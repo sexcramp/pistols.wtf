@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import confetti from 'canvas-confetti';
 
 export default function LandingPage({ onNavigate, onOpenAuth }) {
   const [claimHandle, setClaimHandle] = useState('');
@@ -9,16 +8,7 @@ export default function LandingPage({ onNavigate, onOpenAuth }) {
     const clean = claimHandle.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
     if (!clean) return;
 
-    try {
-      confetti({
-        particleCount: 70,
-        spread: 65,
-        origin: { y: 0.65 },
-        colors: ['#EE6F35', '#FFA172', '#FFFFFF', '#D5551A']
-      });
-    } catch (err) {}
-
-    // Open Register Modal with the claimed username pre-filled (Screenshot 1:1)
+    // Immediately open Register Modal with the claimed username pre-filled
     if (onOpenAuth) {
       onOpenAuth('register', clean);
     } else {

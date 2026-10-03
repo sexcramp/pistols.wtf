@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { 
   DiscordIcon, 
+  GoogleIcon,
   LinkChainIcon, 
   KeyIcon, 
   EyeIcon, 
@@ -67,6 +68,17 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
     }
   };
 
+  const handleGoogleAuth = () => {
+    // Google login simulation
+    const cleanUsername = username || 'ares';
+    const existing = getProfileByUsername(cleanUsername);
+    saveProfile(existing);
+    onClose();
+    if (onSuccess) {
+      onSuccess(cleanUsername);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 selection:bg-[#EE6F35]">
       {/* iOS Blur Backdrop */}
@@ -76,7 +88,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
       />
 
       {/* Modal Card (Screenshot 1:1 Matching) */}
-      <div className="relative w-full max-w-[430px] rounded-[30px] p-6 sm:p-7 bg-gradient-to-b from-[#18181b] via-[#121215] to-[#0a0a0c] border border-[#27272a] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_25px_60px_rgba(0,0,0,0.95)] z-10 ios-menu-enter">
+      <div className="relative w-full max-w-[430px] rounded-[30px] p-6 sm:p-7 bg-gradient-to-b from-[#18181b] via-[#121215] to-[#0a0a0c] border border-[#26262a] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_25px_60px_rgba(0,0,0,0.95)] z-10 ios-menu-enter">
         
         {/* Header: Brand & Close Button */}
         <div className="flex items-center justify-between">
@@ -114,15 +126,28 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
           </p>
         </div>
 
-        {/* Sign up with Discord Button (Screenshot) */}
-        <button
-          onClick={handleDiscordAuth}
-          type="button"
-          className="w-full py-3 px-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold text-[15px] flex items-center justify-center gap-2.5 shadow-lg shadow-[#5865F2]/25 active:scale-[0.98] transition-all"
-        >
-          <DiscordIcon className="w-5 h-5 text-white" />
-          <span>{mode === 'register' ? 'Sign Up with Discord' : 'Sign In with Discord'}</span>
-        </button>
+        {/* Social Auth Buttons (Discord & Google) */}
+        <div className="space-y-2.5">
+          {/* Discord Button */}
+          <button
+            onClick={handleDiscordAuth}
+            type="button"
+            className="w-full py-3 px-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold text-[15px] flex items-center justify-center gap-2.5 shadow-lg shadow-[#5865F2]/25 active:scale-[0.98] transition-all"
+          >
+            <DiscordIcon className="w-5 h-5 text-white" />
+            <span>{mode === 'register' ? 'Sign Up with Discord' : 'Sign In with Discord'}</span>
+          </button>
+
+          {/* Google Button */}
+          <button
+            onClick={handleGoogleAuth}
+            type="button"
+            className="w-full py-2.5 px-4 rounded-2xl bg-[#1e1e22] hover:bg-[#27272c] border border-white/[0.08] text-white font-medium text-[14px] flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all"
+          >
+            <GoogleIcon className="w-4 h-4" />
+            <span>{mode === 'register' ? 'Sign Up with Google' : 'Sign In with Google'}</span>
+          </button>
+        </div>
 
         {/* Divider with 'or register with' / 'or login with' */}
         <div className="flex items-center my-4 text-white/40 text-[13px]">
