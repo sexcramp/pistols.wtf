@@ -3,10 +3,16 @@ import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import BioPage from './pages/BioPage';
+import AuthModal from './components/AuthModal';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home'); // 'home', 'dashboard', 'bio'
   const [activeUsername, setActiveUsername] = useState('ares');
+  const [authModal, setAuthModal] = useState({
+    isOpen: false,
+    mode: 'register',
+    prefilledUsername: '',
+  });
 
   // Handle URL route parsing on initial load and back/forward navigation
   const parseRoute = () => {
@@ -44,16 +50,39 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const openAuth = (mode = 'register', prefilled = '') => {
+    setAuthModal({
+      isOpen: true,
+      mode,
+      prefilledUsername: prefilled,
+    });
+  };
+
+  const closeAuth = () => {
+    setAuthModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleAuthSuccess = (username) => {
+    navigate('dashboard', username);
+  };
+
   return (
     <div className="min-h-screen bg-[#060608] text-white selection:bg-[#EE6F35] selection:text-white">
       {/* Show Navbar on Home and Dashboard */}
       {currentPage !== 'bio' && (
-        <Navbar onNavigate={navigate} currentPage={currentPage} />
+        <Navbar 
+          onNavigate={navigate} 
+          onOpenAuth={openAuth}
+          currentPage={currentPage} 
+        />
       )}
 
       <main>
         {currentPage === 'home' && (
-          <LandingPage onNavigate={navigate} />
+          <LandingPage 
+            onNavigate={navigate} 
+            onOpenAuth={openAuth}
+          />
         )}
 
         {currentPage === 'dashboard' && (
@@ -64,6 +93,15 @@ export default function App() {
           <BioPage username={activeUsername} onNavigate={navigate} />
         )}
       </main>
+
+      {/* Register / Login Modal (Screenshot 1:1) */}
+      <AuthModal
+        isOpen={authModal.isOpen}
+        onClose={closeAuth}
+        initialMode={authModal.mode}
+        prefilledUsername={authModal.prefilledUsername}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

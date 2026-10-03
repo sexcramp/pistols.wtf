@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 
-export default function LandingPage({ onNavigate }) {
+export default function LandingPage({ onNavigate, onOpenAuth }) {
   const [claimHandle, setClaimHandle] = useState('');
 
   const handleClaim = (e) => {
@@ -18,9 +18,12 @@ export default function LandingPage({ onNavigate }) {
       });
     } catch (err) {}
 
-    setTimeout(() => {
+    // Open Register Modal with the claimed username pre-filled (Screenshot 1:1)
+    if (onOpenAuth) {
+      onOpenAuth('register', clean);
+    } else {
       onNavigate('dashboard', clean);
-    }, 600);
+    }
   };
 
   return (

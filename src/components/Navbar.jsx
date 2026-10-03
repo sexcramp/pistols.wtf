@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { SparklesIcon, DiamondIcon, DiscordIcon } from './Icons';
 
-export default function Navbar({ onNavigate, currentPage }) {
+export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -56,13 +56,13 @@ export default function Navbar({ onNavigate, currentPage }) {
           {/* Action Buttons Right */}
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onOpenAuth ? onOpenAuth('login') : onNavigate('dashboard')}
               className="px-5 py-1.5 rounded-full bg-[#1f1f23] hover:bg-[#27272d] border border-white/[0.08] text-white text-[14px] font-medium transition active:scale-[0.98]"
             >
               Login
             </button>
             <button
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onOpenAuth ? onOpenAuth('register') : onNavigate('dashboard')}
               className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#EE6F35] to-[#f47f48] hover:opacity-95 text-white text-[14px] font-medium transition shadow-md shadow-[#EE6F35]/25 active:scale-[0.98]"
             >
               Register
@@ -192,8 +192,9 @@ export default function Navbar({ onNavigate, currentPage }) {
             <div className="grid grid-cols-2 gap-3 mt-1 ios-item-4">
               <button
                 onClick={() => {
-                  onNavigate('dashboard');
                   setMobileMenuOpen(false);
+                  if (onOpenAuth) onOpenAuth('login');
+                  else onNavigate('dashboard');
                 }}
                 className="py-3 rounded-[16px] bg-[#222226] hover:bg-[#28282d] border border-white/[0.08] text-white text-[15px] font-medium text-center transition active:scale-[0.96]"
               >
@@ -201,8 +202,9 @@ export default function Navbar({ onNavigate, currentPage }) {
               </button>
               <button
                 onClick={() => {
-                  onNavigate('dashboard');
                   setMobileMenuOpen(false);
+                  if (onOpenAuth) onOpenAuth('register');
+                  else onNavigate('dashboard');
                 }}
                 className="py-3 rounded-[16px] bg-gradient-to-r from-[#EE6F35] to-[#f47f48] hover:from-[#d95e26] hover:to-[#e87138] text-white text-[15px] font-medium text-center transition shadow-lg shadow-[#EE6F35]/25 active:scale-[0.96]"
               >
