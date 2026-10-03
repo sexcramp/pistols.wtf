@@ -8,7 +8,9 @@ import {
   Radio,
   MapPin,
   Briefcase,
-  Music2
+  Music2,
+  Clock,
+  CloudSun
 } from 'lucide-react';
 import { 
   DiscordIcon, 
@@ -26,27 +28,48 @@ import {
   GlobeIcon 
 } from './Icons';
 
+// Spiderweb SVG for the Halloween limited badge (from Screenshot_20261003_194936_Chrome.jpg)
+export const SpiderwebIcon = ({ className = "w-4 h-4 text-purple-400" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="12" cy="12" r="8" />
+  </svg>
+);
+
 export default function ProfileCard({ profile, isPreview = false, onLinkClick }) {
   const [displayedBio, setDisplayedBio] = useState('');
+  const [showUidTooltip, setShowUidTooltip] = useState(false);
   const cardRef = useRef(null);
   const [tiltStyle, setTiltStyle] = useState({});
 
   const theme = profile.theme || {};
   const primaryColor = theme.primaryColor || '#EE6F35';
-  const avatarShape = profile.avatarShape || 'soft'; // circle, soft, rounded, square
+  const avatarShape = profile.avatarShape || 'rounded'; // square, soft, rounded, circle
   const decoration = profile.avatarDecoration || 'none';
   const decorationHue = profile.avatarDecorationHue ?? 0;
   const isTilting = theme.tilt ?? true;
+  const layout = theme.layout || 'floating'; // floating, stacked, compact, showcase
+
+  const hasAvatar = Boolean(profile.avatarUrl);
+  const hasBanner = Boolean(profile.bannerUrl);
+  const hasBio = Boolean(profile.bio && profile.bio.trim());
+  const hasLinks = Boolean(profile.links && profile.links.length > 0);
+  const hasWidgets = Boolean(profile.widgets && profile.widgets.length > 0);
+  const hasDiscord = Boolean(profile.discordStatus);
+
+  // If user hasn't added avatar, banner, or bio yet, show the minimal default capsule (Screenshot 1:1)
+  const isMinimalDefault = !hasAvatar && !hasBanner && !hasBio && !hasLinks && !hasWidgets;
 
   // Typewriter effect for Bio
   useEffect(() => {
-    if (!theme.typewriterBio) {
+    if (!theme.typewriterBio || !profile.bio) {
       setDisplayedBio(profile.bio || '');
       return;
     }
 
     setDisplayedBio('');
-    const text = profile.bio || '';
+    const text = profile.bio;
     let currentIdx = 0;
 
     const interval = setInterval(() => {
@@ -69,8 +92,8 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -7;
-    const rotateY = ((x - centerX) / centerX) * 7;
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
 
     setTiltStyle({
       transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`,
@@ -84,6 +107,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
       transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
       transition: 'transform 0.4s ease-out'
     });
+    setShowUidTooltip(false);
   };
 
   // Social Icon Helper
@@ -126,75 +150,119 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
     }
   };
 
-  // Avatar Decoration Frames
-  const renderAvatarDecoration = () => {
-    if (!decoration || decoration === 'none') return null;
-
-    const hueStyle = { filter: `hue-rotate(${decorationHue}deg)` };
-
-    switch (decoration) {
-      case 'halo':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -top-3 -left-3 -right-3 -bottom-3 rounded-full border-2 border-[#EE6F35] animate-pulse shadow-[0_0_20px_#EE6F35] pointer-events-none"
-          />
-        );
-      case 'cyber-orange':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -inset-2 rounded-2xl border-2 border-dashed border-[#EE6F35] animate-spin shadow-[0_0_25px_#EE6F35]/70 pointer-events-none"
-            style={{ ...hueStyle, animationDuration: '14s' }}
-          />
-        );
-      case 'wings':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -inset-3 bg-gradient-to-r from-amber-400/30 via-[#EE6F35]/40 to-amber-400/30 blur-md rounded-3xl animate-pulse pointer-events-none"
-          />
-        );
-      case 'horns':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -top-4 left-1/2 -translate-x-1/2 flex items-center justify-between w-[85%] pointer-events-none"
-          >
-            <span className="text-red-500 text-lg font-black drop-shadow-[0_0_10px_red]">▲</span>
-            <span className="text-red-500 text-lg font-black drop-shadow-[0_0_10px_red]">▲</span>
-          </div>
-        );
-      case 'void':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -inset-2.5 rounded-full bg-gradient-to-tr from-purple-900/60 via-[#EE6F35]/30 to-black blur-sm border border-purple-500/50 animate-spin pointer-events-none"
-            style={{ ...hueStyle, animationDuration: '8s' }}
-          />
-        );
-      case 'orbit':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -inset-3 rounded-full border border-amber-300/60 shadow-[0_0_15px_gold] animate-spin pointer-events-none"
-            style={{ ...hueStyle, animationDuration: '6s' }}
-          >
-            <div className="w-2 h-2 rounded-full bg-amber-300 shadow-[0_0_8px_gold] absolute -top-1 left-1/2" />
-          </div>
-        );
-      case 'fire':
-        return (
-          <div 
-            style={hueStyle}
-            className="absolute -inset-2.5 rounded-2xl bg-gradient-to-t from-[#EE6F35]/60 via-red-500/40 to-yellow-400/20 blur-sm animate-pulse pointer-events-none"
-          />
-        );
-      default:
-        return null;
-    }
+  // Render Badges
+  const renderBadges = () => {
+    const badges = profile.badges || ['halloween'];
+    return (
+      <div className="flex items-center justify-center gap-2 mt-2.5">
+        {badges.map((badge, idx) => {
+          if (badge === 'halloween') {
+            return (
+              <div 
+                key={idx} 
+                title="Halloween Limited Badge"
+                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-purple-500/30 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.35)] hover:scale-110 transition-transform"
+              >
+                <SpiderwebIcon className="w-4 h-4 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.8)]" />
+              </div>
+            );
+          }
+          if (badge === 'verified') {
+            return (
+              <div 
+                key={idx}
+                title="Verified Profile"
+                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-[#EE6F35]/40 flex items-center justify-center text-[#EE6F35] shadow-[0_0_12px_rgba(238,111,53,0.35)] hover:scale-110 transition-transform"
+              >
+                <BadgeCheck className="w-4 h-4 fill-[#EE6F35] text-black" />
+              </div>
+            );
+          }
+          if (badge === 'early') {
+            return (
+              <div 
+                key={idx}
+                title="Early Supporter"
+                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.35)] hover:scale-110 transition-transform"
+              >
+                <Sparkles className="w-4 h-4 fill-amber-400/20" />
+              </div>
+            );
+          }
+          if (badge === 'owner') {
+            return (
+              <div 
+                key={idx}
+                title="Staff / Owner"
+                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-purple-400/40 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.35)] hover:scale-110 transition-transform"
+              >
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
   };
 
+  // -------------------------------------------------------------
+  // 1. MINIMAL DEFAULT PROFILE LOOK (EXACT MATCH Screenshot 194936)
+  // -------------------------------------------------------------
+  if (isMinimalDefault) {
+    return (
+      <div 
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          ...tiltStyle,
+          backgroundColor: theme.cardBackground || 'rgba(10, 10, 13, 0.92)',
+          borderColor: theme.cardBorder || 'rgba(255, 255, 255, 0.07)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+        }}
+        className="w-full max-w-[390px] rounded-[38px] px-8 py-9 sm:px-10 sm:py-10 border relative overflow-hidden backdrop-blur-xl transition-all duration-300 select-none"
+      >
+        {/* Top Right: Views Counter Pill with Eye (Screenshot 1:1) */}
+        <div className="absolute top-4 sm:top-5 right-5 sm:right-6">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#14141c]/90 border border-white/5 shadow-inner">
+            <Eye className="w-3.5 h-3.5 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
+            <span className="text-xs font-semibold text-white/90">
+              {profile.views ?? 0}
+            </span>
+          </div>
+        </div>
+
+        {/* Center: Username + UID Tooltip (Screenshot 194936 & 194942) */}
+        <div className="flex flex-col items-center justify-center mt-3 mb-1 relative">
+          
+          {/* Tooltip on hover/tap (Screenshot_20261003_194942_Chrome.jpg) */}
+          {showUidTooltip && (
+            <div className="absolute -top-7 px-2.5 py-0.5 rounded-full bg-black/90 border border-white/10 text-[10px] font-mono text-white/90 shadow-lg animate-in fade-in duration-150">
+              UID {profile.uid || '545701376'}
+            </div>
+          )}
+
+          <h1 
+            onMouseEnter={() => setShowUidTooltip(true)}
+            onMouseLeave={() => setShowUidTooltip(false)}
+            onClick={() => setShowUidTooltip(!showUidTooltip)}
+            style={{ fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif' }}
+            className="text-[32px] sm:text-[36px] font-medium text-white tracking-tight cursor-pointer hover:text-white/90 transition-colors"
+          >
+            {profile.displayName || profile.username || 'bloodare'}
+          </h1>
+
+          {/* Centered Badge (Spiderweb / Halloween) */}
+          {renderBadges()}
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // 2. CUSTOMIZED PROFILE (WHEN USER ADDS AVATAR/LINKS/BANNER)
+  // -------------------------------------------------------------
   return (
     <div 
       ref={cardRef}
@@ -202,87 +270,85 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
       onMouseLeave={handleMouseLeave}
       style={{
         ...tiltStyle,
-        backgroundColor: theme.cardBackground || 'rgba(18, 18, 20, 0.85)',
+        backgroundColor: theme.cardBackground || 'rgba(12, 12, 16, 0.88)',
         backdropFilter: `blur(${theme.cardBlur ?? 20}px)`,
         WebkitBackdropFilter: `blur(${theme.cardBlur ?? 20}px)`,
-        borderColor: theme.cardBorder || 'rgba(238, 111, 53, 0.25)',
-        borderRadius: `${theme.cardRadius || 28}px`,
-        boxShadow: theme.glowIntensity === 'high' 
-          ? `0 0 50px rgba(238, 111, 53, 0.35)` 
-          : theme.glowIntensity === 'low' 
-          ? `0 0 20px rgba(0, 0, 0, 0.8)` 
-          : `0 0 35px rgba(238, 111, 53, 0.2)`,
+        borderColor: theme.cardBorder || 'rgba(255, 255, 255, 0.08)',
+        borderRadius: `${theme.cardRadius || 36}px`,
+        boxShadow: '0 25px 60px rgba(0,0,0,0.92), inset 0 1px 0 rgba(255,255,255,0.06)',
       }}
-      className="w-full max-w-[420px] overflow-hidden shadow-2xl relative border transition-shadow duration-300 selection:bg-[#EE6F35]"
+      className="w-full max-w-[410px] overflow-hidden shadow-2xl relative border transition-shadow duration-300 selection:bg-[#EE6F35]"
     >
       {/* Banner */}
-      <div className="h-32 sm:h-36 w-full relative overflow-hidden bg-gradient-to-br from-neutral-900 via-[#18181c] to-black">
-        {profile.bannerUrl && (
+      {hasBanner && (
+        <div className="h-32 sm:h-36 w-full relative overflow-hidden bg-gradient-to-br from-neutral-900 via-[#18181c] to-black">
           <img 
             src={profile.bannerUrl} 
             alt="Profile Banner" 
             className="w-full h-full object-cover"
           />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/85" />
+        </div>
+      )}
+
+      {/* Views Counter (Top Right) */}
+      <div className="absolute top-4 right-5 z-20">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 shadow-inner">
+          <Eye className="w-3.5 h-3.5 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
+          <span className="text-xs font-semibold text-white/90">
+            {profile.views ?? 0}
+          </span>
+        </div>
       </div>
 
-      <div className="px-6 pb-6 pt-0 relative">
-        {/* Avatar & Badges row */}
-        <div className="flex items-end justify-between -mt-14 mb-4">
-          <div className="relative">
-            {renderAvatarDecoration()}
+      <div className={`px-6 pb-6 pt-5 relative ${hasBanner ? '-mt-12' : ''}`}>
+        
+        {/* Avatar & Presence Row (if avatar enabled) */}
+        {hasAvatar && (
+          <div className="flex items-end justify-between mb-4">
+            <div className="relative">
+              <div className={`w-24 h-24 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-black/80 backdrop-blur-md border border-white/15 shadow-2xl relative z-10`}>
+                <img 
+                  src={profile.avatarUrl} 
+                  alt={profile.displayName} 
+                  className={`w-full h-full object-cover ${getShapeClass(avatarShape)}`}
+                />
+              </div>
 
-            <div className={`w-24 h-24 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-black/70 backdrop-blur-md border border-white/20 shadow-2xl relative z-10`}>
-              <img 
-                src={profile.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80'} 
-                alt={profile.displayName} 
-                className={`w-full h-full object-cover ${getShapeClass(avatarShape)}`}
+              {/* Status badge */}
+              <div 
+                className={`absolute bottom-0 right-0 z-20 w-5 h-5 rounded-full border-2 border-black flex items-center justify-center ${getStatusColor(profile.discordStatus?.status || 'online')}`}
+                title={`Status: ${profile.discordStatus?.status || 'online'}`}
               />
             </div>
-
-            {/* Discord status badge */}
-            <div 
-              className={`absolute bottom-0 right-0 z-20 w-5 h-5 rounded-full border-2 border-black flex items-center justify-center ${getStatusColor(profile.discordStatus?.status || 'dnd')}`}
-              title={`Status: ${profile.discordStatus?.status || 'online'}`}
-            />
           </div>
+        )}
 
-          {/* Badges container */}
-          {theme.showBadges && profile.badges && profile.badges.length > 0 && (
-            <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg">
-              {profile.badges.includes('verified') && (
-                <div title="Verified Profile" className="text-[#EE6F35]">
-                  <BadgeCheck className="w-4 h-4 fill-[#EE6F35] text-black" />
-                </div>
-              )}
-              {profile.badges.includes('early') && (
-                <div title="Early Supporter" className="text-amber-400">
-                  <Sparkles className="w-4 h-4 fill-amber-400/20" />
-                </div>
-              )}
-              {profile.badges.includes('owner') && (
-                <div title="Staff / Owner" className="text-purple-400">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-              )}
+        {/* Username Header + Tooltip */}
+        <div className="mb-3 relative">
+          {showUidTooltip && (
+            <div className="absolute -top-7 left-0 px-2.5 py-0.5 rounded-full bg-black/90 border border-white/10 text-[10px] font-mono text-white/90 shadow-lg animate-in fade-in duration-150">
+              UID {profile.uid || '545701376'}
             </div>
           )}
-        </div>
 
-        {/* Name and Handle */}
-        <div className="mb-3">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white tracking-tight">
-              {profile.displayName || profile.username}
-            </h1>
+          <h1 
+            onMouseEnter={() => setShowUidTooltip(true)}
+            onMouseLeave={() => setShowUidTooltip(false)}
+            onClick={() => setShowUidTooltip(!showUidTooltip)}
+            style={{ fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif' }}
+            className="text-[28px] sm:text-[32px] font-semibold text-white tracking-tight cursor-pointer inline-block"
+          >
+            {profile.displayName || profile.username || 'bloodare'}
+          </h1>
+
+          {/* Badges */}
+          <div className="flex items-center gap-2 mt-1">
+            {renderBadges()}
           </div>
-          <p className="text-xs font-mono font-medium text-[#EE6F35] tracking-wide">
-            whose.baby/{profile.username}
-          </p>
         </div>
 
-        {/* Location & Occupation / Details */}
+        {/* Location & Occupation */}
         {(profile.location || profile.occupation) && (
           <div className="flex flex-wrap items-center gap-3 mb-3 text-[11px] text-white/60">
             {profile.location && (
@@ -300,31 +366,19 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
           </div>
         )}
 
-        {/* Tags */}
-        {profile.tags && profile.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3.5">
-            {profile.tags.map((tag, i) => (
-              <span 
-                key={i}
-                className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/5 border border-white/10 text-white/80"
-              >
-                #{tag}
-              </span>
-            ))}
+        {/* Bio Text */}
+        {hasBio && (
+          <div className="mb-4 text-xs sm:text-[13px] text-white/75 leading-relaxed whitespace-pre-line min-h-[24px]">
+            {displayedBio}
+            {theme.typewriterBio && displayedBio.length < (profile.bio || '').length && (
+              <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#EE6F35] animate-pulse align-middle" />
+            )}
           </div>
         )}
 
-        {/* Bio Text */}
-        <div className="mb-4 text-xs sm:text-[13px] text-white/75 leading-relaxed font-sans whitespace-pre-line min-h-[38px]">
-          {displayedBio}
-          {theme.typewriterBio && displayedBio.length < (profile.bio || '').length && (
-            <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#EE6F35] animate-pulse align-middle" />
-          )}
-        </div>
-
-        {/* Discord Presence / Spotify activity */}
-        {profile.discordStatus && (
-          <div className="mb-4 p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+        {/* Discord Activity / Spotify Widget */}
+        {hasDiscord && profile.discordStatus && (
+          <div className="mb-4 p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-3">
             {profile.discordStatus.spotify ? (
               <>
                 <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-neutral-800 border border-white/10 relative">
@@ -355,23 +409,18 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
               </>
             ) : (
               <>
-                <div className="w-8 h-8 rounded-xl bg-[#EE6F35]/15 border border-[#EE6F35]/30 flex items-center justify-center text-[#EE6F35]">
-                  <Radio className="w-4 h-4 animate-pulse" />
+                <div className="w-8 h-8 rounded-xl bg-[#5865F2]/20 border border-[#5865F2]/40 flex items-center justify-center text-[#5865F2]">
+                  <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#EE6F35]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#5865F2]">
                       Discord Status
                     </span>
                   </div>
                   <p className="text-xs font-semibold text-white truncate">
                     {profile.discordStatus.activity || 'whose.baby ✦ sync'}
                   </p>
-                  {profile.discordStatus.state && (
-                    <p className="text-[10px] text-white/50 truncate">
-                      {profile.discordStatus.state}
-                    </p>
-                  )}
                 </div>
               </>
             )}
@@ -379,51 +428,43 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         )}
 
         {/* Links List */}
-        <div className="space-y-2 mb-4">
-          {(profile.links || []).map((link) => (
-            <a
-              key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => onLinkClick && onLinkClick(link.id)}
-              className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-[#EE6F35]/40 transition-all duration-200 active:scale-[0.98]"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-[#EE6F35]/20 text-white/70 group-hover:text-[#EE6F35] flex items-center justify-center transition border border-white/10 group-hover:border-[#EE6F35]/30 shrink-0">
-                  {getSocialIcon(link.icon)}
-                </div>
-                <span className="text-xs font-medium text-white/90 group-hover:text-white truncate">
-                  {link.title}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                {link.clicks !== undefined && (
-                  <span className="text-[10px] font-mono text-white/40 group-hover:text-white/60">
-                    {link.clicks} clicks
+        {hasLinks && (
+          <div className="space-y-2 mb-4">
+            {(profile.links || []).map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => onLinkClick && onLinkClick(link.id)}
+                className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-[#EE6F35]/40 transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-[#EE6F35]/20 text-white/70 group-hover:text-[#EE6F35] flex items-center justify-center transition border border-white/10 group-hover:border-[#EE6F35]/30 shrink-0">
+                    {getSocialIcon(link.icon)}
+                  </div>
+                  <span className="text-xs font-medium text-white/90 group-hover:text-white truncate">
+                    {link.title}
                   </span>
-                )}
-                <ExternalLink className="w-3.5 h-3.5 text-white/40 group-hover:text-[#EE6F35] group-hover:translate-x-0.5 transition" />
-              </div>
-            </a>
-          ))}
-        </div>
+                </div>
 
-        {/* Footer: View count & Brand */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {link.clicks !== undefined && (
+                    <span className="text-[10px] font-mono text-white/40 group-hover:text-white/60">
+                      {link.clicks} clicks
+                    </span>
+                  )}
+                  <ExternalLink className="w-3.5 h-3.5 text-white/40 group-hover:text-[#EE6F35] group-hover:translate-x-0.5 transition" />
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Footer */}
         <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/40">
-          {theme.showViews && (
-            <div className="flex items-center gap-1.5">
-              <Eye className="w-3.5 h-3.5 text-[#EE6F35]" />
-              <span>{(profile.views || 0).toLocaleString()} views</span>
-            </div>
-          )}
-
           <div className="flex items-center gap-1 ml-auto">
-            <span>powered by</span>
-            <span className="font-semibold text-white/70 hover:text-[#EE6F35] transition cursor-pointer">
-              whose<span className="text-[#EE6F35]">.</span>baby
-            </span>
+            <span>whose<span className="text-[#EE6F35]">.</span>baby</span>
           </div>
         </div>
 

@@ -1,46 +1,85 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Save, 
+  Menu, 
+  X, 
+  ExternalLink, 
   Eye, 
-  Plus, 
-  Trash2, 
-  Music, 
+  Hash, 
+  User, 
+  Tag, 
+  ChevronLeft, 
+  ChevronRight, 
+  Sparkles, 
   Palette, 
   Link as LinkIcon, 
-  User, 
-  Sparkles, 
-  CheckCircle, 
-  Copy, 
-  Check, 
-  Layers, 
+  Shield, 
+  Puzzle, 
+  Music, 
+  Settings, 
+  Folder, 
+  Dices, 
+  HelpCircle, 
+  LogOut, 
+  Plus, 
+  Trash2, 
+  Edit3, 
   Sliders, 
-  ShieldCheck, 
-  ExternalLink,
+  Save, 
+  Check, 
+  MapPin, 
+  Briefcase, 
+  Layers, 
+  Wand2, 
+  EyeOff, 
+  GripVertical,
   Radio,
-  MapPin,
-  Briefcase,
-  Flame,
-  ArrowUp,
-  ArrowDown
+  Clock,
+  Sun,
+  Calendar,
+  Gamepad2,
+  Tv,
+  RadioTower,
+  Volume2
 } from 'lucide-react';
-import ProfileCard from '../components/ProfileCard';
-import { DiscordIcon, SpotifyIcon, GoogleIcon } from '../components/Icons';
+import ProfileCard, { SpiderwebIcon } from '../components/ProfileCard';
+import { 
+  DiscordIcon, 
+  SpotifyIcon, 
+  GithubIcon, 
+  YoutubeIcon, 
+  TwitchIcon, 
+  SteamIcon, 
+  SoundcloudIcon 
+} from '../components/Icons';
 import { getProfileByUsername, saveProfile } from '../utils/storage';
 
-export default function DashboardPage({ initialUsername = 'ares', onNavigate }) {
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'appearance', 'links', 'effects', 'audio', 'discord'
-  const [mobileView, setMobileView] = useState('editor'); // 'editor', 'preview'
-  const [profile, setProfile] = useState(() => getProfileByUsername(initialUsername));
+export default function DashboardPage({ initialUsername = 'bloodare', onNavigate }) {
+  // Navigation State
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentSection, setCurrentSection] = useState('customize'); // 'overview', 'customize', 'settings', 'templates'
+  const [customizeSubTab, setCustomizeSubTab] = useState('profile'); // 'profile', 'appearance', 'links', 'badges', 'widgets', 'tracks'
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
-  const [copiedLink, setCopiedLink] = useState(false);
 
-  // New link form state
+  // Profile State
+  const [profile, setProfile] = useState(() => getProfileByUsername(initialUsername));
+
+  // Modals & Forms
+  const [showAddLinkModal, setShowAddLinkModal] = useState(false);
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkIcon, setNewLinkIcon] = useState('globe');
 
-  // New tag state
-  const [newTagInput, setNewTagInput] = useState('');
+  const [showAddTrackModal, setShowAddTrackModal] = useState(false);
+  const [newTrackTitle, setNewTrackTitle] = useState('');
+  const [newTrackArtist, setNewTrackArtist] = useState('');
+  const [newTrackUrl, setNewTrackUrl] = useState('');
+
+  // Badges Sub-Filter
+  const [badgeFilter, setBadgeFilter] = useState('owned'); // 'owned', 'other'
+
+  // Giveaways Sub-Filter
+  const [giveawayFilter, setGiveawayFilter] = useState('active'); // 'active', 'winners'
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -49,18 +88,9 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
 
   const handleSave = () => {
     saveProfile(profile);
-    showToast('Changes saved to whose.baby! ✦');
+    showToast('Changes saved successfully! ✦');
   };
 
-  const handleCopyLink = () => {
-    const fullUrl = `https://whose.baby/${profile.username}`;
-    navigator.clipboard?.writeText(fullUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-    showToast(`Copied ${fullUrl} to clipboard!`);
-  };
-
-  // Add Link
   const handleAddLink = (e) => {
     e.preventDefault();
     if (!newLinkTitle || !newLinkUrl) return;
@@ -80,850 +110,1276 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
 
     setNewLinkTitle('');
     setNewLinkUrl('');
-    showToast('Link added!');
+    setShowAddLinkModal(false);
+    showToast('Link added to profile!');
   };
 
-  // Remove Link
-  const handleRemoveLink = (id) => {
-    setProfile(prev => ({
-      ...prev,
-      links: (prev.links || []).filter(l => l.id !== id)
-    }));
-  };
-
-  // Move Link Up/Down
-  const handleMoveLink = (index, direction) => {
-    const links = [...(profile.links || [])];
-    const targetIdx = direction === 'up' ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= links.length) return;
-    const temp = links[index];
-    links[index] = links[targetIdx];
-    links[targetIdx] = temp;
-    setProfile(prev => ({ ...prev, links }));
-  };
-
-  // Add Tag
-  const handleAddTag = (e) => {
+  const handleAddTrack = (e) => {
     e.preventDefault();
-    const tag = newTagInput.trim().replace(/^#/, '');
-    if (!tag) return;
-    if ((profile.tags || []).includes(tag)) return;
+    if (!newTrackTitle || !newTrackUrl) return;
 
     setProfile(prev => ({
       ...prev,
-      tags: [...(prev.tags || []), tag]
+      audio: {
+        enabled: true,
+        title: newTrackTitle,
+        artist: newTrackArtist || 'Unknown Artist',
+        url: newTrackUrl,
+      }
     }));
-    setNewTagInput('');
+
+    setShowAddTrackModal(false);
+    showToast('Track added to profile!');
   };
 
-  const handleRemoveTag = (tagToRemove) => {
+  const handleAddWidget = (widgetKey, widgetTitle) => {
+    const existing = profile.widgets || [];
+    if (existing.some(w => w.key === widgetKey)) {
+      showToast(`${widgetTitle} widget is already added!`);
+      return;
+    }
+
     setProfile(prev => ({
       ...prev,
-      tags: (prev.tags || []).filter(t => t !== tagToRemove)
+      widgets: [...existing, { key: widgetKey, title: widgetTitle, id: Date.now().toString() }]
     }));
-  };
-
-  // Toggle Badges
-  const handleToggleBadge = (badgeName) => {
-    const badges = profile.badges || [];
-    const updated = badges.includes(badgeName)
-      ? badges.filter(b => b !== badgeName)
-      : [...badges, badgeName];
-    setProfile(prev => ({ ...prev, badges: updated }));
+    showToast(`Added ${widgetTitle} widget!`);
   };
 
   const theme = profile.theme || {};
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4 max-w-6xl mx-auto selection:bg-[#EE6F35]">
+    <div className="min-h-screen bg-[#08080a] text-white selection:bg-[#EE6F35] font-sans pb-24">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 px-4 py-3 rounded-2xl border border-[#EE6F35]/40 bg-black/95 shadow-2xl flex items-center gap-2 text-xs font-semibold text-white animate-in slide-in-from-top duration-300">
-          <CheckCircle className="w-4 h-4 text-[#EE6F35]" />
+          <Sparkles className="w-4 h-4 text-[#EE6F35]" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
-        <div>
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Studio
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#EE6F35]/20 text-[#EE6F35] text-[10px] font-bold uppercase tracking-wider border border-[#EE6F35]/30">
-              Live Preview
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-white/50 font-mono">
-            <span>whose.baby/<strong className="text-white">{profile.username}</strong></span>
-            <button
-              onClick={handleCopyLink}
-              className="p-1 hover:text-white rounded transition"
-              title="Copy public link"
-            >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
+      {/* ------------------------------------------------------------- */}
+      {/* 1. TOP HEADER BAR (EXACT MATCH Screenshot 194845 / 195229)    */}
+      {/* ------------------------------------------------------------- */}
+      <header className="fixed top-0 left-0 right-0 h-14 bg-[#0a0a0d]/95 backdrop-blur-md border-b border-white/[0.06] z-40 px-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Hamburger button (2 horizontal bars) */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="w-9 h-9 rounded-xl flex flex-col justify-center items-center gap-1.5 text-white/70 hover:text-white hover:bg-white/5 active:scale-95 transition"
+            aria-label="Open Navigation Drawer"
+          >
+            <span className="w-4 h-[2px] bg-current rounded-full" />
+            <span className="w-4 h-[2px] bg-current rounded-full" />
+          </button>
+
+          {/* Section Icon & Title */}
+          <div className="flex items-center gap-2">
+            {currentSection === 'overview' ? (
+              <>
+                <Layers className="w-4 h-4 text-purple-400" />
+                <span className="text-[15px] font-semibold text-white tracking-tight">Overview</span>
+              </>
+            ) : (
+              <>
+                <Palette className="w-4 h-4 text-[#5865F2]" />
+                <span className="text-[15px] font-semibold text-white tracking-tight">Customize</span>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {/* Mobile view toggle */}
-          <div className="flex lg:hidden p-1 rounded-xl bg-white/5 border border-white/10">
-            <button
-              onClick={() => setMobileView('editor')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${mobileView === 'editor' ? 'bg-[#EE6F35] text-white shadow-md' : 'text-white/60'}`}
-            >
-              Editor
-            </button>
-            <button
-              onClick={() => setMobileView('preview')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${mobileView === 'preview' ? 'bg-[#EE6F35] text-white shadow-md' : 'text-white/60'}`}
-            >
-              Live Card
-            </button>
-          </div>
+        {/* Right Action: View Profile Pill Button */}
+        <button
+          onClick={() => onNavigate('bio', profile.username)}
+          className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-white/90 hover:text-white flex items-center gap-1.5 transition active:scale-95"
+        >
+          <ExternalLink className="w-3.5 h-3.5 text-white/60" />
+          <span>View Profile</span>
+        </button>
+      </header>
 
-          <button
-            onClick={() => onNavigate('bio', profile.username)}
-            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 transition"
-            title="Open Fullscreen Public Bio"
-          >
-            <Eye className="w-3.5 h-3.5 text-[#EE6F35]" />
-            <span className="hidden sm:inline">View Bio Page</span>
-          </button>
+      {/* ------------------------------------------------------------- */}
+      {/* 2. SIDEBAR DRAWER OVERLAY (Screenshot_20261003_194922_Chrome) */}
+      {/* ------------------------------------------------------------- */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+          />
 
-          <button
-            onClick={handleSave}
-            className="px-5 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#d95e26] text-white text-xs font-bold shadow-lg shadow-[#EE6F35]/25 active:scale-95 transition flex items-center gap-1.5"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>Save</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Studio Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Left Column: Controls (Editor) */}
-        <div className={`lg:col-span-7 flex flex-col gap-6 ${mobileView === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
-          
-          {/* Studio Navigation Tabs (Inspired by feds-lol & guns.lol) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/5 no-scrollbar">
-            {[
-              { id: 'profile', label: 'Profile & Info', icon: User },
-              { id: 'appearance', label: 'Appearance', icon: Palette },
-              { id: 'links', label: 'Links', icon: LinkIcon },
-              { id: 'effects', label: 'Effects & Media', icon: Sparkles },
-              { id: 'audio', label: 'Audio & Splash', icon: Music },
-              { id: 'discord', label: 'Discord Sync', icon: DiscordIcon },
-            ].map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
+          {/* Drawer Content */}
+          <div className="relative w-[280px] sm:w-[320px] max-w-[85vw] h-full bg-[#0d0d10] border-r border-white/10 flex flex-col justify-between p-4 z-10 overflow-y-auto animate-in slide-in-from-left duration-250">
+            <div>
+              {/* Brand Header */}
+              <div className="flex items-center justify-between px-2 pt-2 pb-5 border-b border-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 flex items-center justify-center">
+                    <img src="/logo.png" alt="logo" className="w-5 h-5 object-contain" />
+                  </div>
+                  <span className="font-bold text-[17px] text-white tracking-tight">
+                    whose<span className="text-[#EE6F35]">.</span>baby
+                  </span>
+                </div>
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                    isActive 
-                      ? 'bg-[#EE6F35] text-white shadow-md shadow-[#EE6F35]/25' 
-                      : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                  onClick={() => setSidebarOpen(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* SECTION: Dashboard */}
+              <div className="mt-4 mb-4">
+                <p className="px-3 text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+                  Dashboard
+                </p>
+                <button
+                  onClick={() => {
+                    setCurrentSection('overview');
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
+                    currentSection === 'overview'
+                      ? 'bg-[#1b1b2f] text-white border-l-2 border-[#5865F2]'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
+                  <Layers className="w-4 h-4 text-[#5865F2]" />
+                  <span>Overview</span>
                 </button>
-              );
-            })}
-          </div>
-
-          {/* TAB 1: PROFILE & INFO */}
-          {activeTab === 'profile' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#EE6F35]" />
-                  <span>General Information</span>
-                </h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1">Display Name</label>
-                    <input
-                      type="text"
-                      value={profile.displayName || ''}
-                      onChange={(e) => setProfile(prev => ({ ...prev, displayName: e.target.value }))}
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1">Username Handle</label>
-                    <input
-                      type="text"
-                      value={profile.username || ''}
-                      disabled
-                      className="w-full bg-black/30 border border-white/5 rounded-xl px-3.5 py-2 text-xs text-white/50 font-mono cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                {/* Location & Occupation */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#EE6F35]" />
-                      <span>Location</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={profile.location || ''}
-                      onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="e.g. Tokyo, Japan"
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1 flex items-center gap-1">
-                      <Briefcase className="w-3 h-3 text-[#EE6F35]" />
-                      <span>Occupation / Title</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={profile.occupation || ''}
-                      onChange={(e) => setProfile(prev => ({ ...prev, occupation: e.target.value }))}
-                      placeholder="e.g. Designer & Developer"
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-1">Bio Description</label>
-                  <textarea
-                    rows={3}
-                    value={profile.bio || ''}
-                    onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
-                    placeholder="Tell visitors about yourself..."
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35] resize-none"
-                  />
-                </div>
-
-                {/* Typewriter toggle */}
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <div>
-                    <span className="text-xs font-medium text-white block">Typewriter Bio Animation</span>
-                    <span className="text-[11px] text-white/40">Types out your bio when visitors open your link</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(theme.typewriterBio)}
-                    onChange={(e) => setProfile(prev => ({
-                      ...prev,
-                      theme: { ...prev.theme, typewriterBio: e.target.checked }
-                    }))}
-                    className="w-4 h-4 accent-[#EE6F35] cursor-pointer"
-                  />
-                </div>
               </div>
 
-              {/* Tags Section */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Profile Tags</span>
-                </h3>
-
-                <form onSubmit={handleAddTag} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newTagInput}
-                    onChange={(e) => setNewTagInput(e.target.value)}
-                    placeholder="Add a tag (e.g. Producer, Developer, Gamer)"
-                    className="flex-1 bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold"
-                  >
-                    Add
-                  </button>
-                </form>
-
-                <div className="flex flex-wrap gap-2">
-                  {(profile.tags || []).map((tag, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/90 flex items-center gap-1.5"
-                    >
-                      #{tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(tag)}
-                        className="text-white/40 hover:text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Badges Section */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Profile Badges</span>
-                </h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              {/* SECTION: Customize */}
+              <div className="mb-4">
+                <p className="px-3 text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+                  Customize
+                </p>
+                <div className="space-y-0.5">
                   {[
-                    { id: 'verified', label: 'Verified Badge', color: 'text-[#EE6F35]' },
-                    { id: 'early', label: 'Early Supporter', color: 'text-amber-400' },
-                    { id: 'owner', label: 'Owner / Staff', color: 'text-purple-400' },
-                  ].map(b => {
-                    const active = (profile.badges || []).includes(b.id);
+                    { id: 'profile', label: 'Profile', icon: User },
+                    { id: 'appearance', label: 'Appearance', icon: Palette },
+                    { id: 'links', label: 'Links', icon: LinkIcon },
+                    { id: 'badges', label: 'Badges', icon: Shield },
+                    { id: 'widgets', label: 'Widgets', icon: Puzzle },
+                    { id: 'tracks', label: 'Tracks', icon: Music },
+                  ].map(tab => {
+                    const Icon = tab.icon;
+                    const isActive = currentSection === 'customize' && customizeSubTab === tab.id;
                     return (
                       <button
-                        key={b.id}
-                        type="button"
-                        onClick={() => handleToggleBadge(b.id)}
-                        className={`p-3 rounded-2xl border text-xs font-semibold flex items-center justify-between transition ${
-                          active 
-                            ? 'bg-[#EE6F35]/10 border-[#EE6F35]/50 text-white' 
-                            : 'bg-black/40 border-white/5 text-white/40 hover:text-white/80'
+                        key={tab.id}
+                        onClick={() => {
+                          setCurrentSection('customize');
+                          setCustomizeSubTab(tab.id);
+                          setSidebarOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                          isActive
+                            ? 'bg-[#1b1b2f] text-white font-semibold border-l-2 border-[#5865F2]'
+                            : 'text-white/60 hover:text-white hover:bg-white/5'
                         }`}
                       >
-                        <span className={active ? b.color : ''}>{b.label}</span>
-                        {active && <Check className="w-3.5 h-3.5 text-[#EE6F35]" />}
+                        <Icon className="w-4 h-4 text-white/70" />
+                        <span>{tab.label}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* TAB 2: APPEARANCE (FEDS-LOL / GUNS-LOL STYLE) */}
-          {activeTab === 'appearance' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              
-              {/* Avatar Shape & Decorations */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-5">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Avatar Shape & Decorations</span>
-                </h3>
-
-                {/* Avatar URL */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-1">Avatar Image URL</label>
-                  <input
-                    type="url"
-                    value={profile.avatarUrl || ''}
-                    onChange={(e) => setProfile(prev => ({ ...prev, avatarUrl: e.target.value }))}
-                    placeholder="https://..."
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                  />
-                </div>
-
-                {/* Shapes */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-2">Avatar Border Shape</label>
-                  <div className="grid grid-cols-4 gap-2.5">
-                    {[
-                      { id: 'circle', label: 'Circle' },
-                      { id: 'soft', label: 'Soft' },
-                      { id: 'rounded', label: 'Rounded' },
-                      { id: 'square', label: 'Square' },
-                    ].map(shape => (
-                      <button
-                        key={shape.id}
-                        type="button"
-                        onClick={() => setProfile(prev => ({ ...prev, avatarShape: shape.id }))}
-                        className={`py-2 px-3 rounded-xl border text-xs font-semibold transition ${
-                          (profile.avatarShape || 'soft') === shape.id
-                            ? 'bg-[#EE6F35] border-[#EE6F35] text-white shadow-md shadow-[#EE6F35]/25'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {shape.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Avatar Decoration Frame */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-2">Avatar Frame / Decoration</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {[
-                      { id: 'none', label: 'None' },
-                      { id: 'halo', label: 'Neon Halo' },
-                      { id: 'cyber-orange', label: 'Cyber Tech' },
-                      { id: 'wings', label: 'Angel Wings' },
-                      { id: 'horns', label: 'Demon Horns' },
-                      { id: 'void', label: 'Void Vortex' },
-                      { id: 'orbit', label: 'Star Orbit' },
-                      { id: 'fire', label: 'Fiery Blaze' },
-                    ].map(dec => (
-                      <button
-                        key={dec.id}
-                        type="button"
-                        onClick={() => setProfile(prev => ({ ...prev, avatarDecoration: dec.id }))}
-                        className={`py-2.5 px-3 rounded-xl border text-xs font-semibold transition ${
-                          (profile.avatarDecoration || 'none') === dec.id
-                            ? 'bg-[#EE6F35] border-[#EE6F35] text-white shadow-md shadow-[#EE6F35]/25'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {dec.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Decoration Hue Slider */}
-                {profile.avatarDecoration && profile.avatarDecoration !== 'none' && (
-                  <div>
-                    <div className="flex items-center justify-between text-xs text-white/70 mb-1.5">
-                      <span>Decoration Color Hue</span>
-                      <span className="font-mono text-[#EE6F35]">{profile.avatarDecorationHue || 0}°</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={360}
-                      value={profile.avatarDecorationHue || 0}
-                      onChange={(e) => setProfile(prev => ({ ...prev, avatarDecorationHue: Number(e.target.value) }))}
-                      className="w-full accent-[#EE6F35] cursor-pointer"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Card Container Customization */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Card Container Styling</span>
-                </h3>
-
-                {/* 3D Tilt Card Toggle */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-black/40 border border-white/5">
-                  <div>
-                    <span className="text-xs font-semibold text-white block">3D Parallax Tilt Effect</span>
-                    <span className="text-[11px] text-white/40">Smooth 3D tilting following cursor and motion</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={theme.tilt ?? true}
-                    onChange={(e) => setProfile(prev => ({
-                      ...prev,
-                      theme: { ...prev.theme, tilt: e.target.checked }
-                    }))}
-                    className="w-4 h-4 accent-[#EE6F35] cursor-pointer"
-                  />
-                </div>
-
-                {/* Card Background Blur Slider */}
-                <div>
-                  <div className="flex items-center justify-between text-xs text-white/70 mb-1">
-                    <span>Card Glass Blur</span>
-                    <span className="font-mono text-[#EE6F35]">{theme.cardBlur ?? 20}px</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={40}
-                    value={theme.cardBlur ?? 20}
-                    onChange={(e) => setProfile(prev => ({
-                      ...prev,
-                      theme: { ...prev.theme, cardBlur: Number(e.target.value) }
-                    }))}
-                    className="w-full accent-[#EE6F35] cursor-pointer"
-                  />
-                </div>
-
-                {/* Card Border Radius */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-2">Card Corner Radius</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[16, 22, 28, 36].map(radius => (
-                      <button
-                        key={radius}
-                        type="button"
-                        onClick={() => setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, cardRadius: radius }
-                        }))}
-                        className={`py-2 px-3 rounded-xl border text-xs font-semibold transition ${
-                          (theme.cardRadius || 28) === radius
-                            ? 'bg-[#EE6F35] border-[#EE6F35] text-white'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {radius}px
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Glow Intensity */}
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-2">Glow Ambience</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['low', 'medium', 'high'].map(glow => (
-                      <button
-                        key={glow}
-                        type="button"
-                        onClick={() => setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, glowIntensity: glow }
-                        }))}
-                        className={`py-2 px-3 rounded-xl border text-xs font-semibold capitalize transition ${
-                          (theme.glowIntensity || 'medium') === glow
-                            ? 'bg-[#EE6F35] border-[#EE6F35] text-white'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {glow}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 3: LINKS & SOCIALS */}
-          {activeTab === 'links' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              
-              {/* Add New Link Card */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Add New Link</span>
-                </h3>
-
-                <form onSubmit={handleAddLink} className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs font-medium text-white/70 block mb-1">Title / Label</label>
-                      <input
-                        type="text"
-                        value={newLinkTitle}
-                        onChange={(e) => setNewLinkTitle(e.target.value)}
-                        placeholder="e.g. My Spotify Playlist"
-                        className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-medium text-white/70 block mb-1">Platform Icon</label>
-                      <select
-                        value={newLinkIcon}
-                        onChange={(e) => setNewLinkIcon(e.target.value)}
-                        className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                      >
-                        <option value="globe">Custom Website</option>
-                        <option value="spotify">Spotify</option>
-                        <option value="discord">Discord</option>
-                        <option value="github">GitHub</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="twitter">X (Twitter)</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="telegram">Telegram</option>
-                        <option value="twitch">Twitch</option>
-                        <option value="kick">Kick</option>
-                        <option value="steam">Steam</option>
-                        <option value="soundcloud">Soundcloud</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1">Destination URL</label>
-                    <input
-                      type="text"
-                      value={newLinkUrl}
-                      onChange={(e) => setNewLinkUrl(e.target.value)}
-                      placeholder="https://..."
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
-                  </div>
-
+              {/* SECTION: Manage */}
+              <div className="mb-4">
+                <p className="px-3 text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+                  Manage
+                </p>
+                <div className="space-y-0.5">
                   <button
-                    type="submit"
-                    className="w-full py-2.5 rounded-xl bg-[#EE6F35] hover:bg-[#d95e26] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-[#EE6F35]/25"
+                    onClick={() => {
+                      setCurrentSection('settings');
+                      setSidebarOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>Add to Card</span>
+                    <Settings className="w-4 h-4 text-white/70" />
+                    <span>Settings</span>
                   </button>
-                </form>
+                  <button
+                    onClick={() => {
+                      setCurrentSection('templates');
+                      setSidebarOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
+                  >
+                    <Folder className="w-4 h-4 text-white/70" />
+                    <span>Templates</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Current Links List */}
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-3">
-                <h3 className="text-sm font-bold text-white flex items-center justify-between">
-                  <span>Current Links ({(profile.links || []).length})</span>
-                </h3>
+              {/* SECTION: Resources */}
+              <div className="mb-4">
+                <p className="px-3 text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+                  Resources
+                </p>
+                <div className="space-y-0.5">
+                  <a
+                    href="https://discord.gg"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
+                  >
+                    <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                    <span>Discord Support</span>
+                  </a>
+                  <button
+                    onClick={() => showToast('Help & documentation: whose.baby/docs')}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
+                  >
+                    <HelpCircle className="w-4 h-4 text-white/70" />
+                    <span>Help</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  {(profile.links || []).map((link, index) => (
-                    <div
-                      key={link.id}
-                      className="p-3 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-between gap-3 group"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="flex flex-col gap-0.5">
+            {/* Bottom User Capsule (Screenshot 1:1) */}
+            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-white/70" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">
+                    {profile.displayName || profile.username}
+                  </p>
+                  <p className="text-[10px] font-mono text-white/40 truncate">
+                    UID {profile.uid || '545,701,376'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => onNavigate('home')}
+                className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition"
+                title="Log out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Container */}
+      <main className="pt-20 px-4 max-w-xl mx-auto">
+        
+        {/* ========================================================= */}
+        {/* VIEW 1: OVERVIEW PAGE (Screenshot_20261003_194845_Chrome) */}
+        {/* ========================================================= */}
+        {currentSection === 'overview' && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            {/* 1. Profile Views Card */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-black/50 border border-white/5 flex items-center justify-center text-white/60">
+                <Eye className="w-5 h-5 text-white/70" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white tracking-tight">{profile.views ?? 0}</p>
+                <p className="text-xs text-white/40">Profile Views</p>
+              </div>
+            </div>
+
+            {/* 2. User ID Card */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-black/50 border border-white/5 flex items-center justify-center text-white/60">
+                <Hash className="w-5 h-5 text-white/70" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white tracking-tight font-mono">
+                  {profile.uid || '545,701,376'}
+                </p>
+                <p className="text-xs text-white/40">User ID</p>
+              </div>
+            </div>
+
+            {/* 3. Username Card */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-black/50 border border-white/5 flex items-center justify-center text-white/60">
+                <User className="w-5 h-5 text-white/70" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white tracking-tight">
+                  {profile.username || 'bloodare'}
+                </p>
+                <p className="text-xs text-white/40">Username</p>
+              </div>
+            </div>
+
+            {/* 4. Limited Badges Card (Screenshot 1:1) */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
+              <div className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-white/70" />
+                <h3 className="text-sm font-bold text-white">Limited Badges</h3>
+              </div>
+              <p className="text-xs text-white/50 leading-relaxed">
+                You've claimed all available limited badges. Check back later for more!
+              </p>
+
+              {/* Carousel Row */}
+              <div className="flex items-center gap-2.5 py-1">
+                <button className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                {/* Claimed Halloween Badge */}
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#352565]/80 border border-purple-500/40 text-xs font-semibold text-white shadow-md shadow-purple-900/30">
+                  <Check className="w-3.5 h-3.5 text-purple-300" />
+                  <SpiderwebIcon className="w-4 h-4 text-purple-300" />
+                  <span>Halloween</span>
+                </div>
+
+                {/* Locked Mystery Badge */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/5 text-xs text-white/40">
+                  <span>?</span>
+                  <span>🦯</span>
+                  <span>???</span>
+                </div>
+
+                <button className="w-8 h-8 rounded-full bg-[#5865F2] hover:bg-[#4752C4] flex items-center justify-center text-white ml-auto shadow-md">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="space-y-1.5 pt-1">
+                <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div className="w-[10%] h-full bg-[#5865F2] rounded-full" />
+                </div>
+                <div className="text-right">
+                  <span className="text-[11px] text-white/40 font-mono">1 / 10 badges</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Join Discord / Casino Card */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#5865F2] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#5865F2]/25">
+                  <DiscordIcon className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-white">Join our Discord</p>
+                  <p className="text-[11px] text-white/40 truncate">discord.gg/whosebaby</p>
+                </div>
+              </div>
+
+              <button className="w-full py-3 px-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#5865F2]/20 active:scale-[0.98] transition">
+                <DiscordIcon className="w-4 h-4 text-white" />
+                <span>Connected to Discord</span>
+              </button>
+
+              <button 
+                onClick={() => showToast('Casino rewards coming soon!')}
+                className="w-full py-3 px-4 rounded-2xl bg-[#C88A1A] hover:bg-[#b07812] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition"
+              >
+                <Dices className="w-4 h-4 text-white" />
+                <span>Go to Casino</span>
+              </button>
+            </div>
+
+            {/* 6. Giveaways Card */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-white/70" />
+                <h3 className="text-sm font-bold text-white">Giveaways</h3>
+              </div>
+
+              {/* Active / Winners Pill Tabs */}
+              <div className="grid grid-cols-2 p-1 rounded-xl bg-black/50 border border-white/5 text-xs">
+                <button
+                  onClick={() => setGiveawayFilter('active')}
+                  className={`py-1.5 rounded-lg font-semibold transition ${
+                    giveawayFilter === 'active' ? 'bg-white/10 text-white' : 'text-white/40'
+                  }`}
+                >
+                  Active
+                </button>
+                <button
+                  onClick={() => setGiveawayFilter('winners')}
+                  className={`py-1.5 rounded-lg font-semibold transition ${
+                    giveawayFilter === 'winners' ? 'bg-white/10 text-white' : 'text-white/40'
+                  }`}
+                >
+                  Winners
+                </button>
+              </div>
+
+              <p className="text-xs text-white/40 py-2 text-center">
+                No active giveaways yet. Please check back later.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* VIEW 2: CUSTOMIZE TABS (MATCHING SCREENSHOTS 3 TO 8)      */}
+        {/* ========================================================= */}
+        {currentSection === 'customize' && (
+          <div className="space-y-5 animate-in fade-in duration-200">
+            
+            {/* Subtabs Bar (Profile, Appearance, Links, Badges, Widgets, Tracks) */}
+            <div className="flex items-center gap-6 overflow-x-auto border-b border-white/[0.08] pb-1 no-scrollbar text-xs font-semibold">
+              {[
+                { id: 'profile', label: 'Profile' },
+                { id: 'appearance', label: 'Appearance' },
+                { id: 'links', label: 'Links' },
+                { id: 'badges', label: 'Badges' },
+                { id: 'widgets', label: 'Widgets' },
+                { id: 'tracks', label: 'Tracks' },
+              ].map(sub => {
+                const isActive = customizeSubTab === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => setCustomizeSubTab(sub.id)}
+                    className={`pb-2.5 relative whitespace-nowrap transition-colors ${
+                      isActive ? 'text-white' : 'text-white/40 hover:text-white/70'
+                    }`}
+                  >
+                    <span>{sub.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#5865F2] rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: PROFILE (Screenshot_20261003_195229_Chrome)  */}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'profile' && (
+              <div className="space-y-6">
+                {/* 1. Avatar Section */}
+                <div className="space-y-3">
+                  <label className="text-xs font-semibold text-white/90 block">Avatar</label>
+                  <div className="w-20 h-20 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden">
+                    {profile.avatarUrl ? (
+                      <img src={profile.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-8 h-8 text-white/40" />
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      const url = prompt('Enter your Avatar image URL:', profile.avatarUrl || '');
+                      if (url !== null) {
+                        setProfile(prev => ({ ...prev, avatarUrl: url.trim() }));
+                        showToast('Avatar updated!');
+                      }
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold transition"
+                  >
+                    Change Avatar
+                  </button>
+
+                  {/* Avatar Shape */}
+                  <div className="pt-2">
+                    <label className="text-xs font-medium text-white/60 block mb-2">Avatar Shape</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {['Square', 'Soft', 'Rounded', 'Circle'].map(shape => {
+                        const shapeKey = shape.toLowerCase();
+                        const isSelected = (profile.avatarShape || 'rounded') === shapeKey;
+                        return (
                           <button
-                            type="button"
-                            onClick={() => handleMoveLink(index, 'up')}
-                            disabled={index === 0}
-                            className="text-white/30 hover:text-white disabled:opacity-20"
+                            key={shape}
+                            onClick={() => setProfile(prev => ({ ...prev, avatarShape: shapeKey }))}
+                            className={`py-2 rounded-xl border text-xs font-medium transition ${
+                              isSelected
+                                ? 'bg-[#1e1b4b] border-[#5865F2] text-white'
+                                : 'bg-[#121215] border-white/5 text-white/60 hover:text-white'
+                            }`}
                           >
-                            <ArrowUp className="w-3 h-3" />
+                            {shape}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveLink(index, 'down')}
-                            disabled={index === (profile.links || []).length - 1}
-                            className="text-white/30 hover:text-white disabled:opacity-20"
-                          >
-                            <ArrowDown className="w-3 h-3" />
-                          </button>
-                        </div>
-
-                        <div className="min-w-0">
-                          <p className="text-xs font-semibold text-white truncate">{link.title}</p>
-                          <p className="text-[11px] text-white/40 truncate">{link.url}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[11px] font-mono text-white/40">{link.clicks || 0} clicks</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveLink(link.id)}
-                          className="w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 4: EFFECTS & MEDIA */}
-          {activeTab === 'effects' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Background Atmosphere</span>
-                </h3>
-
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-2">Particle Effect</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {[
-                      { id: 'stars', label: 'Starfield' },
-                      { id: 'rain', label: 'Rain' },
-                      { id: 'grid', label: 'Cyber Grid' },
-                      { id: 'none', label: 'Clean Void' },
-                    ].map(eff => (
-                      <button
-                        key={eff.id}
-                        type="button"
-                        onClick={() => setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, backgroundEffect: eff.id }
-                        }))}
-                        className={`py-2.5 px-3 rounded-xl border text-xs font-semibold transition ${
-                          (theme.backgroundEffect || 'stars') === eff.id
-                            ? 'bg-[#EE6F35] border-[#EE6F35] text-white'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {eff.label}
-                      </button>
-                    ))}
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-1">Banner Image URL</label>
-                  <input
-                    type="url"
-                    value={profile.bannerUrl || ''}
-                    onChange={(e) => setProfile(prev => ({ ...prev, bannerUrl: e.target.value }))}
-                    placeholder="https://..."
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                  />
+                <div className="h-[1px] bg-white/[0.06]" />
+
+                {/* 2. Decoration */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Decoration</label>
+                  <button
+                    onClick={() => {
+                      const next = profile.avatarDecoration === 'halo' ? 'none' : 'halo';
+                      setProfile(prev => ({ ...prev, avatarDecoration: next }));
+                      showToast(`Avatar decoration: ${next}`);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold transition"
+                  >
+                    Change Decoration
+                  </button>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* TAB 5: AUDIO & SPLASH */}
-          {activeTab === 'audio' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Music className="w-4 h-4 text-[#EE6F35]" />
-                  <span>Background Audio & Splash</span>
-                </h3>
+                <div className="h-[1px] bg-white/[0.06]" />
 
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-black/40 border border-white/5">
-                  <div>
-                    <span className="text-xs font-semibold text-white block">Autoplay on Enter</span>
-                    <span className="text-[11px] text-white/40">Plays audio when visitors click anywhere to enter</span>
+                {/* 3. Background Color / Media */}
+                <div className="space-y-3">
+                  <label className="text-xs font-semibold text-white/90 block">Background</label>
+                  <div className="inline-flex p-1 rounded-xl bg-black/60 border border-white/5 text-xs">
+                    <button className="px-4 py-1.5 rounded-lg bg-white/10 text-white font-medium">Color</button>
+                    <button className="px-4 py-1.5 rounded-lg text-white/40 hover:text-white">Media</button>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(profile.audio?.enabled)}
-                    onChange={(e) => setProfile(prev => ({
-                      ...prev,
-                      audio: { ...prev.audio, enabled: e.target.checked }
-                    }))}
-                    className="w-4 h-4 accent-[#EE6F35] cursor-pointer"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1">Song Title</label>
-                    <input
-                      type="text"
-                      value={profile.audio?.title || ''}
-                      onChange={(e) => setProfile(prev => ({
-                        ...prev,
-                        audio: { ...prev.audio, title: e.target.value }
-                      }))}
-                      placeholder="e.g. After Dark"
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
+                  <div className="w-16 h-8 rounded-xl bg-[#060608] border border-white/15 flex items-center justify-center cursor-pointer">
+                    <Edit3 className="w-3.5 h-3.5 text-white/60" />
                   </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-white/70 block mb-1">Artist Name</label>
-                    <input
-                      type="text"
-                      value={profile.audio?.artist || ''}
-                      onChange={(e) => setProfile(prev => ({
-                        ...prev,
-                        audio: { ...prev.audio, artist: e.target.value }
-                      }))}
-                      placeholder="e.g. Mr.Kitty"
-                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-1">Audio Stream URL (.mp3)</label>
-                  <input
-                    type="url"
-                    value={profile.audio?.url || ''}
-                    onChange={(e) => setProfile(prev => ({
-                      ...prev,
-                      audio: { ...prev.audio, url: e.target.value }
-                    }))}
-                    placeholder="https://.../song.mp3"
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 6: DISCORD SYNC */}
-          {activeTab === 'discord' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="p-5 rounded-3xl bg-neutral-900/60 border border-white/10 space-y-4">
-                <div className="flex items-center gap-2">
-                  <DiscordIcon className="w-5 h-5 text-[#5865F2]" />
-                  <h3 className="text-sm font-bold text-white">Automated Discord Synchronization</h3>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-[#5865F2]/10 border border-[#5865F2]/25 space-y-1 text-xs">
-                  <span className="font-bold text-[#5865F2] uppercase text-[10px] tracking-wider block">
-                    ✦ Zero Bot Commands Needed
-                  </span>
-                  <p className="text-white/70 text-[11px] leading-relaxed">
-                    Users never need to type <code className="text-white bg-black/40 px-1 py-0.5 rounded">/claim</code> or commands.
-                    When someone authorizes with Discord, the bot automatically pulls them into your support server and syncs their status dot and Spotify widget.
+                  <p className="text-[11px] text-white/40">
+                    Sets a solid background color. Any image/video background will be removed.
                   </p>
                 </div>
 
-                <div>
-                  <label className="text-xs font-medium text-white/70 block mb-1">Connected Discord ID</label>
-                  <input
-                    type="text"
-                    value={profile.discordId || ''}
-                    onChange={(e) => setProfile(prev => ({ ...prev, discordId: e.target.value }))}
-                    placeholder="e.g. 712345678901234567"
-                    className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white font-mono outline-none focus:border-[#5865F2]"
-                  />
+                <div className="h-[1px] bg-white/[0.06]" />
+
+                {/* 4. Banner */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Banner</label>
+                  <button
+                    onClick={() => {
+                      const url = prompt('Enter Banner image URL:', profile.bannerUrl || '');
+                      if (url !== null) {
+                        setProfile(prev => ({ ...prev, bannerUrl: url.trim() }));
+                        showToast('Banner updated!');
+                      }
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold transition"
+                  >
+                    Change Banner
+                  </button>
                 </div>
 
-                <div className="pt-2 border-t border-white/5 space-y-2">
-                  <span className="text-xs font-semibold text-white block">Status Dot Simulation</span>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['online', 'idle', 'dnd'].map(status => (
-                      <button
-                        key={status}
-                        type="button"
-                        onClick={() => setProfile(prev => ({
-                          ...prev,
-                          discordStatus: { ...prev.discordStatus, status }
-                        }))}
-                        className={`py-2 px-3 rounded-xl border text-xs font-semibold capitalize transition ${
-                          profile.discordStatus?.status === status
-                            ? 'bg-[#5865F2] border-[#5865F2] text-white'
-                            : 'bg-black/50 border-white/5 text-white/60 hover:text-white'
-                        }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                <div className="h-[1px] bg-white/[0.06]" />
+
+                {/* 5. Display Name */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Display Name</label>
+                  <div className="rounded-xl bg-[#121215] border border-white/[0.08] px-3.5 py-2.5 flex items-center gap-2.5">
+                    <User className="w-4 h-4 text-white/40 shrink-0" />
+                    <input
+                      type="text"
+                      value={profile.displayName || ''}
+                      onChange={(e) => setProfile(prev => ({ ...prev, displayName: e.target.value }))}
+                      className="w-full bg-transparent border-none outline-none text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* 6. Bio with Formatting Toolbar */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Bio</label>
+                  <div className="rounded-2xl bg-[#121215] border border-white/[0.08] overflow-hidden">
+                    {/* Rich text button row (Screenshot 1:1) */}
+                    <div className="flex flex-wrap items-center gap-1.5 p-2.5 border-b border-white/5 text-[11px] text-white/60 font-mono select-none">
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 cursor-pointer">H1</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 cursor-pointer">H2</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 cursor-pointer">H3</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 font-bold cursor-pointer">B</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 italic cursor-pointer">I</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 underline cursor-pointer">U</span>
+                      <span className="px-1.5 py-0.5 rounded hover:bg-white/5 line-through cursor-pointer">S</span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={profile.bio || ''}
+                      onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
+                      placeholder="Write your bio..."
+                      className="w-full p-3 bg-transparent border-none outline-none text-xs text-white placeholder-white/30 resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 7. Occupation */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Occupation</label>
+                  <div className="rounded-xl bg-[#121215] border border-white/[0.08] px-3.5 py-2.5 flex items-center gap-2.5">
+                    <Briefcase className="w-4 h-4 text-white/40 shrink-0" />
+                    <input
+                      type="text"
+                      value={profile.occupation || ''}
+                      onChange={(e) => setProfile(prev => ({ ...prev, occupation: e.target.value }))}
+                      placeholder="Your job or occupation"
+                      className="w-full bg-transparent border-none outline-none text-xs text-white placeholder-white/30"
+                    />
+                  </div>
+                </div>
+
+                {/* 8. Location */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/90 block">Location</label>
+                  <div className="rounded-xl bg-[#121215] border border-white/[0.08] px-3.5 py-2.5 flex items-center gap-2.5">
+                    <MapPin className="w-4 h-4 text-white/40 shrink-0" />
+                    <input
+                      type="text"
+                      value={profile.location || ''}
+                      onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Your location"
+                      className="w-full bg-transparent border-none outline-none text-xs text-white placeholder-white/30"
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-        </div>
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: APPEARANCE (Screenshot_20261003_195256_Chrome)*/}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'appearance' && (
+              <div className="space-y-6">
+                {/* Section: Layout */}
+                <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-white/70" />
+                      <h3 className="text-sm font-bold text-white">Layout</h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-white/50">
+                      <span>Advanced</span>
+                      <div className="w-8 h-4 rounded-full bg-white/10 p-0.5 cursor-pointer">
+                        <div className="w-3 h-3 rounded-full bg-white/40" />
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Right Column: Live Phone Mockup Preview */}
-        <div className={`lg:col-span-5 flex flex-col items-center sticky top-24 ${mobileView === 'editor' ? 'hidden lg:flex' : 'flex'}`}>
-          <div className="w-full flex items-center justify-between mb-3 px-2">
-            <span className="text-xs font-semibold text-white/60 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Live Card
-            </span>
-            <span className="text-[11px] font-mono text-white/40">whose.baby/{profile.username}</span>
+                  <p className="text-xs text-white/50">
+                    Customize the layout settings for your profile.
+                  </p>
+
+                  {/* 1. Floating Avatar Card Illustration */}
+                  <div
+                    onClick={() => {
+                      setProfile(prev => ({ ...prev, theme: { ...prev.theme, layout: 'floating' } }));
+                      showToast('Layout set to Floating Avatar');
+                    }}
+                    className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
+                      (theme.layout || 'floating') === 'floating'
+                        ? 'bg-[#171728] border-[#5865F2] shadow-lg shadow-[#5865F2]/20'
+                        : 'bg-black/40 border-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <p className="text-xs font-semibold text-white/90 mb-3">Floating Avatar</p>
+                    <div className="w-40 h-20 mx-auto rounded-xl bg-white/10 relative flex flex-col items-center justify-center p-2">
+                      <div className="w-7 h-7 rounded-full bg-white/40 absolute -top-3 shadow-md" />
+                      <div className="w-16 h-1.5 rounded-full bg-white/20 mt-4 mb-2" />
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-white/25" />
+                        <div className="w-2 h-2 rounded-full bg-white/25" />
+                        <div className="w-2 h-2 rounded-full bg-white/25" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Stacked Card Illustration */}
+                  <div
+                    onClick={() => {
+                      setProfile(prev => ({ ...prev, theme: { ...prev.theme, layout: 'stacked' } }));
+                      showToast('Layout set to Stacked');
+                    }}
+                    className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
+                      theme.layout === 'stacked'
+                        ? 'bg-[#171728] border-[#5865F2] shadow-lg shadow-[#5865F2]/20'
+                        : 'bg-black/40 border-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <p className="text-xs font-semibold text-white/90 mb-3">Stacked</p>
+                    <div className="w-40 h-20 mx-auto rounded-xl bg-white/10 relative p-3">
+                      <div className="w-6 h-6 rounded-full bg-white/40 mb-2" />
+                      <div className="w-20 h-1.5 rounded-full bg-white/20 mb-2" />
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-white/25" />
+                        <div className="w-2 h-2 rounded-full bg-white/25" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Compact Row Card Illustration */}
+                  <div
+                    onClick={() => {
+                      setProfile(prev => ({ ...prev, theme: { ...prev.theme, layout: 'compact' } }));
+                      showToast('Layout set to Compact Row');
+                    }}
+                    className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
+                      theme.layout === 'compact'
+                        ? 'bg-[#171728] border-[#5865F2] shadow-lg shadow-[#5865F2]/20'
+                        : 'bg-black/40 border-white/5 hover:border-white/10'
+                    }`}
+                  >
+                    <p className="text-xs font-semibold text-white/90 mb-3">Compact Row</p>
+                    <div className="w-40 h-16 mx-auto rounded-xl bg-white/10 flex items-center gap-3 p-3">
+                      <div className="w-6 h-6 rounded-full bg-white/40 shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <div className="w-16 h-1.5 rounded-full bg-white/30" />
+                        <div className="w-10 h-1 rounded-full bg-white/20" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Save Layout Button */}
+                  <button
+                    onClick={handleSave}
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#5865F2] to-[#7c3aed] text-white font-semibold text-xs shadow-lg shadow-[#5865F2]/25 active:scale-[0.98] transition"
+                  >
+                    Save
+                  </button>
+                </div>
+
+                {/* Section: Profile Card Presets */}
+                <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-white/70" />
+                      <h3 className="text-sm font-bold text-white">Profile Card</h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-white/50">
+                      <span>Advanced</span>
+                      <div className="w-8 h-4 rounded-full bg-white/10 p-0.5 cursor-pointer">
+                        <div className="w-3 h-3 rounded-full bg-white/40" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-white/50">
+                    This is the center piece of your profile. Most of your profile elements will be built around it.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: 'classic', label: 'classic' },
+                      { id: 'frosted-square', label: 'frosted square' },
+                      { id: 'frosted-soft', label: 'frosted soft' },
+                      { id: 'outlined', label: 'outlined' },
+                    ].map(card => {
+                      const isSelected = (theme.cardTemplate || 'classic') === card.id;
+                      return (
+                        <div
+                          key={card.id}
+                          onClick={() => {
+                            setProfile(prev => ({ ...prev, theme: { ...prev.theme, cardTemplate: card.id } }));
+                            showToast(`Card style: ${card.label}`);
+                          }}
+                          className={`p-3 rounded-2xl border text-center cursor-pointer transition ${
+                            isSelected
+                              ? 'bg-[#1b1b2d] border-[#5865F2]'
+                              : 'bg-black/40 border-white/5 hover:border-white/10'
+                          }`}
+                        >
+                          <div className="h-16 rounded-xl bg-white/[0.06] flex items-center justify-center mb-2">
+                            <span className="text-[10px] font-mono text-white/40">👁 0</span>
+                          </div>
+                          <span className="text-xs font-medium text-white/80">{card.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: LINKS (Screenshot_20261003_195310_Chrome)    */}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'links' && (
+              <div className="space-y-4">
+                {/* Action Buttons: Customize & Add Link */}
+                <div className="flex items-center justify-end gap-2.5">
+                  <button 
+                    onClick={() => showToast('Link appearance customizer')}
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 transition"
+                  >
+                    <Wand2 className="w-3.5 h-3.5" />
+                    <span>Customize</span>
+                  </button>
+                  <button 
+                    onClick={() => setShowAddLinkModal(true)}
+                    className="px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#5865F2]/25 active:scale-95 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Link</span>
+                  </button>
+                </div>
+
+                {/* Links Container */}
+                <div className="p-8 rounded-[26px] bg-[#121215] border border-white/[0.06] text-center space-y-4">
+                  {(profile.links || []).length === 0 ? (
+                    <>
+                      {/* Skeleton Links Illustration (Screenshot 1:1) */}
+                      <div className="w-48 mx-auto space-y-2 py-3 opacity-25">
+                        <div className="h-7 rounded-xl bg-white/15 flex items-center px-3 gap-2">
+                          <div className="w-3 h-3 rounded-full bg-white/30" />
+                          <div className="w-16 h-1.5 rounded-full bg-white/30" />
+                        </div>
+                        <div className="h-7 rounded-xl bg-white/15 flex items-center px-3 gap-2">
+                          <div className="w-3 h-3 rounded-full bg-white/30" />
+                          <div className="w-20 h-1.5 rounded-full bg-white/30" />
+                        </div>
+                      </div>
+
+                      <h4 className="text-sm font-bold text-white">No Links Found</h4>
+                      <p className="text-xs text-white/50">
+                        Create your first link to get started.
+                      </p>
+
+                      <button
+                        onClick={() => setShowAddLinkModal(true)}
+                        className="px-5 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#5865F2]/20"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Link</span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-2 text-left">
+                      {(profile.links || []).map(link => (
+                        <div key={link.id} className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-white truncate">{link.title}</p>
+                            <p className="text-[11px] text-white/40 truncate">{link.url}</p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setProfile(prev => ({ ...prev, links: prev.links.filter(l => l.id !== link.id) }));
+                              showToast('Link removed');
+                            }}
+                            className="text-red-400 p-1 hover:bg-red-500/10 rounded-lg transition"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: BADGES (Screenshot_20261003_195315_Chrome)   */}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'badges' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  {/* Owned / Other Pill Filters */}
+                  <div className="inline-flex p-1 rounded-xl bg-black/60 border border-white/5 text-xs">
+                    <button
+                      onClick={() => setBadgeFilter('owned')}
+                      className={`px-4 py-1.5 rounded-lg font-medium transition ${
+                        badgeFilter === 'owned' ? 'bg-white/10 text-white' : 'text-white/40'
+                      }`}
+                    >
+                      Owned
+                    </button>
+                    <button
+                      onClick={() => setBadgeFilter('other')}
+                      className={`px-4 py-1.5 rounded-lg font-medium transition ${
+                        badgeFilter === 'other' ? 'bg-white/10 text-white' : 'text-white/40'
+                      }`}
+                    >
+                      Other
+                    </button>
+                  </div>
+
+                  <button 
+                    onClick={() => showToast('Badge position & glow customization')}
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 transition"
+                  >
+                    <Wand2 className="w-3.5 h-3.5" />
+                    <span>Customize</span>
+                  </button>
+                </div>
+
+                {/* Badge Item (Screenshot 1:1) */}
+                <div className="p-3.5 rounded-[22px] bg-[#121215] border border-white/[0.06] flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <GripVertical className="w-4 h-4 text-white/30 cursor-grab" />
+                    
+                    {/* Badge Icon box */}
+                    <div className="w-9 h-9 rounded-xl bg-[#191629] border border-purple-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+                      <SpiderwebIcon className="w-4 h-4 text-purple-400" />
+                    </div>
+
+                    <span className="text-xs font-semibold text-white">Halloween</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: WIDGETS (Screenshot_20261003_195336_Chrome)  */}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'widgets' && (
+              <div className="space-y-5">
+                {/* 14 Colorful Widget Buttons (Screenshot 1:1) */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  {[
+                    { key: 'timezone', label: 'Timezone', color: 'bg-[#0ea5e9]', icon: Clock },
+                    { key: 'weather', label: 'Weather', color: 'bg-[#f59e0b]', icon: Sun },
+                    { key: 'account-date', label: 'Account Date', color: 'bg-[#8b5cf6]', icon: Calendar },
+                    { key: 'chess', label: 'Chess.com', color: 'bg-[#84cc16]', icon: Gamepad2 },
+                    { key: 'discord', label: 'Discord', color: 'bg-[#5865F2]', icon: DiscordIcon },
+                    { key: 'spotify', label: 'Spotify', color: 'bg-[#10b981]', icon: SpotifyIcon },
+                    { key: 'roblox', label: 'Roblox', color: 'bg-[#18181b]', icon: Gamepad2 },
+                    { key: 'valorant', label: 'Valorant', color: 'bg-[#f43f5e]', icon: Shield },
+                    { key: 'soundcloud', label: 'SoundCloud', color: 'bg-[#EE6F35]', icon: SoundcloudIcon },
+                    { key: 'youtube', label: 'YouTube', color: 'bg-[#ef4444]', icon: YoutubeIcon },
+                    { key: 'twitch', label: 'Twitch', color: 'bg-[#9333ea]', icon: TwitchIcon },
+                    { key: 'steam', label: 'Steam', color: 'bg-[#0284c7]', icon: SteamIcon },
+                    { key: 'github', label: 'GitHub', color: 'bg-[#27272a]', icon: GithubIcon },
+                    { key: 'lastfm', label: 'Last.fm', color: 'bg-[#dc2626]', icon: Music },
+                  ].map(w => {
+                    const Icon = w.icon;
+                    return (
+                      <button
+                        key={w.key}
+                        onClick={() => handleAddWidget(w.key, w.label)}
+                        className={`p-3 rounded-2xl ${w.color} text-white text-left shadow-md flex items-center justify-between active:scale-[0.98] transition group`}
+                      >
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold leading-tight">{w.label}</p>
+                          <p className="text-[10px] text-white/80 flex items-center gap-1 mt-0.5">
+                            <span>+ Add widget</span>
+                          </p>
+                        </div>
+                        <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                          <Icon className="w-3.5 h-3.5 text-white" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Empty State / Active Widgets */}
+                <div className="p-8 rounded-[26px] bg-[#121215] border border-white/[0.06] text-center space-y-3">
+                  {(profile.widgets || []).length === 0 ? (
+                    <>
+                      <div className="w-48 mx-auto space-y-2 py-2 opacity-20">
+                        <div className="h-7 rounded-xl bg-white/20 flex items-center px-3 gap-2">
+                          <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                          <div className="w-16 h-1.5 rounded-full bg-white/30" />
+                        </div>
+                      </div>
+                      <h4 className="text-sm font-bold text-white">No Widgets Found</h4>
+                      <p className="text-xs text-white/50 leading-relaxed max-w-sm mx-auto">
+                        Widgets are a great way to add dynamic content and integrate your other platforms to your page.
+                      </p>
+                    </>
+                  ) : (
+                    <div className="space-y-2 text-left">
+                      {(profile.widgets || []).map(w => (
+                        <div key={w.id} className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white">{w.title}</span>
+                          <button
+                            onClick={() => {
+                              setProfile(prev => ({ ...prev, widgets: prev.widgets.filter(item => item.id !== w.id) }));
+                              showToast('Widget removed');
+                            }}
+                            className="text-red-400 hover:bg-red-500/10 p-1 rounded-lg"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ----------------------------------------------------- */}
+            {/* SUBTAB: TRACKS (Screenshot_20261003_195347_Chrome)   */}
+            {/* ----------------------------------------------------- */}
+            {customizeSubTab === 'tracks' && (
+              <div className="space-y-5">
+                <div className="space-y-3">
+                  <label className="text-xs font-semibold text-white/90 block">Layout</label>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {[
+                      { id: 'default', label: 'Default', icon: Music },
+                      { id: 'compact', label: 'Compact', icon: Volume2 },
+                      { id: 'banner', label: 'Banner 💎', icon: Layers },
+                      { id: 'vinyl', label: 'Vinyl 💎', icon: RadioTower },
+                      { id: 'cover-vinyl', label: 'Cover Vinyl 💎', icon: Tv },
+                    ].map(layout => {
+                      const isSelected = (theme.trackLayout || 'default') === layout.id;
+                      return (
+                        <div
+                          key={layout.id}
+                          onClick={() => {
+                            setProfile(prev => ({ ...prev, theme: { ...prev.theme, trackLayout: layout.id } }));
+                            showToast(`Track layout: ${layout.label}`);
+                          }}
+                          className={`p-3 rounded-2xl border text-center cursor-pointer transition ${
+                            isSelected
+                              ? 'bg-[#1b1b2d] border-[#5865F2]'
+                              : 'bg-[#121215] border-white/5 hover:border-white/10'
+                          }`}
+                        >
+                          <span className="text-xs font-semibold text-white/90">{layout.label}</span>
+                          <div className="h-12 mt-2 rounded-xl bg-white/[0.04] flex items-center justify-center">
+                            <Music className="w-4 h-4 text-white/30" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowAddTrackModal(true)}
+                    className="px-4 py-2 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#5865F2]/25"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Track</span>
+                  </button>
+                </div>
+
+                {/* Empty State / Current Track */}
+                <div className="p-8 rounded-[26px] bg-[#121215] border border-white/[0.06] text-center space-y-4">
+                  {profile.audio?.url ? (
+                    <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between text-left">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{profile.audio.title}</p>
+                        <p className="text-[11px] text-white/40 truncate">{profile.audio.artist}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setProfile(prev => ({ ...prev, audio: null }));
+                          showToast('Track removed');
+                        }}
+                        className="text-red-400 p-1 hover:bg-red-500/10 rounded-lg"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-40 mx-auto py-2 opacity-25">
+                        <div className="w-10 h-10 rounded-xl bg-white/20 mx-auto flex items-center justify-center">
+                          <Music className="w-5 h-5 text-white/50" />
+                        </div>
+                      </div>
+                      <h4 className="text-sm font-bold text-white">No Tracks Found</h4>
+                      <p className="text-xs text-white/50 max-w-xs mx-auto">
+                        Let your visitors listen to your favorite music directly from your profile.
+                      </p>
+                      <button
+                        onClick={() => setShowAddTrackModal(true)}
+                        className="px-5 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#5865F2]/20"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Track</span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
+        )}
 
-          {/* Interactive Card Render */}
-          <div className="w-full flex justify-center transform-gpu">
+      </main>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 3. FLOATING PREVIEW BUTTON (Screenshot_20261003_195229_Chrome)*/}
+      {/* ------------------------------------------------------------- */}
+      <div className="fixed bottom-6 right-5 z-40">
+        <button
+          onClick={() => setPreviewOpen(true)}
+          className="px-4 py-2.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold shadow-2xl shadow-[#5865F2]/50 flex items-center gap-2 active:scale-95 transition"
+        >
+          <Eye className="w-4 h-4" />
+          <span>Preview</span>
+        </button>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 4. LIVE CARD PREVIEW MODAL                                   */}
+      {/* ------------------------------------------------------------- */}
+      {previewOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            onClick={() => setPreviewOpen(false)}
+            className="fixed inset-0 bg-black/85 backdrop-blur-md"
+          />
+          <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-in zoom-in-95 duration-200">
+            <div className="w-full flex items-center justify-between mb-3 px-2">
+              <span className="text-xs font-semibold text-white/70">Card Live Preview</span>
+              <button
+                onClick={() => setPreviewOpen(false)}
+                className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
             <ProfileCard profile={profile} isPreview={true} />
           </div>
         </div>
+      )}
 
-      </div>
+      {/* ------------------------------------------------------------- */}
+      {/* 5. ADD LINK MODAL                                             */}
+      {/* ------------------------------------------------------------- */}
+      {showAddLinkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div onClick={() => setShowAddLinkModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md p-6 rounded-[28px] bg-[#141418] border border-white/10 shadow-2xl">
+            <h3 className="text-base font-bold text-white mb-4">Add New Link</h3>
+            <form onSubmit={handleAddLink} className="space-y-3">
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Title / Label</label>
+                <input
+                  type="text"
+                  value={newLinkTitle}
+                  onChange={(e) => setNewLinkTitle(e.target.value)}
+                  placeholder="e.g. Discord Server, Spotify, Instagram"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Destination URL</label>
+                <input
+                  type="text"
+                  value={newLinkUrl}
+                  onChange={(e) => setNewLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Platform Icon</label>
+                <select
+                  value={newLinkIcon}
+                  onChange={(e) => setNewLinkIcon(e.target.value)}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                >
+                  <option value="globe">Custom Website</option>
+                  <option value="discord">Discord</option>
+                  <option value="spotify">Spotify</option>
+                  <option value="github">GitHub</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="twitter">X (Twitter)</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="telegram">Telegram</option>
+                  <option value="twitch">Twitch</option>
+                  <option value="kick">Kick</option>
+                  <option value="steam">Steam</option>
+                  <option value="soundcloud">Soundcloud</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddLinkModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold shadow-lg shadow-[#5865F2]/25"
+                >
+                  Add Link
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* 6. ADD TRACK MODAL                                            */}
+      {/* ------------------------------------------------------------- */}
+      {showAddTrackModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div onClick={() => setShowAddTrackModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md p-6 rounded-[28px] bg-[#141418] border border-white/10 shadow-2xl">
+            <h3 className="text-base font-bold text-white mb-4">Add Background Track</h3>
+            <form onSubmit={handleAddTrack} className="space-y-3">
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Song Title</label>
+                <input
+                  type="text"
+                  value={newTrackTitle}
+                  onChange={(e) => setNewTrackTitle(e.target.value)}
+                  placeholder="e.g. After Dark"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Artist Name</label>
+                <input
+                  type="text"
+                  value={newTrackArtist}
+                  onChange={(e) => setNewTrackArtist(e.target.value)}
+                  placeholder="e.g. Mr.Kitty"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Audio Stream URL (.mp3)</label>
+                <input
+                  type="url"
+                  value={newTrackUrl}
+                  onChange={(e) => setNewTrackUrl(e.target.value)}
+                  placeholder="https://.../audio.mp3"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#5865F2]"
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddTrackModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-semibold shadow-lg shadow-[#5865F2]/25"
+                >
+                  Save Track
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

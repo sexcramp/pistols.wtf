@@ -7,13 +7,18 @@ import { getProfileByUsername, incrementProfileViews } from '../utils/storage';
 
 export default function BioPage({ username = 'ares', onNavigate }) {
   const [profile, setProfile] = useState(() => getProfileByUsername(username));
-  const [entered, setEntered] = useState(false);
+  const hasAudioTrack = Boolean(profile.audio?.enabled && profile.audio?.url);
+  const [entered, setEntered] = useState(!hasAudioTrack);
   const [autoplayAudio, setAutoplayAudio] = useState(false);
 
   useEffect(() => {
     const data = getProfileByUsername(username);
     setProfile(data);
     incrementProfileViews(username);
+    const audioOn = Boolean(data.audio?.enabled && data.audio?.url);
+    if (!audioOn) {
+      setEntered(true);
+    }
   }, [username]);
 
   const handleEnter = () => {
