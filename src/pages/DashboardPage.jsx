@@ -503,7 +503,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </div>
               </div>
 
-              <button className="w-full py-3 px-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#5865F2]/20 active:scale-[0.98] transition">
+              <button className="w-full py-3 px-4 rounded-2xl bg-[#EE6F35] hover:bg-[#D5551A] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#EE6F35]/25 active:scale-[0.98] transition">
                 <DiscordIcon className="w-4 h-4 text-white" />
                 <span>Connected to Discord</span>
               </button>
@@ -515,6 +515,30 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <Dices className="w-4 h-4 text-white" />
                 <span>Go to Casino</span>
               </button>
+            </div>
+
+            {/* 6. Casino Stats Card (Screenshot 220541 / feds.lol 1:1) */}
+            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
+              <div className="flex items-center gap-2">
+                <Dices className="w-4 h-4 text-[#EE6F35]" />
+                <h3 className="text-sm font-bold text-white">Casino Stats</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
+                  <p className="text-lg font-bold text-white">0</p>
+                  <p className="text-[11px] text-white/40">Current Streak</p>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
+                  <p className="text-lg font-bold text-white">0</p>
+                  <p className="text-[11px] text-white/40">Total Winnings</p>
+                </div>
+              </div>
+              <div className="pt-1 text-[11px] text-white/40 flex items-center justify-between">
+                <span>Wheel 0.0% <strong className="text-white/60">+0</strong></span>
+                <span>Slot Machine 0.0% <strong className="text-white/60">+0</strong></span>
+                <span>RPS 0.0% <strong className="text-white/60">+0</strong></span>
+              </div>
+              <p className="text-[11px] text-white/30 text-center pt-1">No positive profit yet</p>
             </div>
 
             {/* 6. Giveaways Card */}

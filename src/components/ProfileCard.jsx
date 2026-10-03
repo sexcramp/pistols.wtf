@@ -226,7 +226,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         {/* Top Right: Views Counter Pill with Eye (Screenshot 1:1) */}
         <div className="absolute top-4 sm:top-5 right-5 sm:right-6">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#14141c]/90 border border-white/5 shadow-inner">
-            <Eye className="w-3.5 h-3.5 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
+            <Eye className="w-3.5 h-3.5 text-[#EE6F35] drop-shadow-[0_0_6px_rgba(238,111,53,0.7)]" />
             <span className="text-xs font-semibold text-white/90">
               {profile.views ?? 0}
             </span>
