@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>whose.baby — Your digital identity, simplified.</title>
+    <meta name="description" content="Create stunning biolinks, showcase your content, and connect with your audience. Claim your unique handle on whose.baby." />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS with custom styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                DEFAULT: '#EE6F35',
+                50: '#FDF3ED',
+                100: '#FBE4D6',
+                200: '#F7C6AB',
+                300: '#F3A780',
+                400: '#F08B55',
+                500: '#EE6F35',
+                600: '#D5551A',
+                700: '#A64012',
+                800: '#752D0D',
+                900: '#461B08',
+              },
+              dark: {
+                bg: '#080808',
+                surface: '#111111',
+                card: '#161616',
+                border: '#222222',
+                muted: '#888888',
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'glow': 'glow 3s ease-in-out infinite alternate',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              glow: {
+                '0%': { filter: 'drop-shadow(0 0 15px rgba(238, 111, 53, 0.2))' },
+                '100%': { filter: 'drop-shadow(0 0 35px rgba(238, 111, 53, 0.5))' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #080808;
+        color: #ffffff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
+      }
+      
+      /* Custom glowing scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #080808;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #222222;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #EE6F35;
+      }
+
+      .glass-card {
+        background: rgba(18, 18, 18, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .glass-card-hover:hover {
+        border-color: rgba(238, 111, 53, 0.4);
+        box-shadow: 0 0 30px rgba(238, 111, 53, 0.15);
+      }
+
+      .orange-gradient-text {
+        background: linear-gradient(135deg, #FFFFFF 0%, #EE6F35 60%, #FFA172 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .orange-radial-glow {
+        background: radial-gradient(circle at 50% 30%, rgba(238, 111, 53, 0.18) 0%, rgba(8, 8, 8, 0) 70%);
+      }
+    </style>
+  </head>
+  <body class="bg-[#080808] text-white selection:bg-[#EE6F35] selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
