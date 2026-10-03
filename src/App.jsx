@@ -45,7 +45,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-[#EE6F35] selection:text-white">
+    <div className="min-h-screen bg-[#060608] text-white selection:bg-[#EE6F35] selection:text-white">
       {/* Show Navbar on Home and Dashboard */}
       {currentPage !== 'bio' && (
         <Navbar onNavigate={navigate} currentPage={currentPage} />
