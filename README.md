@@ -1,13 +1,13 @@
-# whose.baby ✨
+# pistols.wtf ⛧
 
-> The ultimate aesthetic biolink platform inspired by guns.lol and feds.lol.
+> The aesthetic biolink platform inspired by guns.lol and aesthetic biocard standards.
 
 ## Features
-- 🔗 **Unique Vanity Slugs**: Claim your unique handle (`whose.baby/[username]`)
+- 🔗 **Unique Vanity Slugs**: Claim your unique handle (`pistols.wtf/[username]`)
 - 🎵 **Audio & Music Player**: Custom audio tracks with click-to-enter splash screen
-- 🎨 **Deep Customization**: Glassmorphism cards, orange `#EE6F35` neon glow, custom particle effects
+- 🎨 **Deep Customization**: Frosted glassmorphism cards, crimson `#990026` neon glow, custom particle effects
 - 👾 **Discord Presence**: Real-time rich presence & status simulation
-- ⚡ **Instant Live Preview**: Edit your bio, links, and themes with immediate split-screen preview
+- ⚡ **Instant Live Preview**: Edit your bio, links, and themes with immediate preview
 - 📱 **Mobile & Desktop Optimized**: Ultra-lightweight and fast
 
 ## Running Locally

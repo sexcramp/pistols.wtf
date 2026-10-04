@@ -61,7 +61,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
 
   // Typewriter effect for Status / Bio (from jefersc/gunslol-template)
   useEffect(() => {
-    const rawText = profile.bio || profile.statusText || 'Living in the noise ✦ pistols.wtf';
+    const rawText = profile.bio || profile.statusText || 'Living in the noise ✦';
     if (!theme.typewriterBio) {
       setDisplayedBio(rawText);
       return;
@@ -239,15 +239,18 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         onMouseLeave={handleMouseLeave}
         style={{
           ...tiltStyle,
-          backgroundColor: theme.cardBackground || 'rgba(12, 6, 8, 0.92)',
-          borderColor: theme.cardBorder || 'rgba(153, 0, 38, 0.25)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 30px rgba(153, 0, 38, 0.15)',
+          backgroundColor: 'rgba(18, 8, 12, 0.45)',
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          borderColor: 'rgba(255, 255, 255, 0.12)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75), inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), 0 0 30px rgba(153, 0, 38, 0.12)',
+          borderRadius: '32px',
         }}
-        className="w-full max-w-[390px] rounded-[38px] px-8 py-9 sm:px-10 sm:py-10 border relative overflow-hidden backdrop-blur-xl transition-all duration-300 select-none"
+        className="w-full max-w-[390px] px-8 py-9 sm:px-10 sm:py-10 border relative overflow-hidden transition-all duration-300 select-none"
       >
         {/* Top Right: Views Counter Pill */}
         <div className="absolute top-4 sm:top-5 right-5 sm:right-6">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#12080b]/90 border border-white/5 shadow-inner">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-inner">
             <Eye className="w-3.5 h-3.5 text-[#ff4d6d] drop-shadow-[0_0_6px_rgba(255,77,109,0.7)]" />
             <span className="text-xs font-semibold text-white/90 font-mono">
               {profile.views ?? 0}
@@ -295,14 +298,14 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
       onMouseLeave={handleMouseLeave}
       style={{
         ...tiltStyle,
-        background: `linear-gradient(145deg, rgba(26, 6, 12, 0.88) 0%, rgba(14, 4, 7, 0.94) 50%, rgba(8, 2, 4, 0.98) 100%)`,
-        backdropFilter: `blur(${theme.cardBlur ?? 24}px)`,
-        WebkitBackdropFilter: `blur(${theme.cardBlur ?? 24}px)`,
-        borderColor: 'rgba(153, 0, 38, 0.3)',
-        borderRadius: `${theme.cardRadius || 44}px`,
-        boxShadow: '0 30px 80px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 35px rgba(153,0,38,0.18)',
+        backgroundColor: 'rgba(18, 8, 12, 0.45)',
+        backdropFilter: 'blur(32px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+        borderColor: 'rgba(255, 255, 255, 0.12)',
+        borderRadius: '32px',
+        boxShadow: '0 30px 80px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.18), 0 0 40px rgba(153,0,38,0.15)',
       }}
-      className="w-full max-w-[420px] overflow-hidden shadow-2xl relative border transition-shadow duration-300 selection:bg-[#990026] text-white"
+      className="w-full max-w-[420px] overflow-hidden relative border transition-shadow duration-300 selection:bg-[#990026] text-white"
     >
       {/* Banner */}
       {hasBanner && (
@@ -487,14 +490,6 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
             ))}
           </div>
         )}
-
-        {/* Footer Brand */}
-        <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-white/30">
-          <div className="flex items-center gap-1.5 mx-auto hover:text-white/60 transition cursor-pointer">
-            <img src="/logo.png" alt="pistols.wtf" className="w-3.5 h-3.5 object-contain" />
-            <span>pistols<span className="text-[#990026]">.</span>wtf</span>
-          </div>
-        </div>
 
       </div>
     </div>

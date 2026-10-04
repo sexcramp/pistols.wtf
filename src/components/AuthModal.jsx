@@ -287,7 +287,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                 />
               </div>
               <span className="font-bold text-[18px] text-white tracking-tight ml-2">
-                whose<span className="text-[#990026]">.</span>baby
+                pistols<span className="text-[#990026]">.</span>wtf
               </span>
             </div>
 

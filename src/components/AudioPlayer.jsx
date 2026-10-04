@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
 
-export default function AudioPlayer({ audio, isAutoplayRequested = false, primaryColor = '#EE6F35' }) {
+export default function AudioPlayer({ audio, isAutoplayRequested = false, primaryColor = '#990026' }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(audio?.volume ?? 0.6);
   const [isMuted, setIsMuted] = useState(false);
@@ -83,7 +83,7 @@ export default function AudioPlayer({ audio, isAutoplayRequested = false, primar
           <div className="flex items-center gap-2.5 min-w-0">
             <div 
               className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                isPlaying ? 'bg-[#EE6F35] text-black shadow-lg shadow-[#EE6F35]/30' : 'bg-white/5 text-white/60'
+                isPlaying ? 'bg-[#990026] text-black shadow-lg shadow-[#990026]/30' : 'bg-white/5 text-white/60'
               }`}
             >
               <Music className={`w-4 h-4 ${isPlaying ? 'animate-bounce' : ''}`} />
@@ -93,7 +93,7 @@ export default function AudioPlayer({ audio, isAutoplayRequested = false, primar
                 {audio.title || 'Untitled Track'}
               </p>
               <p className="text-[11px] text-white/50 truncate">
-                {audio.artist || 'whose.baby'}
+                {audio.artist || 'pistols.wtf'}
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function AudioPlayer({ audio, isAutoplayRequested = false, primar
 
             <button
               onClick={togglePlay}
-              className="p-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white shadow-md shadow-[#EE6F35]/20 active:scale-95 transition"
+              className="p-2 rounded-xl bg-[#990026] hover:bg-[#b3002d] text-white shadow-md shadow-[#990026]/20 active:scale-95 transition"
             >
               {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white translate-x-0.5" />}
             </button>
@@ -123,7 +123,7 @@ export default function AudioPlayer({ audio, isAutoplayRequested = false, primar
           className="w-full h-1 bg-white/10 rounded-full cursor-pointer overflow-hidden relative"
         >
           <div 
-            className="h-full bg-[#EE6F35] rounded-full transition-all duration-100"
+            className="h-full bg-[#990026] rounded-full transition-all duration-100"
             style={{ width: `${progress}%` }}
           />
         </div>

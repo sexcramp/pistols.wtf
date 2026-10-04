@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function ParticleCanvas({ effect = 'stars', primaryColor = '#EE6F35' }) {
+export default function ParticleCanvas({ effect = 'stars', primaryColor = '#990026' }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
