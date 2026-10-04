@@ -28,8 +28,8 @@ import {
   GlobeIcon 
 } from './Icons';
 
-// Spiderweb SVG for the Halloween limited badge (from Screenshot_20261003_194936_Chrome.jpg)
-export const SpiderwebIcon = ({ className = "w-4 h-4 text-purple-400" }) => (
+// Spiderweb SVG for the Halloween limited badge
+export const SpiderwebIcon = ({ className = "w-4 h-4 text-[#990026]" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
     <circle cx="12" cy="12" r="4" />
@@ -40,16 +40,14 @@ export const SpiderwebIcon = ({ className = "w-4 h-4 text-purple-400" }) => (
 export default function ProfileCard({ profile, isPreview = false, onLinkClick }) {
   const [displayedBio, setDisplayedBio] = useState('');
   const [showUidTooltip, setShowUidTooltip] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState(null);
   const cardRef = useRef(null);
   const [tiltStyle, setTiltStyle] = useState({});
 
   const theme = profile.theme || {};
-  const primaryColor = theme.primaryColor || '#EE6F35';
+  const primaryColor = theme.primaryColor || '#990026';
   const avatarShape = profile.avatarShape || 'rounded'; // square, soft, rounded, circle
-  const decoration = profile.avatarDecoration || 'none';
-  const decorationHue = profile.avatarDecorationHue ?? 0;
   const isTilting = theme.tilt ?? true;
-  const layout = theme.layout || 'floating'; // floating, stacked, compact, showcase
 
   const hasAvatar = Boolean(profile.avatarUrl);
   const hasBanner = Boolean(profile.bannerUrl);
@@ -58,33 +56,32 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
   const hasWidgets = Boolean(profile.widgets && profile.widgets.length > 0);
   const hasDiscord = Boolean(profile.discordStatus);
 
-  // If user hasn't added avatar, banner, or bio yet, show the minimal default capsule (Screenshot 1:1)
+  // If user hasn't added avatar, banner, or bio yet, show the minimal default capsule
   const isMinimalDefault = !hasAvatar && !hasBanner && !hasBio && !hasLinks && !hasWidgets;
 
-  // Typewriter effect for Bio
+  // Typewriter effect for Status / Bio (from jefersc/gunslol-template)
   useEffect(() => {
-    if (!theme.typewriterBio || !profile.bio) {
-      setDisplayedBio(profile.bio || '');
+    const rawText = profile.bio || profile.statusText || 'Living in the noise ✦ pistols.wtf';
+    if (!theme.typewriterBio) {
+      setDisplayedBio(rawText);
       return;
     }
 
     setDisplayedBio('');
-    const text = profile.bio;
     let currentIdx = 0;
-
     const interval = setInterval(() => {
-      if (currentIdx <= text.length) {
-        setDisplayedBio(text.slice(0, currentIdx));
+      if (currentIdx <= rawText.length) {
+        setDisplayedBio(rawText.slice(0, currentIdx));
         currentIdx++;
       } else {
         clearInterval(interval);
       }
-    }, 30);
+    }, 40);
 
     return () => clearInterval(interval);
-  }, [profile.bio, theme.typewriterBio]);
+  }, [profile.bio, profile.statusText, theme.typewriterBio]);
 
-  // 3D Tilt calculation on mouse move
+  // 3D Tilt calculation on mouse move (from jefersc/gunslol-template)
   const handleMouseMove = (e) => {
     if (!isTilting || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
@@ -92,11 +89,11 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -6;
-    const rotateY = ((x - centerX) / centerX) * 6;
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
 
     setTiltStyle({
-      transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`,
+      transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`,
       transition: 'transform 0.1s ease-out'
     });
   };
@@ -105,14 +102,15 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
     if (!isTilting) return;
     setTiltStyle({
       transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-      transition: 'transform 0.4s ease-out'
+      transition: 'transform 0.5s cubic-bezier(0.03, 0.98, 0.52, 0.99)'
     });
     setShowUidTooltip(false);
+    setActiveTooltip(null);
   };
 
   // Social Icon Helper
   const getSocialIcon = (iconName) => {
-    const className = "w-4 h-4";
+    const className = "w-5 h-5";
     switch (iconName?.toLowerCase()) {
       case 'discord': return <DiscordIcon className={className} />;
       case 'spotify': return <SpotifyIcon className={className} />;
@@ -143,27 +141,33 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
   const getShapeClass = (shape) => {
     switch (shape) {
       case 'circle': return 'rounded-full';
-      case 'rounded': return 'rounded-xl';
-      case 'square': return 'rounded-md';
+      case 'rounded': return 'rounded-2xl';
+      case 'square': return 'rounded-lg';
       case 'soft':
-      default: return 'rounded-2xl';
+      default: return 'rounded-3xl';
     }
   };
 
-  // Render Badges
+  // Badges container matching gunslol-template (#badges)
   const renderBadges = () => {
     const badges = profile.badges || ['halloween'];
     return (
-      <div className="flex items-center justify-center gap-2 mt-2.5">
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#990026]/15 border border-[#990026]/30 shadow-[0_0_12px_rgba(153,0,38,0.2)]">
         {badges.map((badge, idx) => {
           if (badge === 'halloween') {
             return (
               <div 
                 key={idx} 
-                title="Halloween Limited Badge"
-                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-purple-500/30 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.35)] hover:scale-110 transition-transform"
+                onMouseEnter={() => setActiveTooltip('Halloween Limited')}
+                onMouseLeave={() => setActiveTooltip(null)}
+                className="relative group p-1 hover:scale-125 transition-transform cursor-pointer"
               >
-                <SpiderwebIcon className="w-4 h-4 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.8)]" />
+                <SpiderwebIcon className="w-4 h-4 text-[#ff4d6d] drop-shadow-[0_0_6px_rgba(255,77,109,0.8)]" />
+                {activeTooltip === 'Halloween Limited' && (
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/90 border border-white/10 text-[10px] whitespace-nowrap text-white shadow-lg pointer-events-none z-30">
+                    Halloween
+                  </span>
+                )}
               </div>
             );
           }
@@ -171,10 +175,16 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
             return (
               <div 
                 key={idx}
-                title="Verified Profile"
-                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-[#EE6F35]/40 flex items-center justify-center text-[#EE6F35] shadow-[0_0_12px_rgba(238,111,53,0.35)] hover:scale-110 transition-transform"
+                onMouseEnter={() => setActiveTooltip('Verified')}
+                onMouseLeave={() => setActiveTooltip(null)}
+                className="relative group p-1 hover:scale-125 transition-transform cursor-pointer text-[#990026]"
               >
-                <BadgeCheck className="w-4 h-4 fill-[#EE6F35] text-black" />
+                <BadgeCheck className="w-4 h-4 fill-[#990026] text-black drop-shadow-[0_0_6px_rgba(153,0,38,0.8)]" />
+                {activeTooltip === 'Verified' && (
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/90 border border-white/10 text-[10px] whitespace-nowrap text-white shadow-lg pointer-events-none z-30">
+                    Verified
+                  </span>
+                )}
               </div>
             );
           }
@@ -182,10 +192,16 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
             return (
               <div 
                 key={idx}
-                title="Early Supporter"
-                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.35)] hover:scale-110 transition-transform"
+                onMouseEnter={() => setActiveTooltip('Early Supporter')}
+                onMouseLeave={() => setActiveTooltip(null)}
+                className="relative group p-1 hover:scale-125 transition-transform cursor-pointer text-amber-400"
               >
-                <Sparkles className="w-4 h-4 fill-amber-400/20" />
+                <Sparkles className="w-4 h-4 fill-amber-400/30 text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
+                {activeTooltip === 'Early Supporter' && (
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/90 border border-white/10 text-[10px] whitespace-nowrap text-white shadow-lg pointer-events-none z-30">
+                    Early Supporter
+                  </span>
+                )}
               </div>
             );
           }
@@ -193,10 +209,16 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
             return (
               <div 
                 key={idx}
-                title="Staff / Owner"
-                className="w-8 h-8 rounded-full bg-[#161622]/90 border border-purple-400/40 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.35)] hover:scale-110 transition-transform"
+                onMouseEnter={() => setActiveTooltip('Owner / Staff')}
+                onMouseLeave={() => setActiveTooltip(null)}
+                className="relative group p-1 hover:scale-125 transition-transform cursor-pointer text-[#ff4d6d]"
               >
-                <ShieldCheck className="w-4 h-4" />
+                <ShieldCheck className="w-4 h-4 drop-shadow-[0_0_6px_rgba(255,77,109,0.8)]" />
+                {activeTooltip === 'Owner / Staff' && (
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/90 border border-white/10 text-[10px] whitespace-nowrap text-white shadow-lg pointer-events-none z-30">
+                    Owner
+                  </span>
+                )}
               </div>
             );
           }
@@ -207,7 +229,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
   };
 
   // -------------------------------------------------------------
-  // 1. MINIMAL DEFAULT PROFILE LOOK (EXACT MATCH Screenshot 194936)
+  // 1. MINIMAL DEFAULT PROFILE LOOK (Pure black stadium capsule)
   // -------------------------------------------------------------
   if (isMinimalDefault) {
     return (
@@ -217,28 +239,26 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         onMouseLeave={handleMouseLeave}
         style={{
           ...tiltStyle,
-          backgroundColor: theme.cardBackground || 'rgba(10, 10, 13, 0.92)',
-          borderColor: theme.cardBorder || 'rgba(255, 255, 255, 0.07)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+          backgroundColor: theme.cardBackground || 'rgba(12, 6, 8, 0.92)',
+          borderColor: theme.cardBorder || 'rgba(153, 0, 38, 0.25)',
+          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 30px rgba(153, 0, 38, 0.15)',
         }}
         className="w-full max-w-[390px] rounded-[38px] px-8 py-9 sm:px-10 sm:py-10 border relative overflow-hidden backdrop-blur-xl transition-all duration-300 select-none"
       >
-        {/* Top Right: Views Counter Pill with Eye (Screenshot 1:1) */}
+        {/* Top Right: Views Counter Pill */}
         <div className="absolute top-4 sm:top-5 right-5 sm:right-6">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#14141c]/90 border border-white/5 shadow-inner">
-            <Eye className="w-3.5 h-3.5 text-[#EE6F35] drop-shadow-[0_0_6px_rgba(238,111,53,0.7)]" />
-            <span className="text-xs font-semibold text-white/90">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#12080b]/90 border border-white/5 shadow-inner">
+            <Eye className="w-3.5 h-3.5 text-[#ff4d6d] drop-shadow-[0_0_6px_rgba(255,77,109,0.7)]" />
+            <span className="text-xs font-semibold text-white/90 font-mono">
               {profile.views ?? 0}
             </span>
           </div>
         </div>
 
-        {/* Center: Username + UID Tooltip (Screenshot 194936 & 194942) */}
+        {/* Center: Username + UID Tooltip */}
         <div className="flex flex-col items-center justify-center mt-3 mb-1 relative">
-          
-          {/* Tooltip on hover/tap (Screenshot_20261003_194942_Chrome.jpg) */}
           {showUidTooltip && (
-            <div className="absolute -top-7 px-2.5 py-0.5 rounded-full bg-black/90 border border-white/10 text-[10px] font-mono text-white/90 shadow-lg animate-in fade-in duration-150">
+            <div className="absolute -top-7 px-2.5 py-0.5 rounded-full bg-black/90 border border-[#990026]/40 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150">
               UID {profile.uid || '545701376'}
             </div>
           )}
@@ -247,21 +267,26 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
             onMouseEnter={() => setShowUidTooltip(true)}
             onMouseLeave={() => setShowUidTooltip(false)}
             onClick={() => setShowUidTooltip(!showUidTooltip)}
-            style={{ fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif' }}
+            style={{ 
+              fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif',
+              textShadow: '0 0 20px rgba(153, 0, 38, 0.4)'
+            }}
             className="text-[32px] sm:text-[36px] font-medium text-white tracking-tight cursor-pointer hover:text-white/90 transition-colors"
           >
             {profile.displayName || profile.username || 'bloodare'}
           </h1>
 
-          {/* Centered Badge (Spiderweb / Halloween) */}
-          {renderBadges()}
+          {/* Centered Badges */}
+          <div className="mt-2.5">
+            {renderBadges()}
+          </div>
         </div>
       </div>
     );
   }
 
   // -------------------------------------------------------------
-  // 2. CUSTOMIZED PROFILE (WHEN USER ADDS AVATAR/LINKS/BANNER)
+  // 2. GUNS.LOL BIOCARD ARCHITECTURE (jefersc/gunslol-template 1:1)
   // -------------------------------------------------------------
   return (
     <div 
@@ -270,44 +295,48 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
       onMouseLeave={handleMouseLeave}
       style={{
         ...tiltStyle,
-        backgroundColor: theme.cardBackground || 'rgba(12, 12, 16, 0.88)',
-        backdropFilter: `blur(${theme.cardBlur ?? 20}px)`,
-        WebkitBackdropFilter: `blur(${theme.cardBlur ?? 20}px)`,
-        borderColor: theme.cardBorder || 'rgba(255, 255, 255, 0.08)',
-        borderRadius: `${theme.cardRadius || 36}px`,
-        boxShadow: '0 25px 60px rgba(0,0,0,0.92), inset 0 1px 0 rgba(255,255,255,0.06)',
+        background: `linear-gradient(145deg, rgba(26, 6, 12, 0.88) 0%, rgba(14, 4, 7, 0.94) 50%, rgba(8, 2, 4, 0.98) 100%)`,
+        backdropFilter: `blur(${theme.cardBlur ?? 24}px)`,
+        WebkitBackdropFilter: `blur(${theme.cardBlur ?? 24}px)`,
+        borderColor: 'rgba(153, 0, 38, 0.3)',
+        borderRadius: `${theme.cardRadius || 44}px`,
+        boxShadow: '0 30px 80px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 35px rgba(153,0,38,0.18)',
       }}
-      className="w-full max-w-[410px] overflow-hidden shadow-2xl relative border transition-shadow duration-300 selection:bg-[#EE6F35]"
+      className="w-full max-w-[420px] overflow-hidden shadow-2xl relative border transition-shadow duration-300 selection:bg-[#990026] text-white"
     >
       {/* Banner */}
       {hasBanner && (
-        <div className="h-32 sm:h-36 w-full relative overflow-hidden bg-gradient-to-br from-neutral-900 via-[#18181c] to-black">
+        <div className="h-32 sm:h-36 w-full relative overflow-hidden bg-gradient-to-br from-[#26000a] via-[#140005] to-black">
           <img 
             src={profile.bannerUrl} 
             alt="Profile Banner" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#0e0407]" />
         </div>
       )}
 
       {/* Views Counter (Top Right) */}
       <div className="absolute top-4 right-5 z-20">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 shadow-inner">
-          <Eye className="w-3.5 h-3.5 text-purple-400 drop-shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
-          <span className="text-xs font-semibold text-white/90">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-[#990026]/30 shadow-inner">
+          <Eye className="w-3.5 h-3.5 text-[#ff4d6d] drop-shadow-[0_0_6px_rgba(255,77,109,0.7)]" />
+          <span className="text-xs font-semibold text-white/90 font-mono">
             {profile.views ?? 0}
           </span>
         </div>
       </div>
 
-      <div className={`px-6 pb-6 pt-5 relative ${hasBanner ? '-mt-12' : ''}`}>
+      <div className={`p-6 sm:p-7 relative ${hasBanner ? '-mt-10' : ''}`}>
         
-        {/* Avatar & Presence Row (if avatar enabled) */}
-        {hasAvatar && (
-          <div className="flex items-end justify-between mb-4">
-            <div className="relative">
-              <div className={`w-24 h-24 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-black/80 backdrop-blur-md border border-white/15 shadow-2xl relative z-10`}>
+        {/* ======================================================== */}
+        {/* SECTION 1: PROFILE MAIN (Avatar + Name + Status)         */}
+        {/* ======================================================== */}
+        <div className="flex items-center gap-4 mb-4">
+          
+          {/* Avatar Wrapper */}
+          {hasAvatar && (
+            <div className="relative shrink-0">
+              <div className={`w-20 h-20 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-black/80 backdrop-blur-md border-2 border-[#990026]/40 shadow-2xl relative z-10`}>
                 <img 
                   src={profile.avatarUrl} 
                   alt={profile.displayName} 
@@ -315,121 +344,107 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
                 />
               </div>
 
-              {/* Status badge */}
+              {/* Status Badge */}
               <div 
-                className={`absolute bottom-0 right-0 z-20 w-5 h-5 rounded-full border-2 border-black flex items-center justify-center ${getStatusColor(profile.discordStatus?.status || 'online')}`}
+                className={`absolute bottom-0 right-0 z-20 w-4.5 h-4.5 rounded-full border-2 border-black flex items-center justify-center ${getStatusColor(profile.discordStatus?.status || 'online')}`}
                 title={`Status: ${profile.discordStatus?.status || 'online'}`}
               />
             </div>
-          </div>
-        )}
-
-        {/* Username Header + Tooltip */}
-        <div className="mb-3 relative">
-          {showUidTooltip && (
-            <div className="absolute -top-7 left-0 px-2.5 py-0.5 rounded-full bg-black/90 border border-white/10 text-[10px] font-mono text-white/90 shadow-lg animate-in fade-in duration-150">
-              UID {profile.uid || '545701376'}
-            </div>
           )}
 
-          <h1 
-            onMouseEnter={() => setShowUidTooltip(true)}
-            onMouseLeave={() => setShowUidTooltip(false)}
-            onClick={() => setShowUidTooltip(!showUidTooltip)}
-            style={{ fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif' }}
-            className="text-[28px] sm:text-[32px] font-semibold text-white tracking-tight cursor-pointer inline-block"
-          >
-            {profile.displayName || profile.username || 'bloodare'}
-          </h1>
+          {/* Profile Info (Name Row + Badges) */}
+          <div className="min-w-0 flex-1">
+            <div className="relative flex items-center gap-2.5 flex-wrap">
+              {showUidTooltip && (
+                <div className="absolute -top-7 left-0 px-2 py-0.5 rounded-full bg-black/95 border border-[#990026]/40 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150 z-30">
+                  UID {profile.uid || '545701376'}
+                </div>
+              )}
 
-          {/* Badges */}
-          <div className="flex items-center gap-2 mt-1">
-            {renderBadges()}
+              <h1 
+                onMouseEnter={() => setShowUidTooltip(true)}
+                onMouseLeave={() => setShowUidTooltip(false)}
+                onClick={() => setShowUidTooltip(!showUidTooltip)}
+                style={{ 
+                  fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif',
+                  textShadow: '0 0 16px rgba(153, 0, 38, 0.65)'
+                }}
+                className="text-[24px] sm:text-[26px] font-bold text-white tracking-tight cursor-pointer truncate"
+              >
+                {profile.displayName || profile.username || 'ares'}
+              </h1>
+
+              {/* Badges Container */}
+              {renderBadges()}
+            </div>
+
+            {/* Status Text (Typewriter effect) */}
+            <div className="mt-1 text-xs sm:text-[13px] text-white/70 leading-relaxed font-medium">
+              <span>{displayedBio}</span>
+              {theme.typewriterBio && (
+                <span className="inline-block w-1.5 h-3.5 ml-1 bg-[#ff4d6d] animate-pulse align-middle" />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Location & Occupation */}
+        {/* Location & Occupation Pill Tags */}
         {(profile.location || profile.occupation) && (
-          <div className="flex flex-wrap items-center gap-3 mb-3 text-[11px] text-white/60">
+          <div className="flex flex-wrap items-center gap-2 mb-4 text-[11px] text-white/60">
             {profile.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-[#EE6F35]" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/5">
+                <MapPin className="w-3 h-3 text-[#ff4d6d]" />
                 {profile.location}
               </span>
             )}
             {profile.occupation && (
-              <span className="flex items-center gap-1">
-                <Briefcase className="w-3 h-3 text-[#EE6F35]" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/5">
+                <Briefcase className="w-3 h-3 text-[#ff4d6d]" />
                 {profile.occupation}
               </span>
             )}
           </div>
         )}
 
-        {/* Bio Text */}
-        {hasBio && (
-          <div className="mb-4 text-xs sm:text-[13px] text-white/75 leading-relaxed whitespace-pre-line min-h-[24px]">
-            {displayedBio}
-            {theme.typewriterBio && displayedBio.length < (profile.bio || '').length && (
-              <span className="inline-block w-1.5 h-3.5 ml-0.5 bg-[#EE6F35] animate-pulse align-middle" />
-            )}
-          </div>
-        )}
-
-        {/* Discord Activity / Spotify Widget */}
+        {/* ======================================================== */}
+        {/* SECTION 2: DISCORD PRESENCE BOX (jefersc/gunslol 1:1)    */}
+        {/* ======================================================== */}
         {hasDiscord && profile.discordStatus && (
-          <div className="mb-4 p-3 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center gap-3">
-            {profile.discordStatus.spotify ? (
-              <>
-                <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-neutral-800 border border-white/10 relative">
-                  {profile.discordStatus.spotify.albumArt ? (
-                    <img 
-                      src={profile.discordStatus.spotify.albumArt} 
-                      alt="Album Art" 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <SpotifyIcon className="w-5 h-5 text-emerald-500 m-auto mt-2.5" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <SpotifyIcon className="w-3 h-3 text-emerald-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                      Listening to Spotify
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold text-white truncate mt-0.5">
-                    {profile.discordStatus.spotify.song || 'After Dark'}
-                  </p>
-                  <p className="text-[10px] text-white/50 truncate">
-                    by {profile.discordStatus.spotify.artist || 'Mr.Kitty'}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-8 h-8 rounded-xl bg-[#5865F2]/20 border border-[#5865F2]/40 flex items-center justify-center text-[#5865F2]">
-                  <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#5865F2]">
-                      Discord Status
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold text-white truncate">
-                    {profile.discordStatus.activity || 'whose.baby ✦ sync'}
-                  </p>
-                </div>
-              </>
-            )}
+          <div className="mb-4 p-3.5 rounded-2xl bg-black/50 border border-[#990026]/25 flex items-center gap-3.5 shadow-inner">
+            {/* Discord Avatar with Status Indicator */}
+            <div className="relative shrink-0">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
+                <img 
+                  src={profile.avatarUrl || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"} 
+                  alt="Discord" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div 
+                className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#0e0407] ${getStatusColor(profile.discordStatus.status || 'online')}`}
+              />
+            </div>
+
+            {/* Discord Info */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-white tracking-wide truncate">
+                  {profile.discordStatus.username || profile.username || 'ares_wtf'}
+                </p>
+                <DiscordIcon className="w-3.5 h-3.5 text-[#ff4d6d]/80 shrink-0" />
+              </div>
+              <p className="text-[11px] text-white/50 italic truncate mt-0.5">
+                {profile.discordStatus.activity || 'Playing Valorant'}
+              </p>
+            </div>
           </div>
         )}
 
-        {/* Links List */}
+        {/* ======================================================== */}
+        {/* SECTION 3: SOCIAL LINKS ICONS ROW (gunslol #social-links) */}
+        {/* ======================================================== */}
         {hasLinks && (
-          <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-center gap-3.5 py-2 mb-2 flex-wrap">
             {(profile.links || []).map((link) => (
               <a
                 key={link.id}
@@ -437,34 +452,47 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => onLinkClick && onLinkClick(link.id)}
-                className="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-[#EE6F35]/40 transition-all duration-200 active:scale-[0.98]"
+                title={link.title}
+                className="w-10 h-10 rounded-xl bg-white/[0.04] hover:bg-[#990026]/20 border border-white/[0.08] hover:border-[#990026]/50 flex items-center justify-center text-white/80 hover:text-white transition-all duration-200 hover:-translate-y-1 hover:scale-110 active:scale-95 shadow-sm group"
+                style={{
+                  filter: 'drop-shadow(0 0 6px rgba(153, 0, 38, 0.35))'
+                }}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-white/5 group-hover:bg-[#EE6F35]/20 text-white/70 group-hover:text-[#EE6F35] flex items-center justify-center transition border border-white/10 group-hover:border-[#EE6F35]/30 shrink-0">
-                    {getSocialIcon(link.icon)}
-                  </div>
-                  <span className="text-xs font-medium text-white/90 group-hover:text-white truncate">
-                    {link.title}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  {link.clicks !== undefined && (
-                    <span className="text-[10px] font-mono text-white/40 group-hover:text-white/60">
-                      {link.clicks} clicks
-                    </span>
-                  )}
-                  <ExternalLink className="w-3.5 h-3.5 text-white/40 group-hover:text-[#EE6F35] group-hover:translate-x-0.5 transition" />
-                </div>
+                {getSocialIcon(link.icon)}
               </a>
             ))}
           </div>
         )}
 
-        {/* Footer */}
-        <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/40">
-          <div className="flex items-center gap-1 ml-auto">
-            <span>whose<span className="text-[#EE6F35]">.</span>baby</span>
+        {/* Full Link Cards (if more than 3 links or custom links) */}
+        {hasLinks && profile.links.length > 5 && (
+          <div className="space-y-2 mt-3 pt-3 border-t border-white/[0.06]">
+            {profile.links.slice(0, 3).map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => onLinkClick && onLinkClick(link.id)}
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-[#990026]/15 border border-white/5 hover:border-[#990026]/30 transition active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-white/70">
+                    {getSocialIcon(link.icon)}
+                  </div>
+                  <span className="text-xs text-white/90 truncate">{link.title}</span>
+                </div>
+                <ExternalLink className="w-3 h-3 text-white/30" />
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Footer Brand */}
+        <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-white/30">
+          <div className="flex items-center gap-1.5 mx-auto hover:text-white/60 transition cursor-pointer">
+            <img src="/logo.png" alt="pistols.wtf" className="w-3.5 h-3.5 object-contain" />
+            <span>pistols<span className="text-[#990026]">.</span>wtf</span>
           </div>
         </div>
 

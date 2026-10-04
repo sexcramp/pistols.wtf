@@ -85,7 +85,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
 
   const handleSave = () => {
     saveProfile(profile);
-    showToast('Changes saved to whose.baby! ✦');
+    showToast('Changes saved to pistols.wtf! ✦');
   };
 
   const handleAddLink = (e) => {
@@ -175,11 +175,11 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
   const HeaderIcon = headerInfo.icon;
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white selection:bg-[#EE6F35] font-sans pb-28">
+    <div className="min-h-screen bg-[#060608] text-white selection:bg-[#990026] font-sans pb-28">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 px-4 py-3 rounded-2xl border border-[#EE6F35]/40 bg-black/95 shadow-2xl flex items-center gap-2 text-xs font-semibold text-white animate-in slide-in-from-top duration-300">
-          <Sparkles className="w-4 h-4 text-[#EE6F35]" />
+        <div className="fixed top-20 right-4 z-50 px-4 py-3 rounded-2xl border border-[#990026]/40 bg-black/95 shadow-2xl flex items-center gap-2 text-xs font-semibold text-white animate-in slide-in-from-top duration-300">
+          <Sparkles className="w-4 h-4 text-[#990026]" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -201,7 +201,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
 
           {/* Section Icon & Title */}
           <div className="flex items-center gap-2">
-            <HeaderIcon className="w-4 h-4 text-[#EE6F35]" />
+            <HeaderIcon className="w-4 h-4 text-[#990026]" />
             <span className="text-[15px] font-semibold text-white tracking-tight">
               {headerInfo.title}
             </span>
@@ -235,9 +235,9 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
               {/* Brand Header */}
               <div className="flex items-center justify-between px-2 pt-2 pb-5 border-b border-white/5">
                 <div className="flex items-center gap-2.5">
-                  <LinkChainIcon className="w-5 h-5 text-[#EE6F35]" />
+                  <img src="/logo.png" alt="pistols.wtf" className="w-6 h-6 object-contain" />
                   <span className="font-bold text-[18px] text-white tracking-tight">
-                    whose<span className="text-[#EE6F35]">.</span>baby
+                    pistols<span className="text-[#990026]">.</span>wtf
                   </span>
                 </div>
                 <button
@@ -260,11 +260,11 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
                     activePage === 'overview'
-                      ? 'bg-[#EE6F35]/15 text-white border-l-2 border-[#EE6F35]'
+                      ? 'bg-[#990026]/15 text-white border-l-2 border-[#990026]'
                       : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Layers className={`w-4 h-4 ${activePage === 'overview' ? 'text-[#EE6F35]' : 'text-white/60'}`} />
+                  <Layers className={`w-4 h-4 ${activePage === 'overview' ? 'text-[#990026]' : 'text-white/60'}`} />
                   <span>Overview</span>
                 </button>
               </div>
@@ -294,11 +294,11 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                         }}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
                           isActive
-                            ? 'bg-[#EE6F35]/15 text-white font-semibold border-l-2 border-[#EE6F35]'
+                            ? 'bg-[#990026]/15 text-white font-semibold border-l-2 border-[#990026]'
                             : 'text-white/60 hover:text-white hover:bg-white/5'
                         }`}
                       >
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#EE6F35]' : 'text-white/60'}`} />
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-[#990026]' : 'text-white/60'}`} />
                         <span>{item.label}</span>
                       </button>
                     );
@@ -319,7 +319,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition ${
                       activePage === 'settings'
-                        ? 'bg-[#EE6F35]/15 text-white font-semibold border-l-2 border-[#EE6F35]'
+                        ? 'bg-[#990026]/15 text-white font-semibold border-l-2 border-[#990026]'
                         : 'text-white/60 hover:text-white hover:bg-white/5'
                     }`}
                   >
@@ -333,7 +333,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition ${
                       activePage === 'templates'
-                        ? 'bg-[#EE6F35]/15 text-white font-semibold border-l-2 border-[#EE6F35]'
+                        ? 'bg-[#990026]/15 text-white font-semibold border-l-2 border-[#990026]'
                         : 'text-white/60 hover:text-white hover:bg-white/5'
                     }`}
                   >
@@ -356,13 +356,13 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
                   >
-                    <Dices className="w-4 h-4 text-[#EE6F35]" />
+                    <Dices className="w-4 h-4 text-[#990026]" />
                     <span>Casino</span>
                   </button>
                   <button
                     onClick={() => {
                       setSidebarOpen(false);
-                      showToast('Help center: whose.baby/help');
+                      showToast('Help center: pistols.wtf/help');
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
                   >
@@ -448,7 +448,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
             {/* 4. Limited Badges Card (Orange Theme Accent) */}
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
               <div className="flex items-center gap-2">
-                <Tag className="w-4 h-4 text-[#EE6F35]" />
+                <Tag className="w-4 h-4 text-[#990026]" />
                 <h3 className="text-sm font-bold text-white">Limited Badges</h3>
               </div>
               <p className="text-xs text-white/50 leading-relaxed">
@@ -462,9 +462,9 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </button>
 
                 {/* Claimed Halloween Badge */}
-                <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#EE6F35]/20 border border-[#EE6F35]/50 text-xs font-semibold text-white shadow-md shadow-[#EE6F35]/20">
-                  <Check className="w-3.5 h-3.5 text-[#EE6F35]" />
-                  <SpiderwebIcon className="w-4 h-4 text-[#EE6F35]" />
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#990026]/20 border border-[#990026]/50 text-xs font-semibold text-white shadow-md shadow-[#990026]/20">
+                  <Check className="w-3.5 h-3.5 text-[#990026]" />
+                  <SpiderwebIcon className="w-4 h-4 text-[#990026]" />
                   <span>Halloween</span>
                 </div>
 
@@ -475,15 +475,15 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   <span>???</span>
                 </div>
 
-                <button className="w-8 h-8 rounded-full bg-[#EE6F35] hover:bg-[#D5551A] flex items-center justify-center text-white ml-auto shadow-md shadow-[#EE6F35]/25">
+                <button className="w-8 h-8 rounded-full bg-[#990026] hover:bg-[#73001d] flex items-center justify-center text-white ml-auto shadow-md shadow-[#990026]/25">
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Progress Bar in Vibrant Orange */}
+              {/* Progress Bar in Crimson Red */}
               <div className="space-y-1.5 pt-1">
                 <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-                  <div className="w-[10%] h-full bg-[#EE6F35] rounded-full shadow-[0_0_8px_#EE6F35]" />
+                  <div className="w-[10%] h-full bg-[#990026] rounded-full shadow-[0_0_8px_#990026]" />
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] text-white/40 font-mono">1 / 10 badges</span>
@@ -503,7 +503,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </div>
               </div>
 
-              <button className="w-full py-3 px-4 rounded-2xl bg-[#EE6F35] hover:bg-[#D5551A] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#EE6F35]/25 active:scale-[0.98] transition">
+              <button className="w-full py-3 px-4 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition">
                 <DiscordIcon className="w-4 h-4 text-white" />
                 <span>Connected to Discord</span>
               </button>
@@ -520,7 +520,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
             {/* 6. Casino Stats Card (Screenshot 220541 / feds.lol 1:1) */}
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
               <div className="flex items-center gap-2">
-                <Dices className="w-4 h-4 text-[#EE6F35]" />
+                <Dices className="w-4 h-4 text-[#990026]" />
                 <h3 className="text-sm font-bold text-white">Casino Stats</h3>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -544,7 +544,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
             {/* 6. Giveaways Card */}
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
               <div className="flex items-center gap-2">
-                <PartyPopper className="w-4 h-4 text-[#EE6F35]" />
+                <PartyPopper className="w-4 h-4 text-[#990026]" />
                 <h3 className="text-sm font-bold text-white">Giveaways</h3>
               </div>
 
@@ -553,7 +553,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <button
                   onClick={() => setGiveawayFilter('active')}
                   className={`py-1.5 rounded-lg font-semibold transition ${
-                    giveawayFilter === 'active' ? 'bg-[#EE6F35] text-white' : 'text-white/40'
+                    giveawayFilter === 'active' ? 'bg-[#990026] text-white' : 'text-white/40'
                   }`}
                 >
                   Active
@@ -561,7 +561,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <button
                   onClick={() => setGiveawayFilter('winners')}
                   className={`py-1.5 rounded-lg font-semibold transition ${
-                    giveawayFilter === 'winners' ? 'bg-[#EE6F35] text-white' : 'text-white/40'
+                    giveawayFilter === 'winners' ? 'bg-[#990026] text-white' : 'text-white/40'
                   }`}
                 >
                   Winners
@@ -577,7 +577,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-[#EE6F35]" />
+                  <Eye className="w-4 h-4 text-[#990026]" />
                   <h3 className="text-sm font-bold text-white">Profile Visitors</h3>
                 </div>
                 <span className="text-[11px] text-white/40 px-2.5 py-1 rounded-lg bg-black/40 border border-white/5">
@@ -587,15 +587,15 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
 
               {/* Visitors Line Graph Simulation */}
               <div className="h-28 w-full relative flex items-end pt-4 pb-2 border-b border-white/5">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#EE6F35]/10 to-transparent pointer-events-none rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#990026]/10 to-transparent pointer-events-none rounded-xl" />
                 <svg className="w-full h-full overflow-visible" viewBox="0 0 300 80" preserveAspectRatio="none">
                   <path
                     d="M 0 75 Q 100 75 180 73 T 260 70 L 290 20 L 300 15"
                     fill="none"
-                    stroke="#EE6F35"
+                    stroke="#990026"
                     strokeWidth="2.5"
                   />
-                  <circle cx="300" cy="15" r="4" fill="#EE6F35" className="animate-pulse" />
+                  <circle cx="300" cy="15" r="4" fill="#990026" className="animate-pulse" />
                 </svg>
               </div>
 
@@ -603,7 +603,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <div>
                   <p className="font-bold text-white flex items-center gap-1">
                     <span>Visitors last 30 days: 1</span>
-                    <TrendingUp className="w-3.5 h-3.5 text-[#EE6F35]" />
+                    <TrendingUp className="w-3.5 h-3.5 text-[#990026]" />
                   </p>
                   <p className="text-[11px] text-white/40">Daily average: 0 visitors/day</p>
                 </div>
@@ -638,7 +638,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   >
                     <span>{sub.label}</span>
                     {isActive && (
-                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#EE6F35] rounded-full shadow-[0_0_8px_#EE6F35]" />
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#990026] rounded-full shadow-[0_0_8px_#990026]" />
                     )}
                   </button>
                 );
@@ -668,7 +668,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                         showToast('Avatar updated!');
                       }
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold transition shadow-md shadow-[#EE6F35]/25"
+                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
                   >
                     Change Avatar
                   </button>
@@ -686,7 +686,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                             onClick={() => setProfile(prev => ({ ...prev, avatarShape: shapeKey }))}
                             className={`py-2 rounded-xl border text-xs font-medium transition ${
                               isSelected
-                                ? 'bg-[#EE6F35]/20 border-[#EE6F35] text-white font-semibold'
+                                ? 'bg-[#990026]/20 border-[#990026] text-white font-semibold'
                                 : 'bg-[#121215] border-white/5 text-white/60 hover:text-white'
                             }`}
                           >
@@ -709,7 +709,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                       setProfile(prev => ({ ...prev, avatarDecoration: next }));
                       showToast(`Avatar decoration: ${next}`);
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold transition shadow-md shadow-[#EE6F35]/25"
+                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
                   >
                     Change Decoration
                   </button>
@@ -745,7 +745,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                         showToast('Banner updated!');
                       }
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold transition shadow-md shadow-[#EE6F35]/25"
+                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
                   >
                     Change Banner
                   </button>
@@ -823,7 +823,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 {/* Save button */}
                 <button
                   onClick={handleSave}
-                  className="w-full py-3 rounded-2xl bg-[#EE6F35] hover:bg-[#D5551A] text-white font-semibold text-xs shadow-lg shadow-[#EE6F35]/25 active:scale-[0.98] transition flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition flex items-center justify-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Profile</span>
@@ -840,7 +840,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-[#EE6F35]" />
+                      <Layers className="w-4 h-4 text-[#990026]" />
                       <h3 className="text-sm font-bold text-white">Layout</h3>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/50">
@@ -863,7 +863,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
                       (theme.layout || 'floating') === 'floating'
-                        ? 'bg-[#EE6F35]/15 border-[#EE6F35] shadow-lg shadow-[#EE6F35]/20'
+                        ? 'bg-[#990026]/15 border-[#990026] shadow-lg shadow-[#990026]/20'
                         : 'bg-black/40 border-white/5 hover:border-white/10'
                     }`}
                   >
@@ -887,7 +887,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
                       theme.layout === 'stacked'
-                        ? 'bg-[#EE6F35]/15 border-[#EE6F35] shadow-lg shadow-[#EE6F35]/20'
+                        ? 'bg-[#990026]/15 border-[#990026] shadow-lg shadow-[#990026]/20'
                         : 'bg-black/40 border-white/5 hover:border-white/10'
                     }`}
                   >
@@ -910,7 +910,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     }}
                     className={`p-4 rounded-2xl border cursor-pointer transition text-center ${
                       theme.layout === 'compact'
-                        ? 'bg-[#EE6F35]/15 border-[#EE6F35] shadow-lg shadow-[#EE6F35]/20'
+                        ? 'bg-[#990026]/15 border-[#990026] shadow-lg shadow-[#990026]/20'
                         : 'bg-black/40 border-white/5 hover:border-white/10'
                     }`}
                   >
@@ -927,7 +927,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   {/* Save Layout Button in Orange */}
                   <button
                     onClick={handleSave}
-                    className="w-full py-3 rounded-2xl bg-[#EE6F35] hover:bg-[#D5551A] text-white font-semibold text-xs shadow-lg shadow-[#EE6F35]/25 active:scale-[0.98] transition"
+                    className="w-full py-3 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition"
                   >
                     Save
                   </button>
@@ -937,7 +937,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Palette className="w-4 h-4 text-[#EE6F35]" />
+                      <Palette className="w-4 h-4 text-[#990026]" />
                       <h3 className="text-sm font-bold text-white">Profile Card</h3>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/50">
@@ -965,7 +965,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                           }}
                           className={`p-3 rounded-2xl border text-center cursor-pointer transition ${
                             isSelected
-                              ? 'bg-[#EE6F35]/15 border-[#EE6F35]'
+                              ? 'bg-[#990026]/15 border-[#990026]'
                               : 'bg-black/40 border-white/5 hover:border-white/10'
                           }`}
                         >
@@ -996,7 +996,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   </button>
                   <button 
                     onClick={() => setShowAddLinkModal(true)}
-                    className="px-4 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#EE6F35]/25 active:scale-95 transition"
+                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#990026]/25 active:scale-95 transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Link</span>
@@ -1024,7 +1024,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
 
                       <button
                         onClick={() => setShowAddLinkModal(true)}
-                        className="px-5 py-2.5 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#EE6F35]/25"
+                        className="px-5 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#990026]/25"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Link</span>
@@ -1065,7 +1065,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     <button
                       onClick={() => setBadgeFilter('owned')}
                       className={`px-4 py-1.5 rounded-lg font-medium transition ${
-                        badgeFilter === 'owned' ? 'bg-[#EE6F35] text-white' : 'text-white/40'
+                        badgeFilter === 'owned' ? 'bg-[#990026] text-white' : 'text-white/40'
                       }`}
                     >
                       Owned
@@ -1073,7 +1073,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     <button
                       onClick={() => setBadgeFilter('other')}
                       className={`px-4 py-1.5 rounded-lg font-medium transition ${
-                        badgeFilter === 'other' ? 'bg-[#EE6F35] text-white' : 'text-white/40'
+                        badgeFilter === 'other' ? 'bg-[#990026] text-white' : 'text-white/40'
                       }`}
                     >
                       Other
@@ -1093,8 +1093,8 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <div className="p-3.5 rounded-[22px] bg-[#121215] border border-white/[0.06] flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <GripVertical className="w-4 h-4 text-white/30 cursor-grab" />
-                    <div className="w-9 h-9 rounded-xl bg-[#EE6F35]/15 border border-[#EE6F35]/30 flex items-center justify-center shadow-[0_0_10px_rgba(238,111,53,0.3)]">
-                      <SpiderwebIcon className="w-4 h-4 text-[#EE6F35]" />
+                    <div className="w-9 h-9 rounded-xl bg-[#990026]/15 border border-[#990026]/30 flex items-center justify-center shadow-[0_0_10px_rgba(238,111,53,0.3)]">
+                      <SpiderwebIcon className="w-4 h-4 text-[#990026]" />
                     </div>
                     <span className="text-xs font-semibold text-white">Halloween</span>
                   </div>
@@ -1126,7 +1126,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     { key: 'spotify', label: 'Spotify', color: 'bg-[#10b981]', icon: SpotifyIcon },
                     { key: 'roblox', label: 'Roblox', color: 'bg-[#18181b]', icon: Gamepad2 },
                     { key: 'valorant', label: 'Valorant', color: 'bg-[#f43f5e]', icon: Shield },
-                    { key: 'soundcloud', label: 'SoundCloud', color: 'bg-[#EE6F35]', icon: SoundcloudIcon },
+                    { key: 'soundcloud', label: 'SoundCloud', color: 'bg-[#990026]', icon: SoundcloudIcon },
                     { key: 'youtube', label: 'YouTube', color: 'bg-[#ef4444]', icon: YoutubeIcon },
                     { key: 'twitch', label: 'Twitch', color: 'bg-[#9333ea]', icon: TwitchIcon },
                     { key: 'steam', label: 'Steam', color: 'bg-[#0284c7]', icon: SteamIcon },
@@ -1159,7 +1159,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     <>
                       <div className="w-48 mx-auto space-y-2 py-2 opacity-20">
                         <div className="h-7 rounded-xl bg-white/20 flex items-center px-3 gap-2">
-                          <div className="w-3 h-3 rounded-full bg-[#EE6F35]" />
+                          <div className="w-3 h-3 rounded-full bg-[#990026]" />
                           <div className="w-16 h-1.5 rounded-full bg-white/30" />
                         </div>
                       </div>
@@ -1215,7 +1215,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                           }}
                           className={`p-3 rounded-2xl border text-center cursor-pointer transition ${
                             isSelected
-                              ? 'bg-[#EE6F35]/15 border-[#EE6F35]'
+                              ? 'bg-[#990026]/15 border-[#990026]'
                               : 'bg-[#121215] border-white/5 hover:border-white/10'
                           }`}
                         >
@@ -1232,7 +1232,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <div className="flex justify-end">
                   <button
                     onClick={() => setShowAddTrackModal(true)}
-                    className="px-4 py-2 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#EE6F35]/25"
+                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-[#990026]/25"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Track</span>
@@ -1269,7 +1269,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                       </p>
                       <button
                         onClick={() => setShowAddTrackModal(true)}
-                        className="px-5 py-2.5 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#EE6F35]/25"
+                        className="px-5 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-lg shadow-[#990026]/25"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Track</span>
@@ -1284,7 +1284,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
             <div className="fixed bottom-6 right-5 z-40">
               <button
                 onClick={() => setPreviewOpen(true)}
-                className="px-4 py-2.5 rounded-full bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-bold shadow-2xl shadow-[#EE6F35]/50 flex items-center gap-2 active:scale-95 transition"
+                className="px-4 py-2.5 rounded-full bg-[#990026] hover:bg-[#73001d] text-white text-xs font-bold shadow-2xl shadow-[#990026]/50 flex items-center gap-2 active:scale-95 transition"
               >
                 <Eye className="w-4 h-4" />
                 <span>Preview</span>
@@ -1299,7 +1299,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
         {activePage === 'settings' && (
           <div className="p-6 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4 animate-in fade-in duration-200">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Settings className="w-4 h-4 text-[#EE6F35]" />
+              <Settings className="w-4 h-4 text-[#990026]" />
               <span>Account Settings</span>
             </h3>
             <p className="text-xs text-white/50">Manage your password, domain, and linked accounts.</p>
@@ -1308,17 +1308,17 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
               <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-white">Username Handle</p>
-                  <p className="text-[11px] text-white/40">whose.baby/{profile.username}</p>
+                  <p className="text-[11px] text-white/40">pistols.wtf/{profile.username}</p>
                 </div>
-                <span className="text-[10px] px-2 py-1 rounded bg-[#EE6F35]/20 text-[#EE6F35] font-semibold">Active</span>
+                <span className="text-[10px] px-2 py-1 rounded bg-[#990026]/20 text-[#990026] font-semibold">Active</span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-white">Theme Accent</p>
-                  <p className="text-[11px] text-white/40">#EE6F35 (Vibrant Orange)</p>
+                  <p className="text-[11px] text-white/40">#990026 (Crimson Red)</p>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-[#EE6F35] border border-white/20 shadow-md" />
+                <div className="w-5 h-5 rounded-full bg-[#990026] border border-white/20 shadow-md" />
               </div>
             </div>
           </div>
@@ -1330,20 +1330,20 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
         {activePage === 'templates' && (
           <div className="p-6 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4 animate-in fade-in duration-200">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Folder className="w-4 h-4 text-[#EE6F35]" />
+              <Folder className="w-4 h-4 text-[#990026]" />
               <span>Community Templates</span>
             </h3>
-            <p className="text-xs text-white/50">Browse and apply aesthetic themes designed for whose.baby.</p>
+            <p className="text-xs text-white/50">Browse and apply aesthetic themes designed for pistols.wtf.</p>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
-              {['Guns Minimal', 'Feds Dark', 'Vibrant Orange', 'Void Cyber'].map(name => (
+              {['Guns Minimal', 'Feds Dark', 'Crimson Red', 'Void Cyber'].map(name => (
                 <div key={name} className="p-3.5 rounded-xl bg-black/40 border border-white/5 text-center space-y-2">
                   <div className="h-16 rounded-lg bg-white/5 flex items-center justify-center">
                     <span className="text-[11px] text-white/40">{name}</span>
                   </div>
                   <button 
                     onClick={() => showToast(`Applied ${name} template!`)}
-                    className="w-full py-1.5 rounded-lg bg-white/5 hover:bg-[#EE6F35] text-white text-[11px] font-semibold transition"
+                    className="w-full py-1.5 rounded-lg bg-white/5 hover:bg-[#990026] text-white text-[11px] font-semibold transition"
                   >
                     Apply
                   </button>
@@ -1395,7 +1395,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   value={newLinkTitle}
                   onChange={(e) => setNewLinkTitle(e.target.value)}
                   placeholder="e.g. Discord Server, Spotify, Instagram"
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                   required
                 />
               </div>
@@ -1407,7 +1407,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   value={newLinkUrl}
                   onChange={(e) => setNewLinkUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                   required
                 />
               </div>
@@ -1417,7 +1417,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 <select
                   value={newLinkIcon}
                   onChange={(e) => setNewLinkIcon(e.target.value)}
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                 >
                   <option value="globe">Custom Website</option>
                   <option value="discord">Discord</option>
@@ -1445,7 +1445,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold shadow-lg shadow-[#EE6F35]/25"
+                  className="flex-1 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold shadow-lg shadow-[#990026]/25"
                 >
                   Add Link
                 </button>
@@ -1471,7 +1471,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   value={newTrackTitle}
                   onChange={(e) => setNewTrackTitle(e.target.value)}
                   placeholder="e.g. After Dark"
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                   required
                 />
               </div>
@@ -1483,7 +1483,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   value={newTrackArtist}
                   onChange={(e) => setNewTrackArtist(e.target.value)}
                   placeholder="e.g. Mr.Kitty"
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                 />
               </div>
 
@@ -1494,7 +1494,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   value={newTrackUrl}
                   onChange={(e) => setNewTrackUrl(e.target.value)}
                   placeholder="https://.../audio.mp3"
-                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
                   required
                 />
               </div>
@@ -1509,7 +1509,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#EE6F35] hover:bg-[#D5551A] text-white text-xs font-semibold shadow-lg shadow-[#EE6F35]/25"
+                  className="flex-1 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold shadow-lg shadow-[#990026]/25"
                 >
                   Save Track
                 </button>

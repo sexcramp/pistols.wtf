@@ -104,15 +104,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
       discordId: '712345678901234567',
       discordStatus: {
         status: 'online',
-        activity: 'whose.baby ✦ sync',
+        activity: 'pistols.wtf ✦ sync',
         details: 'Member of Support Server',
-        state: `whose.baby/${cleanHandle}`
+        state: `pistols.wtf/${cleanHandle}`
       }
     });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 selection:bg-[#EE6F35]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 selection:bg-[#990026]">
       {/* iOS Blur Backdrop */}
       <div 
         onClick={() => {
@@ -143,7 +143,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
 
           <h3 className="text-lg font-bold text-white tracking-tight">Choose an account</h3>
           <p className="text-xs text-white/50 mt-1 mb-5">
-            to continue to <strong className="text-white">whose.baby</strong>
+            to continue to <strong className="text-white">pistols.wtf</strong>
           </p>
 
           <div className="space-y-2">
@@ -152,11 +152,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
               onClick={() => handleSelectGoogleAccount(`${username || 'user'}@gmail.com`, username ? username.toUpperCase() : 'Google User', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80')}
               className="w-full p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 flex items-center gap-3 transition text-left group"
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#EE6F35] to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#990026] to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
                 {(username ? username[0] : 'U').toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-white group-hover:text-[#EE6F35] transition truncate">
+                <p className="text-xs font-semibold text-white group-hover:text-[#990026] transition truncate">
                   {username ? `${username.charAt(0).toUpperCase() + username.slice(1)}` : 'Personal Account'}
                 </p>
                 <p className="text-[11px] text-white/50 truncate">
@@ -181,7 +181,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                 </div>
               </button>
             ) : (
-              <div className="p-3 rounded-2xl bg-white/[0.04] border border-[#EE6F35]/50 space-y-2.5">
+              <div className="p-3 rounded-2xl bg-white/[0.04] border border-[#990026]/50 space-y-2.5">
                 <label className="text-[11px] font-medium text-white/70 block">
                   Enter your Gmail address
                 </label>
@@ -190,7 +190,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                   value={customGmail}
                   onChange={(e) => setCustomGmail(e.target.value)}
                   placeholder="yourname@gmail.com"
-                  className="w-full bg-[#111] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 outline-none focus:border-[#EE6F35]"
+                  className="w-full bg-[#111] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 outline-none focus:border-[#990026]"
                   autoFocus
                 />
                 <button
@@ -200,7 +200,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                       handleSelectGoogleAccount(customGmail, customGmail.split('@')[0]);
                     }
                   }}
-                  className="w-full py-2 rounded-xl bg-[#EE6F35] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#EE6F35]/25"
+                  className="w-full py-2 rounded-xl bg-[#990026] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#990026]/25"
                 >
                   <span>Continue with this Gmail</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -210,7 +210,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
           </div>
 
           <div className="mt-5 pt-4 border-t border-white/10 text-[11px] text-white/40 leading-relaxed">
-            To continue, Google will share your name, email address, and profile picture with whose.baby.
+            To continue, Google will share your name, email address, and profile picture with pistols.wtf.
           </div>
         </div>
       ) : showDiscordSheet ? (
@@ -282,12 +282,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
               <div className="w-7 h-7 flex items-center justify-center shrink-0 overflow-visible">
                 <img 
                   src="/logo.png" 
-                  alt="whose.baby" 
+                  alt="pistols.wtf" 
                   className="w-7 h-7 object-contain scale-[1.3] transform-gpu" 
                 />
               </div>
               <span className="font-bold text-[18px] text-white tracking-tight ml-2">
-                whose<span className="text-[#EE6F35]">.</span>baby
+                whose<span className="text-[#990026]">.</span>baby
               </span>
             </div>
 
@@ -307,7 +307,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
             </h2>
             <p className="text-[14px] text-white/60 mt-1">
               {mode === 'register' 
-                ? 'Create your account to start using whose.baby.'
+                ? 'Create your account to start using pistols.wtf.'
                 : 'Sign in to manage your link and settings.'}
             </p>
           </div>
@@ -357,7 +357,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
               <label className="text-[13px] font-medium text-white/90 mb-1.5 block">
                 Username
               </label>
-              <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#EE6F35]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
+              <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#990026]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
                 <LinkChainIcon className="w-4 h-4 text-white/40 shrink-0" />
                 <input
                   type="text"
@@ -373,7 +373,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
               </div>
               {mode === 'register' && (
                 <p className="text-[12px] text-white/50 mt-1.5 font-normal">
-                  Your page will be available at <strong className="text-white font-semibold">whose.baby/{username || 'username'}</strong>
+                  Your page will be available at <strong className="text-white font-semibold">pistols.wtf/{username || 'username'}</strong>
                 </p>
               )}
             </div>
@@ -384,7 +384,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                 <label className="text-[13px] font-medium text-white/90 mb-1.5 block">
                   Email address
                 </label>
-                <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#EE6F35]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
+                <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#990026]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
                   <span className="text-white/40 font-mono text-[14px] select-none pl-0.5">@</span>
                   <input
                     type="email"
@@ -403,7 +403,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
               <label className="text-[13px] font-medium text-white/90 mb-1.5 block">
                 Password
               </label>
-              <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#EE6F35]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
+              <div className="rounded-xl bg-[#141416] border border-white/[0.08] focus-within:border-[#990026]/70 focus-within:shadow-[0_0_15px_rgba(238,111,53,0.15)] px-3.5 py-2.5 flex items-center gap-2.5 transition-all">
                 <KeyIcon className="w-4 h-4 text-white/40 shrink-0" />
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -427,7 +427,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#EE6F35] to-[#f47f48] hover:from-[#d95e26] hover:to-[#e87138] text-white font-medium text-[15px] shadow-lg shadow-[#EE6F35]/25 active:scale-[0.98] transition-all"
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#990026] to-[#f47f48] hover:from-[#b3002d] hover:to-[#5c0017] text-white font-medium text-[15px] shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition-all"
               >
                 {mode === 'register' ? 'Register' : 'Login'}
               </button>
@@ -445,7 +445,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                     setMode('login');
                     setError(null);
                   }}
-                  className="text-[#EE6F35] hover:underline font-semibold ml-1 focus:outline-none"
+                  className="text-[#990026] hover:underline font-semibold ml-1 focus:outline-none"
                 >
                   Login
                 </button>
@@ -459,7 +459,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
                     setMode('register');
                     setError(null);
                   }}
-                  className="text-[#EE6F35] hover:underline font-semibold ml-1 focus:outline-none"
+                  className="text-[#990026] hover:underline font-semibold ml-1 focus:outline-none"
                 >
                   Register
                 </button>

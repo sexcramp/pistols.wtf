@@ -1,7 +1,7 @@
 {
-  "name": "whose.baby",
+  "name": "pistols.wtf",
   "version": "1.0.0",
-  "description": "whose.baby - The ultimate aesthetic biolink platform inspired by guns.lol and feds.lol.",
+  "description": "pistols.wtf - The ultimate aesthetic biolink platform inspired by guns.lol.",
   "type": "module",
   "scripts": {
     "dev": "node node_modules/vite/bin/vite.js",

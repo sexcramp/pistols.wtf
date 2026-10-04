@@ -67,7 +67,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white selection:bg-[#EE6F35] selection:text-white">
+    <div className="min-h-screen bg-[#060608] text-white selection:bg-[#990026] selection:text-white">
       {/* Show Floating Stadium Navbar ONLY on Landing/Home Page */}
       {currentPage === 'home' && (
         <Navbar 

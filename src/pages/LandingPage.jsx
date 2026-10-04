@@ -17,19 +17,19 @@ export default function LandingPage({ onNavigate, onOpenAuth }) {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#060608] text-white flex flex-col items-center justify-start px-4 selection:bg-[#EE6F35] selection:text-white overflow-hidden">
+    <div className="relative min-h-screen bg-[#060608] text-white flex flex-col items-center justify-start px-4 selection:bg-[#990026] selection:text-white overflow-hidden">
       {/* Subtle, minimal ambient glow behind lower hero / claim box */}
       <div 
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 w-[340px] sm:w-[580px] h-[340px] sm:h-[420px] pointer-events-none -z-10"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(238, 111, 53, 0.08) 0%, rgba(6, 6, 8, 0) 70%)'
+          background: 'radial-gradient(circle at 50% 50%, rgba(153, 0, 38, 0.12) 0%, rgba(64, 0, 16, 0.05) 45%, rgba(6, 6, 8, 0) 70%)'
         }}
       />
 
       {/* Main Hero Container */}
       <div className="w-full max-w-4xl mx-auto flex flex-col items-center text-center pt-[135px] sm:pt-[190px] md:pt-[220px] pb-24">
         
-        {/* Main Headline: 3 lines on mobile (Screenshot 3), 2 lines on desktop (Screenshot 4) */}
+        {/* Main Headline */}
         <h1 className="font-extrabold text-white tracking-[-0.035em] text-center">
           {/* Mobile version (3 lines) */}
           <span className="block sm:hidden text-[44px] leading-[1.08]">
@@ -45,20 +45,20 @@ export default function LandingPage({ onNavigate, onOpenAuth }) {
           </span>
         </h1>
 
-        {/* Subtitle Paragraph (Identical text across Screenshots 3 & 4) */}
+        {/* Subtitle Paragraph */}
         <p className="text-[15px] sm:text-[16px] md:text-[17px] text-[#9ca3af] text-center max-w-[340px] sm:max-w-[560px] md:max-w-[620px] mx-auto mt-5 sm:mt-6 leading-relaxed">
-          Create stunning bio links, showcase your content, and connect with your audience. whose.baby gives you the tools to build your online presence — beautifully.
+          Create aesthetic biolinks, showcase your content, and connect with your audience. pistols.wtf gives you the tools to build your online presence — beautifully.
         </p>
 
-        {/* Claim Username Input Bar (Fixed responsive container & snug inside pill) */}
+        {/* Claim Username Input Bar */}
         <div className="w-full max-w-[350px] sm:max-w-[420px] mx-auto mt-8 sm:mt-10 px-1">
           <form 
             onSubmit={handleClaim}
-            className="relative flex items-center justify-between rounded-full p-1.5 pl-4 sm:pl-5 bg-[#101013]/90 border border-white/[0.09] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_32px_rgba(0,0,0,0.8)] focus-within:border-[#EE6F35]/70 focus-within:shadow-[0_0_25px_rgba(238,111,53,0.25)] transition-all overflow-hidden"
+            className="relative flex items-center justify-between rounded-full p-1.5 pl-4 sm:pl-5 bg-[#100d11]/90 border border-white/[0.09] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_32px_rgba(0,0,0,0.85)] focus-within:border-[#990026]/70 focus-within:shadow-[0_0_25px_rgba(153,0,38,0.35)] transition-all overflow-hidden"
           >
             <div className="flex items-center min-w-0 flex-1 mr-2">
-              <span className="text-[14px] sm:text-[15px] font-normal text-[#EE6F35] select-none shrink-0 whitespace-nowrap">
-                whose.baby/
+              <span className="text-[14px] sm:text-[15px] font-normal text-[#990026] select-none shrink-0 whitespace-nowrap">
+                pistols.wtf/
               </span>
               <input
                 type="text"
@@ -72,7 +72,7 @@ export default function LandingPage({ onNavigate, onOpenAuth }) {
             
             <button
               type="submit"
-              className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-[#EE6F35] to-[#f47f48] hover:from-[#d95e26] hover:to-[#e87138] text-white text-[14px] sm:text-[15px] font-medium tracking-normal shadow-md shadow-[#EE6F35]/30 active:scale-95 transition-all shrink-0"
+              className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-[#990026] via-[#73001d] to-[#400010] hover:from-[#b3002d] hover:to-[#5c0017] text-white text-[14px] sm:text-[15px] font-medium tracking-normal shadow-md shadow-[#990026]/35 active:scale-95 transition-all shrink-0"
             >
               Claim
             </button>
