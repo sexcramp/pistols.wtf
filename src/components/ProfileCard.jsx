@@ -238,20 +238,20 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         onMouseLeave={handleMouseLeave}
         style={{
           ...tiltStyle,
-          backgroundColor: 'rgba(10, 10, 12, 0.6)',
-          backdropFilter: 'blur(32px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-          borderColor: 'rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px 0 rgba(255, 255, 255, 0.16)',
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
           borderRadius: '32px',
         }}
         className="w-full max-w-[390px] px-8 py-9 sm:px-10 sm:py-10 border relative overflow-hidden transition-all duration-300 select-none"
       >
         {/* Top Right: Views Counter Pill */}
         <div className="absolute top-4 sm:top-5 right-5 sm:right-6">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-inner">
-            <Eye className="w-3.5 h-3.5 text-white/70" />
-            <span className="text-xs font-semibold text-white/90 font-mono">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] backdrop-blur-md border border-white/[0.08] shadow-inner">
+            <Eye className="w-3.5 h-3.5 text-white/50" />
+            <span className="text-xs font-semibold text-white/80 font-mono">
               {profile.views ?? 0}
             </span>
           </div>
@@ -297,12 +297,12 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
       onMouseLeave={handleMouseLeave}
       style={{
         ...tiltStyle,
-        backgroundColor: 'rgba(10, 10, 12, 0.6)',
-        backdropFilter: 'blur(32px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-        borderColor: 'rgba(255, 255, 255, 0.12)',
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: '32px',
-        boxShadow: '0 30px 80px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.16)',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
       }}
       className="w-full max-w-[420px] overflow-hidden relative border transition-shadow duration-300 selection:bg-white/20 text-white"
     >
@@ -320,9 +320,9 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
 
       {/* Views Counter (Top Right) */}
       <div className="absolute top-4 right-5 z-20">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 shadow-inner">
-          <Eye className="w-3.5 h-3.5 text-white/70" />
-          <span className="text-xs font-semibold text-white/90 font-mono">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] backdrop-blur-md border border-white/[0.08] shadow-inner">
+          <Eye className="w-3.5 h-3.5 text-white/50" />
+          <span className="text-xs font-semibold text-white/80 font-mono">
             {profile.views ?? 0}
           </span>
         </div>
@@ -338,7 +338,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
           {/* Avatar Wrapper */}
           {hasAvatar && (
             <div className="relative shrink-0">
-              <div className={`w-20 h-20 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-black/80 backdrop-blur-md border-2 border-white/15 shadow-2xl relative z-10`}>
+              <div className={`w-20 h-20 ${getShapeClass(avatarShape)} overflow-hidden p-1 bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-lg relative z-10`}>
                 <img 
                   src={profile.avatarUrl} 
                   alt={profile.displayName} 
@@ -394,14 +394,14 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         {(profile.location || profile.occupation) && (
           <div className="flex flex-wrap items-center gap-2 mb-4 text-[11px] text-white/60">
             {profile.location && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/5">
-                <MapPin className="w-3 h-3 text-white/50" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/50">
+                <MapPin className="w-3 h-3 text-white/40" />
                 {profile.location}
               </span>
             )}
             {profile.occupation && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/5">
-                <Briefcase className="w-3 h-3 text-white/50" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-white/50">
+                <Briefcase className="w-3 h-3 text-white/40" />
                 {profile.occupation}
               </span>
             )}
@@ -412,7 +412,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
         {/* SECTION 2: DISCORD PRESENCE BOX (jefersc/gunslol 1:1)    */}
         {/* ======================================================== */}
         {hasDiscord && profile.discordStatus && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-black/50 border border-white/10 flex items-center gap-3.5 shadow-inner">
+          <div className="mb-4 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3.5 shadow-sm">
             {/* Discord Avatar with Status Indicator */}
             <div className="relative shrink-0">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
@@ -455,7 +455,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
                 rel="noopener noreferrer"
                 onClick={() => onLinkClick && onLinkClick(link.id)}
                 title={link.title}
-                className="w-10 h-10 rounded-xl bg-white/[0.04] hover:bg-white/10 border border-white/[0.08] hover:border-white/20 flex items-center justify-center text-white/80 hover:text-white transition-all duration-200 hover:-translate-y-1 hover:scale-110 active:scale-95 shadow-sm group"
+                className="w-10 h-10 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.15] flex items-center justify-center text-white/70 hover:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-sm group"
               >
                 {getSocialIcon(link.icon)}
               </a>
@@ -473,7 +473,7 @@ export default function ProfileCard({ profile, isPreview = false, onLinkClick })
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => onLinkClick && onLinkClick(link.id)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/10 border border-white/5 hover:border-white/15 transition active:scale-[0.98]"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.05] hover:border-white/[0.12] transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-white/70">
