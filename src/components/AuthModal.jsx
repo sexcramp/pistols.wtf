@@ -279,14 +279,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
           {/* Header: Brand & Close Button */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-7 h-7 flex items-center justify-center shrink-0 overflow-visible">
+              <div className="w-10 h-10 flex items-center justify-center shrink-0 overflow-visible">
                 <img 
                   src="/logo.png" 
                   alt="pistols.wtf" 
-                  className="w-7 h-7 object-contain scale-[1.3] transform-gpu" 
+                  className="w-10 h-10 object-contain scale-[1.35] transform-gpu" 
                 />
               </div>
-              <span className="font-bold text-[18px] text-white tracking-tight ml-2">
+              <span className="font-bold text-[20px] text-white tracking-tight ml-2.5">
                 pistols<span className="text-[#990026]">.</span>wtf
               </span>
             </div>

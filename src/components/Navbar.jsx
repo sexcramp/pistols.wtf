@@ -17,14 +17,14 @@ export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
             onClick={() => onNavigate('home')}
             className="flex items-center cursor-pointer group"
           >
-            <div className="w-8 h-8 flex items-center justify-center shrink-0 overflow-visible">
+            <div className="w-11 h-11 flex items-center justify-center shrink-0 overflow-visible">
               <img 
                 src="/logo.png" 
                 alt="pistols.wtf" 
-                className="w-8 h-8 object-contain scale-[1.3] transform-gpu group-hover:scale-[1.38] transition-transform" 
+                className="w-11 h-11 object-contain scale-[1.35] transform-gpu group-hover:scale-[1.42] transition-transform" 
               />
             </div>
-            <span className="font-bold text-[18px] text-white tracking-tight ml-2">
+            <span className="font-bold text-[20px] text-white tracking-tight ml-2.5">
               pistols<span className="text-[#990026]">.</span>wtf
             </span>
           </div>
@@ -92,14 +92,14 @@ export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
               onClick={() => onNavigate('home')}
               className="flex items-center cursor-pointer"
             >
-              <div className="w-8 h-8 flex items-center justify-center shrink-0 overflow-visible">
+              <div className="w-10 h-10 flex items-center justify-center shrink-0 overflow-visible">
                 <img 
                   src="/logo.png" 
                   alt="pistols.wtf" 
-                  className="w-8 h-8 object-contain scale-[1.3] transform-gpu" 
+                  className="w-10 h-10 object-contain scale-[1.35] transform-gpu" 
                 />
               </div>
-              <span className="font-bold text-[19px] text-white tracking-tight ml-2">
+              <span className="font-bold text-[20px] text-white tracking-tight ml-2.5">
                 pistols<span className="text-[#990026]">.</span>wtf
               </span>
             </div>
@@ -126,14 +126,14 @@ export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
                 }}
                 className="flex items-center cursor-pointer"
               >
-                <div className="w-8 h-8 flex items-center justify-center shrink-0 overflow-visible">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0 overflow-visible">
                   <img 
                     src="/logo.png" 
                     alt="pistols.wtf" 
-                    className="w-8 h-8 object-contain scale-[1.3] transform-gpu" 
+                    className="w-10 h-10 object-contain scale-[1.35] transform-gpu" 
                   />
                 </div>
-                <span className="font-bold text-[19px] text-white tracking-tight ml-2">
+                <span className="font-bold text-[20px] text-white tracking-tight ml-2.5">
                   pistols<span className="text-[#990026]">.</span>wtf
                 </span>
               </div>

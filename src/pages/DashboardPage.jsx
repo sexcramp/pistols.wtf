@@ -52,7 +52,7 @@ import {
 } from '../components/Icons';
 import { getProfileByUsername, saveProfile } from '../utils/storage';
 
-export default function DashboardPage({ initialUsername = 'bloodare', onNavigate }) {
+export default function DashboardPage({ initialUsername = 'aizen', onNavigate }) {
   // Navigation State: Lands in 'overview' by default (as requested!)
   const [activePage, setActivePage] = useState('overview'); // 'overview', 'profile', 'appearance', 'links', 'badges', 'widgets', 'tracks', 'settings', 'templates'
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -234,8 +234,8 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
               {/* Brand Header */}
               <div className="flex items-center justify-between px-2 pt-2 pb-5 border-b border-white/5">
                 <div className="flex items-center gap-2.5">
-                  <img src="/logo.png" alt="pistols.wtf" className="w-6 h-6 object-contain" />
-                  <span className="font-bold text-[18px] text-white tracking-tight">
+                  <img src="/logo.png" alt="pistols.wtf" className="w-9 h-9 object-contain" />
+                  <span className="font-bold text-[20px] text-white tracking-tight">
                     pistols<span className="text-[#990026]">.</span>wtf
                   </span>
                 </div>
@@ -689,24 +689,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   </p>
                 </div>
 
-                <div className="h-[1px] bg-white/[0.06]" />
 
-                {/* Banner */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-white/90 block">Banner</label>
-                  <button
-                    onClick={() => {
-                      const url = prompt('Enter Banner image URL:', profile.bannerUrl || '');
-                      if (url !== null) {
-                        setProfile(prev => ({ ...prev, bannerUrl: url.trim() }));
-                        showToast('Banner updated!');
-                      }
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
-                  >
-                    Change Banner
-                  </button>
-                </div>
 
                 <div className="h-[1px] bg-white/[0.06]" />
 
@@ -1158,7 +1141,6 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                     {[
                       { id: 'default', label: 'Default', icon: Music },
                       { id: 'compact', label: 'Compact', icon: Volume2 },
-                      { id: 'banner', label: 'Banner 💎', icon: Layers },
                       { id: 'vinyl', label: 'Vinyl 💎', icon: RadioTower },
                       { id: 'cover-vinyl', label: 'Cover Vinyl 💎', icon: Tv },
                     ].map(layout => {
@@ -1311,14 +1293,17 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
             onClick={() => setPreviewOpen(false)}
-            className="fixed inset-0 bg-black/85 backdrop-blur-md"
-          />
+            className="fixed inset-0 bg-cover bg-center cursor-pointer"
+            style={{ backgroundImage: `url(${profile.wallpaperUrl || '/wallpaper.jpg'})` }}
+          >
+            <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
+          </div>
           <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-in zoom-in-95 duration-200">
             <div className="w-full flex items-center justify-between mb-3 px-2">
-              <span className="text-xs font-semibold text-white/70">Card Live Preview</span>
+              <span className="text-xs font-semibold text-white/90">Card Live Preview</span>
               <button
                 onClick={() => setPreviewOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white"
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"
               >
                 <X className="w-4 h-4" />
               </button>
