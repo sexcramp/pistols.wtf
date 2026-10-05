@@ -16,7 +16,6 @@ import {
   Music, 
   Settings, 
   Folder, 
-  Dices, 
   HelpCircle, 
   LogOut, 
   Plus, 
@@ -352,16 +351,6 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   <button
                     onClick={() => {
                       setSidebarOpen(false);
-                      showToast('Casino game rewards coming soon!');
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
-                  >
-                    <Dices className="w-4 h-4 text-[#990026]" />
-                    <span>Casino</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSidebarOpen(false);
                       showToast('Help center: pistols.wtf/help');
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/5 transition"
@@ -445,7 +434,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
               </div>
             </div>
 
-            {/* 4. Limited Badges Card (Orange Theme Accent) */}
+            {/* 4. Limited Badges Card */}
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-4">
               <div className="flex items-center gap-2">
                 <Tag className="w-4 h-4 text-[#990026]" />
@@ -491,7 +480,7 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
               </div>
             </div>
 
-            {/* 5. Join Discord & Casino Card */}
+            {/* 5. Join Discord Card */}
             <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
               <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#5865F2] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#5865F2]/25">
@@ -503,42 +492,10 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                 </div>
               </div>
 
-              <button className="w-full py-3 px-4 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition">
+              <button className="w-full py-3 px-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752c4] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#5865F2]/25 active:scale-[0.98] transition">
                 <DiscordIcon className="w-4 h-4 text-white" />
                 <span>Connected to Discord</span>
               </button>
-
-              <button 
-                onClick={() => showToast('Casino rewards coming soon!')}
-                className="w-full py-3 px-4 rounded-2xl bg-[#C88A1A] hover:bg-[#b07812] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition"
-              >
-                <Dices className="w-4 h-4 text-white" />
-                <span>Go to Casino</span>
-              </button>
-            </div>
-
-            {/* 6. Casino Stats Card (Screenshot 220541 / feds.lol 1:1) */}
-            <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
-              <div className="flex items-center gap-2">
-                <Dices className="w-4 h-4 text-[#990026]" />
-                <h3 className="text-sm font-bold text-white">Casino Stats</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-                  <p className="text-lg font-bold text-white">0</p>
-                  <p className="text-[11px] text-white/40">Current Streak</p>
-                </div>
-                <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5">
-                  <p className="text-lg font-bold text-white">0</p>
-                  <p className="text-[11px] text-white/40">Total Winnings</p>
-                </div>
-              </div>
-              <div className="pt-1 text-[11px] text-white/40 flex items-center justify-between">
-                <span>Wheel 0.0% <strong className="text-white/60">+0</strong></span>
-                <span>Slot Machine 0.0% <strong className="text-white/60">+0</strong></span>
-                <span>RPS 0.0% <strong className="text-white/60">+0</strong></span>
-              </div>
-              <p className="text-[11px] text-white/30 text-center pt-1">No positive profit yet</p>
             </div>
 
             {/* 6. Giveaways Card */}
@@ -1311,14 +1268,6 @@ export default function DashboardPage({ initialUsername = 'bloodare', onNavigate
                   <p className="text-[11px] text-white/40">pistols.wtf/{profile.username}</p>
                 </div>
                 <span className="text-[10px] px-2 py-1 rounded bg-[#990026]/20 text-[#990026] font-semibold">Active</span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-white">Theme Accent</p>
-                  <p className="text-[11px] text-white/40">#990026 (Crimson Red)</p>
-                </div>
-                <div className="w-5 h-5 rounded-full bg-[#990026] border border-white/20 shadow-md" />
               </div>
             </div>
           </div>
