@@ -56,6 +56,15 @@ export const GunsVerifiedIcon = ({ className = "w-5 h-5", color = "#1d9bf0" }) =
   </svg>
 );
 
+// 4. Spiderweb / Limited Badge
+export const SpiderwebIcon = ({ className = "w-4 h-4", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
+    <circle cx="12" cy="12" r="4" strokeWidth="1.4" />
+    <circle cx="12" cy="12" r="8" strokeWidth="1.4" />
+  </svg>
+);
+
 export default function ProfileCard({ profile = {}, isPreview = false, onLinkClick }) {
   const [showUidTooltip, setShowUidTooltip] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState(null);

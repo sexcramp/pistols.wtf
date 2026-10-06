@@ -5,32 +5,39 @@ import DashboardPage from './pages/DashboardPage';
 import BioPage from './pages/BioPage';
 import AuthModal from './components/AuthModal';
 
+// Synchronously parse initial URL route to prevent 1-second flash of landing page
+const getInitialRoute = () => {
+  if (typeof window === 'undefined') return { page: 'home', username: 'ares' };
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  if (!path || path === '') {
+    return { page: 'home', username: 'ares' };
+  } else if (path === 'dashboard') {
+    return { page: 'dashboard', username: 'ares' };
+  } else {
+    return { page: 'bio', username: path.replace('@', '') };
+  }
+};
+
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'dashboard', 'bio'
-  const [activeUsername, setActiveUsername] = useState('ares');
+  const initialRoute = getInitialRoute();
+  const [currentPage, setCurrentPage] = useState(initialRoute.page); // Synchronous initial state
+  const [activeUsername, setActiveUsername] = useState(initialRoute.username);
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: 'register',
     prefilledUsername: '',
   });
 
-  // Handle URL route parsing on initial load and back/forward navigation
+  // Handle URL route parsing on back/forward navigation
   const parseRoute = () => {
-    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-    
-    if (!path || path === '') {
-      setCurrentPage('home');
-    } else if (path === 'dashboard') {
-      setCurrentPage('dashboard');
-    } else {
-      // Any other path is treated as a username bio profile (e.g. /ares)
-      setActiveUsername(path.replace('@', ''));
-      setCurrentPage('bio');
+    const route = getInitialRoute();
+    setCurrentPage(route.page);
+    if (route.page === 'bio') {
+      setActiveUsername(route.username);
     }
   };
 
   useEffect(() => {
-    parseRoute();
     const handlePopState = () => parseRoute();
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -94,13 +101,13 @@ export default function App() {
         )}
       </main>
 
-      {/* Register / Login Modal (Screenshot 1:1) */}
+      {/* Register / Login Modal */}
       <AuthModal
         isOpen={authModal.isOpen}
         onClose={closeAuth}
+        onSuccess={handleAuthSuccess}
         initialMode={authModal.mode}
         prefilledUsername={authModal.prefilledUsername}
-        onSuccess={handleAuthSuccess}
       />
     </div>
   );

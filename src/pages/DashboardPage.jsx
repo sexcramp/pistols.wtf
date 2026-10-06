@@ -39,7 +39,7 @@ import {
   TrendingUp,
   PartyPopper
 } from 'lucide-react';
-import ProfileCard, { GunsPremiumDiamondIcon, GunsOwnerCrownIcon, GunsVerifiedIcon } from '../components/ProfileCard';
+import ProfileCard, { GunsPremiumDiamondIcon, GunsOwnerCrownIcon, GunsVerifiedIcon, SpiderwebIcon } from '../components/ProfileCard';
 import { 
   DiscordIcon, 
   SpotifyIcon, 
