@@ -7,7 +7,7 @@ import AuthModal from './components/AuthModal';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home'); // 'home', 'dashboard', 'bio'
-  const [activeUsername, setActiveUsername] = useState('aizen');
+  const [activeUsername, setActiveUsername] = useState('ares');
   const [authModal, setAuthModal] = useState({
     isOpen: false,
     mode: 'register',
@@ -23,7 +23,7 @@ export default function App() {
     } else if (path === 'dashboard') {
       setCurrentPage('dashboard');
     } else {
-      // Any other path is treated as a username bio profile (e.g. /aizen)
+      // Any other path is treated as a username bio profile (e.g. /ares)
       setActiveUsername(path.replace('@', ''));
       setCurrentPage('bio');
     }
@@ -36,7 +36,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (page, username = 'aizen') => {
+  const navigate = (page, username = 'ares') => {
     setCurrentPage(page);
     if (page === 'home') {
       window.history.pushState({}, '', '/');

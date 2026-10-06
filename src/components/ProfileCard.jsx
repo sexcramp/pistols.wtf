@@ -68,7 +68,17 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
   const isMonochromeBadges = Boolean(theme.monochromeBadges);
   const monoColor = theme.monochromeBadgeColor || '#ffffff';
 
-  const avatarUrl = profile.avatarUrl || '/avatar.jpg';
+  // Only show avatar if user explicitly has an avatar set
+  const hasAvatar = Boolean(profile.avatarUrl && profile.avatarUrl.trim());
+  const avatarUrl = profile.avatarUrl;
+
+  // Only show badges if user has badges array with items (no fallback for blank users)
+  const userBadges = Array.isArray(profile.badges) ? profile.badges : [];
+  const hasBadges = userBadges.length > 0;
+
+  // Only show bio if user has non-empty bio
+  const hasBio = Boolean(profile.bio && profile.bio.trim());
+
   const hasLinks = Boolean(profile.links && profile.links.length > 0);
   const hasDiscord = Boolean(profile.discordStatus);
 
@@ -139,10 +149,6 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
     }
   };
 
-  // Owner profile default badges: ONLY owner badge and premium badge as requested!
-  const defaultBadges = ['owner', 'premium'];
-  const userBadges = (profile.badges && profile.badges.length > 0) ? profile.badges : defaultBadges;
-
   // Render individual badge item matching guns.lol standards with full-color vs monochrome support
   const renderBadgeItem = (badge, idx) => {
     let badgeName = '';
@@ -151,24 +157,24 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
     if (badge === 'owner' || badge === 'crown') {
       badgeName = 'Owner';
       if (isMonochromeBadges) {
-        badgeEl = <GunsOwnerCrownIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+        badgeEl = <GunsOwnerCrownIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" color={monoColor} />;
       } else {
         badgeEl = (
           <img 
             src="/badges/owner.png" 
             alt="Owner" 
-            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 object-contain drop-shadow-[0_0_8px_rgba(245,166,35,0.7)] select-none pointer-events-none" 
+            className="w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain drop-shadow-[0_0_8px_rgba(245,166,35,0.7)] select-none pointer-events-none" 
           />
         );
       }
     } else if (badge === 'premium' || badge === 'diamond') {
       badgeName = 'Premium';
       if (isMonochromeBadges) {
-        badgeEl = <GunsPremiumDiamondIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+        badgeEl = <GunsPremiumDiamondIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" color={monoColor} />;
       } else {
         badgeEl = (
           <GunsPremiumDiamondIcon 
-            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.7)] select-none" 
+            className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.7)] select-none" 
             color="#00f0ff"
           />
         );
@@ -176,13 +182,13 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
     } else if (badge === 'verified') {
       badgeName = 'Verified';
       if (isMonochromeBadges) {
-        badgeEl = <GunsVerifiedIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+        badgeEl = <GunsVerifiedIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5" color={monoColor} />;
       } else {
         badgeEl = (
           <img 
             src="/badges/verified.png" 
             alt="Verified" 
-            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 object-contain drop-shadow-[0_0_8px_rgba(29,155,240,0.7)] select-none pointer-events-none" 
+            className="w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain drop-shadow-[0_0_8px_rgba(29,155,240,0.7)] select-none pointer-events-none" 
           />
         );
       }
@@ -208,33 +214,35 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
   };
 
   return (
-    <div className="relative pt-16 sm:pt-20 md:pt-22 select-none w-full flex justify-center">
+    <div className={`relative select-none w-full flex justify-center ${hasAvatar ? 'pt-12 sm:pt-13 md:pt-14' : 'pt-0'}`}>
       {/* ======================================================== */}
-      {/* 1. FLOATING AVATAR (ENLARGED, ZERO BORDERLINE)           */}
+      {/* 1. FLOATING AVATAR (ONLY IF USER HAS AVATAR SET)         */}
       {/* ======================================================== */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-        <div className="relative pointer-events-auto">
-          {/* Pure clean circular avatar without any border or borderline as requested */}
-          <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-[0_16px_45px_rgba(0,0,0,0.7)]">
-            <img 
-              src={avatarUrl} 
-              alt={profile.displayName || profile.username || 'aizen'} 
-              className="w-full h-full object-cover rounded-full select-none"
-            />
+      {hasAvatar && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+          <div className="relative pointer-events-auto">
+            {/* Perfectly sized, zero borderline floating avatar */}
+            <div className="w-24 h-24 sm:w-26 sm:h-26 md:w-28 md:h-28 rounded-full overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.7)]">
+              <img 
+                src={avatarUrl} 
+                alt={profile.displayName || profile.username || 'user'} 
+                className="w-full h-full object-cover rounded-full select-none"
+              />
+            </div>
+
+            {/* Optional Discord status indicator if status is active */}
+            {hasDiscord && profile.discordStatus && (
+              <div 
+                className={`absolute bottom-0 right-1 z-40 w-4 h-4 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus?.status || 'online')}`}
+                title={`Status: ${profile.discordStatus?.status || 'online'}`}
+              />
+            )}
           </div>
-
-          {/* Optional Discord status indicator if status is active */}
-          {hasDiscord && profile.discordStatus && (
-            <div 
-              className={`absolute bottom-1 right-2 z-40 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus?.status || 'online')}`}
-              title={`Status: ${profile.discordStatus?.status || 'online'}`}
-            />
-          )}
         </div>
-      </div>
+      )}
 
       {/* ======================================================== */}
-      {/* 2. FROSTED GLASS BIOCARD (PERFECT DESKTOP & MOBILE RATIO)*/}
+      {/* 2. FROSTED GLASS BIOCARD                                 */}
       {/* ======================================================== */}
       <div 
         ref={cardRef}
@@ -248,14 +256,16 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
           borderColor: 'rgba(255, 255, 255, 0.08)',
           boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
         }}
-        className="w-[92vw] max-w-[390px] sm:max-w-[460px] md:max-w-[520px] lg:max-w-[550px] pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-10 md:pb-12 px-6 sm:px-10 md:px-12 border relative overflow-hidden transition-all duration-300 text-white rounded-[36px] sm:rounded-[42px] md:rounded-[48px]"
+        className={`w-[92vw] max-w-[380px] sm:max-w-[440px] md:max-w-[480px] ${
+          hasAvatar ? 'pt-16 sm:pt-18 md:pt-20' : 'pt-8 sm:pt-9 md:pt-10'
+        } pb-7 sm:pb-8 md:pb-9 px-6 sm:px-9 md:px-10 border relative overflow-hidden transition-all duration-300 text-white rounded-[32px] sm:rounded-[38px] md:rounded-[42px]`}
       >
-        {/* Top Right: Views Counter Capsule Pill (Eye + 3.7K) */}
-        <div className="absolute top-5 right-5 sm:top-6 sm:right-6 md:top-7 md:right-7 z-20">
-          <div className="flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08] shadow-sm">
-            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/70" />
+        {/* Top Right: Views Counter Capsule Pill */}
+        <div className="absolute top-5 right-5 sm:top-6 sm:right-6 z-20">
+          <div className="flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08] shadow-sm">
+            <Eye className="w-3.5 h-3.5 text-white/70" />
             <span className="text-xs sm:text-[13px] font-semibold text-white/90 font-mono tracking-wide">
-              {formatViews(profile.views ?? 3700)}
+              {formatViews(profile.views ?? 0)}
             </span>
           </div>
         </div>
@@ -263,7 +273,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
         {/* ======================================================== */}
         {/* 3. CENTERED USERNAME + UID TOOLTIP                       */}
         {/* ======================================================== */}
-        <div className="flex flex-col items-center justify-center mt-2 relative">
+        <div className="flex flex-col items-center justify-center mt-1 relative">
           {showUidTooltip && (
             <div className="absolute -top-8 px-2.5 py-0.5 rounded-full bg-black/95 border border-white/10 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150 z-30">
               UID {profile.uid || '1'}
@@ -278,47 +288,51 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
               fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif',
               textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)'
             }}
-            className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-bold text-white tracking-tight leading-none cursor-pointer hover:text-white/90 transition-colors"
+            className="text-[26px] sm:text-[30px] md:text-[34px] font-bold text-white tracking-tight leading-none cursor-pointer hover:text-white/90 transition-colors"
           >
-            {profile.displayName || profile.username || 'aizen'}
+            {profile.displayName || profile.username || 'user'}
           </h1>
 
           {/* ======================================================== */}
-          {/* 4. GAUSSIAN BLURRED BADGES DOCK (AUTHENTIC GUNS.LOL)     */}
+          {/* 4. GAUSSIAN BLURRED BADGES DOCK (ONLY IF BADGES EXIST)   */}
           {/* ======================================================== */}
-          <div className="mt-4 sm:mt-4.5 flex justify-center">
-            <div className="inline-flex items-center gap-3.5 sm:gap-4 md:gap-5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-              {userBadges.map((badge, idx) => renderBadgeItem(badge, idx))}
+          {hasBadges && (
+            <div className="mt-3.5 sm:mt-4 flex justify-center">
+              <div className="inline-flex items-center gap-3 sm:gap-4 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+                {userBadges.map((badge, idx) => renderBadgeItem(badge, idx))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* ======================================================== */}
-          {/* 5. SUBTEXT / BIO (Screenshot: PRODIGY)                  */}
+          {/* 5. SUBTEXT / BIO (ONLY IF USER HAS BIO SET)              */}
           {/* ======================================================== */}
-          <div className="mt-3.5 sm:mt-4 text-center">
-            <p 
-              style={{
-                fontFamily: 'Cormorant Garamond, "Times New Roman", serif',
-                letterSpacing: '0.28em',
-              }}
-              className="text-[13px] sm:text-[15px] md:text-[16px] lg:text-[17px] uppercase text-white/90 drop-shadow select-none font-normal"
-            >
-              {profile.bio || 'PRODIGY'}
-            </p>
-          </div>
+          {hasBio && (
+            <div className="mt-3 sm:mt-3.5 text-center">
+              <p 
+                style={{
+                  fontFamily: 'Cormorant Garamond, "Times New Roman", serif',
+                  letterSpacing: '0.28em',
+                }}
+                className="text-[13px] sm:text-[14px] md:text-[15px] uppercase text-white/90 drop-shadow select-none font-normal"
+              >
+                {profile.bio}
+              </p>
+            </div>
+          )}
 
           {/* Location / Occupation (if present) */}
           {(profile.location || profile.occupation) && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-3.5 text-xs text-white/60">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-white/60">
               {profile.location && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
-                  <MapPin className="w-3.5 h-3.5 text-white/40" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
+                  <MapPin className="w-3 h-3 text-white/40" />
                   {profile.location}
                 </span>
               )}
               {profile.occupation && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
-                  <Briefcase className="w-3.5 h-3.5 text-white/40" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
+                  <Briefcase className="w-3 h-3 text-white/40" />
                   {profile.occupation}
                 </span>
               )}
@@ -327,29 +341,29 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
           {/* Optional Discord Presence box (if configured) */}
           {hasDiscord && profile.discordStatus && (
-            <div className="w-full mt-5 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3.5 shadow-sm text-left">
+            <div className="w-full mt-4 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3 shadow-sm text-left">
               <div className="relative shrink-0">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
-                  <img 
-                    src={avatarUrl} 
-                    alt="Discord" 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Discord" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-white/10" />
+                  )}
                 </div>
                 <div 
-                  className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus.status || 'online')}`}
+                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus.status || 'online')}`}
                 />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
                   <p className="text-xs sm:text-sm font-semibold text-white tracking-wide truncate">
-                    {profile.discordStatus.username || profile.username || 'aizen'}
+                    {profile.discordStatus.username || profile.username}
                   </p>
                   <DiscordIcon className="w-4 h-4 text-[#5865F2] shrink-0" />
                 </div>
                 <p className="text-xs text-white/50 italic truncate mt-0.5">
-                  {profile.discordStatus.activity || 'Playing Valorant'}
+                  {profile.discordStatus.activity || 'Online'}
                 </p>
               </div>
             </div>
@@ -357,7 +371,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
           {/* Optional Social Links (if configured) */}
           {hasLinks && (
-            <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 pt-4 border-t border-white/[0.06] w-full flex-wrap">
+            <div className="flex items-center justify-center gap-3 sm:gap-3.5 mt-4 pt-3.5 border-t border-white/[0.06] w-full flex-wrap">
               {(profile.links || []).map((link) => (
                 <a
                   key={link.id}
@@ -366,7 +380,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
                   rel="noopener noreferrer"
                   onClick={() => onLinkClick && onLinkClick(link.id)}
                   title={link.title}
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-white/[0.15] flex items-center justify-center text-white/70 hover:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-sm"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-white/[0.15] flex items-center justify-center text-white/70 hover:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   {getSocialIcon(link.icon)}
                 </a>

@@ -52,7 +52,7 @@ import {
 } from '../components/Icons';
 import { getProfileByUsername, saveProfile } from '../utils/storage';
 
-export default function DashboardPage({ initialUsername = 'aizen', onNavigate }) {
+export default function DashboardPage({ initialUsername = 'ares', onNavigate }) {
   // Navigation State: Lands in 'overview' by default (as requested!)
   const [activePage, setActivePage] = useState('overview'); // 'overview', 'profile', 'appearance', 'links', 'badges', 'widgets', 'tracks', 'settings', 'templates'
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -617,18 +617,69 @@ export default function DashboardPage({ initialUsername = 'aizen', onNavigate })
                       <User className="w-8 h-8 text-white/40" />
                     )}
                   </div>
-                  <button
-                    onClick={() => {
-                      const url = prompt('Enter your Avatar image URL:', profile.avatarUrl || '');
-                      if (url !== null) {
-                        setProfile(prev => ({ ...prev, avatarUrl: url.trim() }));
-                        showToast('Avatar updated!');
-                      }
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
-                  >
-                    Change Avatar
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const url = prompt('Enter your Avatar image URL:', profile.avatarUrl || '');
+                        if (url !== null) {
+                          setProfile(prev => ({ ...prev, avatarUrl: url.trim() }));
+                          showToast('Avatar updated!');
+                        }
+                      }}
+                      className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
+                    >
+                      Change Avatar
+                    </button>
+                    {profile.avatarUrl && (
+                      <button
+                        onClick={() => {
+                          setProfile(prev => ({ ...prev, avatarUrl: '' }));
+                          showToast('Avatar removed');
+                        }}
+                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Wallpaper / Background Section */}
+                  <div className="pt-3 space-y-2 border-t border-white/[0.06]">
+                    <label className="text-xs font-semibold text-white/90 block">Wallpaper / Background</label>
+                    <p className="text-[11px] text-white/50">Leave empty for a clean solid black background.</p>
+                    <div className="w-full h-24 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden relative">
+                      {profile.wallpaperUrl ? (
+                        <img src={profile.wallpaperUrl} alt="wallpaper" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs text-white/30 font-mono">Solid Black (Default)</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          const url = prompt('Enter your Wallpaper image URL:', profile.wallpaperUrl || '');
+                          if (url !== null) {
+                            setProfile(prev => ({ ...prev, wallpaperUrl: url.trim() }));
+                            showToast('Wallpaper updated!');
+                          }
+                        }}
+                        className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
+                      >
+                        Change Wallpaper
+                      </button>
+                      {profile.wallpaperUrl && (
+                        <button
+                          onClick={() => {
+                            setProfile(prev => ({ ...prev, wallpaperUrl: '' }));
+                            showToast('Wallpaper removed (Solid black)');
+                          }}
+                          className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition"
+                        >
+                          Reset to Black
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
                   {/* Avatar Shape */}
                   <div className="pt-2">
@@ -1391,10 +1442,10 @@ export default function DashboardPage({ initialUsername = 'aizen', onNavigate })
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
             onClick={() => setPreviewOpen(false)}
-            className="fixed inset-0 bg-cover bg-center cursor-pointer"
-            style={{ backgroundImage: `url(${profile.wallpaperUrl || '/wallpaper.jpg'})` }}
+            className="fixed inset-0 bg-[#060608] bg-cover bg-center cursor-pointer"
+            style={profile.wallpaperUrl ? { backgroundImage: `url(${profile.wallpaperUrl})` } : {}}
           >
-            <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
+            {profile.wallpaperUrl && <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" />}
           </div>
           <div className="relative z-10 w-full max-w-sm flex flex-col items-center animate-in zoom-in-95 duration-200">
             <div className="w-full flex items-center justify-between mb-3 px-2">

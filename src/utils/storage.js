@@ -1,14 +1,15 @@
 // Local storage & profile state manager for pistols.wtf
 
-const DEFAULT_PROFILE = {
-  username: 'aizen',
-  displayName: 'aizen',
+// Showcase testing profile (configured for /ares and /aizen)
+export const SHOWCASE_PROFILE = {
+  username: 'ares',
+  displayName: 'ares',
   bio: 'PRODIGY',
   avatarUrl: '/avatar.jpg',
   wallpaperUrl: '/wallpaper.jpg',
   uid: 1,
   views: 3700,
-  badges: ['owner', 'premium'], // Exactly as requested: owner badge and premium badge only
+  badges: ['owner', 'premium'],
   discordId: '',
   discordStatus: null,
   theme: {
@@ -17,8 +18,8 @@ const DEFAULT_PROFILE = {
     cardBorder: 'rgba(255, 255, 255, 0.08)',
     cardBlur: 28,
     cardRadius: '42px',
-    tilt: true, // Toggleable moving card
-    monochromeBadges: false, // Toggleable single-color badges
+    tilt: true,
+    monochromeBadges: false,
     monochromeBadgeColor: '#ffffff',
   },
   audio: {
@@ -32,20 +33,52 @@ const DEFAULT_PROFILE = {
   links: []
 };
 
+// Factory for a clean, brand new claimed profile with zero placeholder assets
+export const createBlankProfile = (username) => {
+  const clean = username?.toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'user';
+  return {
+    username: clean,
+    displayName: clean,
+    bio: '',
+    avatarUrl: '', // NO avatar until user sets one
+    wallpaperUrl: '', // Solid black background by default
+    uid: Math.floor(Math.random() * 899) + 100,
+    views: 0,
+    badges: [], // NO badges until user adds one
+    discordId: '',
+    discordStatus: null,
+    theme: {
+      primaryColor: '#990026',
+      cardBackground: 'rgba(0, 0, 0, 0.45)',
+      cardBorder: 'rgba(255, 255, 255, 0.08)',
+      cardBlur: 28,
+      cardRadius: '38px',
+      tilt: true,
+      monochromeBadges: false,
+      monochromeBadgeColor: '#ffffff',
+    },
+    audio: {
+      enabled: false,
+      url: '',
+      title: '',
+      artist: '',
+      volume: 0.6,
+    },
+    links: []
+  };
+};
+
 export const getStoredProfiles = () => {
   try {
     const raw = localStorage.getItem('pistols_wtf_profiles');
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Ensure aizen default has updated badges & theme settings
+      // Ensure testing profiles are available
+      if (!parsed.ares) {
+        parsed.ares = { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' };
+      }
       if (!parsed.aizen) {
-        parsed.aizen = { ...DEFAULT_PROFILE };
-      } else {
-        if (!parsed.aizen.badges || parsed.aizen.badges.length > 2) {
-          parsed.aizen.badges = ['owner', 'premium'];
-        }
-        parsed.aizen.avatarUrl = parsed.aizen.avatarUrl || '/avatar.jpg';
-        parsed.aizen.wallpaperUrl = parsed.aizen.wallpaperUrl || '/wallpaper.jpg';
+        parsed.aizen = { ...SHOWCASE_PROFILE, username: 'aizen', displayName: 'aizen' };
       }
       return parsed;
     }
@@ -53,42 +86,44 @@ export const getStoredProfiles = () => {
     console.error('Error reading profiles from localStorage', e);
   }
   return { 
-    aizen: { ...DEFAULT_PROFILE },
-    ares: { ...DEFAULT_PROFILE, username: 'ares', displayName: 'ares' }
+    ares: { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' },
+    aizen: { ...SHOWCASE_PROFILE, username: 'aizen', displayName: 'aizen' }
   };
 };
 
 export const getProfileByUsername = (username) => {
   const profiles = getStoredProfiles();
-  const cleanUsername = username?.toLowerCase().replace('@', '') || 'aizen';
+  const cleanUsername = username?.toLowerCase().replace('@', '') || 'ares';
   
   if (profiles[cleanUsername]) {
     return profiles[cleanUsername];
   }
 
+  // Pre-configured showcase profile for /ares and /aizen
   if (cleanUsername === 'ares' || cleanUsername === 'bloodare') {
     return {
-      ...DEFAULT_PROFILE,
-      username: cleanUsername,
-      displayName: cleanUsername,
+      ...SHOWCASE_PROFILE,
+      username: 'ares',
+      displayName: 'ares',
+    };
+  }
+
+  if (cleanUsername === 'aizen') {
+    return {
+      ...SHOWCASE_PROFILE,
+      username: 'aizen',
+      displayName: 'aizen',
     };
   }
   
-  // Return default profile configured with requested username
-  return {
-    ...DEFAULT_PROFILE,
-    username: cleanUsername,
-    displayName: cleanUsername,
-    bio: 'PRODIGY',
-    views: 3700,
-    uid: Math.floor(Math.random() * 899) + 100,
-  };
+  // For any new claimed or unconfigured user: Return pure blank profile
+  return createBlankProfile(cleanUsername);
 };
 
 export const saveProfile = (profile) => {
   try {
     const profiles = getStoredProfiles();
-    const cleanUsername = (profile.username || 'aizen').toLowerCase().replace('@', '');
+    const cleanUsername = (profile.username || 'ares').toLowerCase().replace('@', '');
     profiles[cleanUsername] = {
       ...profile,
       username: cleanUsername,
@@ -105,19 +140,19 @@ export const saveProfile = (profile) => {
 
 export const getCurrentUser = () => {
   try {
-    const username = localStorage.getItem('pistols_wtf_current_user') || 'aizen';
+    const username = localStorage.getItem('pistols_wtf_current_user') || 'ares';
     return getProfileByUsername(username);
   } catch (e) {
-    return DEFAULT_PROFILE;
+    return { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' };
   }
 };
 
 export const incrementProfileViews = (username) => {
   try {
     const profiles = getStoredProfiles();
-    const cleanUsername = (username || 'aizen').toLowerCase().replace('@', '');
+    const cleanUsername = (username || 'ares').toLowerCase().replace('@', '');
     if (profiles[cleanUsername]) {
-      profiles[cleanUsername].views = (profiles[cleanUsername].views || 3700) + 1;
+      profiles[cleanUsername].views = (profiles[cleanUsername].views || 0) + 1;
       localStorage.setItem('pistols_wtf_profiles', JSON.stringify(profiles));
     }
   } catch (e) {
