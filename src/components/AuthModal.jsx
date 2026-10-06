@@ -8,7 +8,7 @@ import {
   EyeIcon, 
   EyeOffIcon 
 } from './Icons';
-import { getProfileByUsername, saveProfile } from '../utils/storage';
+import { getProfileByUsername, saveProfile, createBlankProfile } from '../utils/storage';
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'register', prefilledUsername = '', onSuccess }) {
   const [mode, setMode] = useState(initialMode); // 'register' or 'login'
@@ -39,14 +39,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
   // Complete Login / Register Helper
   const completeAuth = (finalUsername, userEmail = '', extraData = {}) => {
     const cleanUsername = (finalUsername || username || 'ares').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    const existing = getProfileByUsername(cleanUsername);
+    let profileData = getProfileByUsername(cleanUsername);
+    if (!profileData) {
+      // Pure blank profile for freshly claimed user with zero placeholder assets
+      profileData = createBlankProfile(cleanUsername);
+    }
     const updated = {
-      ...existing,
+      ...profileData,
       username: cleanUsername,
-      displayName: cleanUsername.charAt(0).toUpperCase() + cleanUsername.slice(1),
+      displayName: cleanUsername,
       email: userEmail || email || `${cleanUsername}@gmail.com`,
       ...extraData,
     };
+    // Ensure avatar is strictly empty unless user sets one
+    if (!updated.avatarUrl) {
+      updated.avatarUrl = '';
+    }
     saveProfile(updated);
 
     setShowGooglePicker(false);
@@ -87,11 +95,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
   };
 
   // Select Google Account
-  const handleSelectGoogleAccount = (selectedEmail, selectedName, avatarUrl) => {
+  const handleSelectGoogleAccount = (selectedEmail, selectedName) => {
     const defaultHandle = username || selectedEmail.split('@')[0].replace(/[^a-z0-9_-]/g, '');
     completeAuth(defaultHandle, selectedEmail, {
-      displayName: selectedName,
-      avatarUrl: avatarUrl || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80`,
+      displayName: defaultHandle,
+      avatarUrl: '', // Zero random avatar
     });
   };
 
@@ -100,14 +108,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
     const tag = discordUsername || username || 'ares';
     const cleanHandle = username || tag.toLowerCase().replace(/[^a-z0-9_-]/g, '');
     completeAuth(cleanHandle, `${cleanHandle}@discord.user`, {
-      displayName: tag,
-      discordId: '712345678901234567',
-      discordStatus: {
-        status: 'online',
-        activity: 'pistols.wtf ✦ sync',
-        details: 'Member of Support Server',
-        state: `pistols.wtf/${cleanHandle}`
-      }
+      displayName: cleanHandle,
+      avatarUrl: '', // Zero random avatar
     });
   };
 
@@ -149,7 +151,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'register', p
           <div className="space-y-2">
             {/* Suggested / Device Accounts */}
             <button
-              onClick={() => handleSelectGoogleAccount(`${username || 'user'}@gmail.com`, username ? username.toUpperCase() : 'Google User', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80')}
+              onClick={() => handleSelectGoogleAccount(`${username || 'user'}@gmail.com`, username ? username : 'Google User')}
               className="w-full p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 flex items-center gap-3 transition text-left group"
             >
               <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#990026] to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">

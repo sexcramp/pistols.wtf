@@ -1,11 +1,11 @@
 // Local storage & profile state manager for pistols.wtf
 
-// Showcase testing profile (configured for /ares and /aizen)
+// Showcase testing profile (configured only for /ares)
 export const SHOWCASE_PROFILE = {
   username: 'ares',
   displayName: 'ares',
   bio: 'PRODIGY',
-  avatarUrl: '/avatar.jpg',
+  avatarUrl: '', // Zero random dude PFP
   wallpaperUrl: '/wallpaper.jpg',
   uid: 1,
   views: 3700,
@@ -39,12 +39,12 @@ export const createBlankProfile = (username) => {
   return {
     username: clean,
     displayName: clean,
-    bio: '',
-    avatarUrl: '', // NO avatar until user sets one
+    bio: '', // NO description
+    avatarUrl: '', // NO avatar
     wallpaperUrl: '', // Solid black background by default
     uid: Math.floor(Math.random() * 899) + 100,
     views: 0,
-    badges: [], // NO badges until user adds one
+    badges: [], // NO badges
     discordId: '',
     discordStatus: null,
     theme: {
@@ -64,7 +64,7 @@ export const createBlankProfile = (username) => {
       artist: '',
       volume: 0.6,
     },
-    links: []
+    links: [] // NO links
   };
 };
 
@@ -73,12 +73,11 @@ export const getStoredProfiles = () => {
     const raw = localStorage.getItem('pistols_wtf_profiles');
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Ensure testing profiles are available
+      // Ensure showcase profile /ares exists and has no old dude avatar
       if (!parsed.ares) {
         parsed.ares = { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' };
-      }
-      if (!parsed.aizen) {
-        parsed.aizen = { ...SHOWCASE_PROFILE, username: 'aizen', displayName: 'aizen' };
+      } else if (parsed.ares.avatarUrl === '/avatar.jpg' || parsed.ares.avatarUrl?.includes('unsplash')) {
+        parsed.ares.avatarUrl = '';
       }
       return parsed;
     }
@@ -86,21 +85,31 @@ export const getStoredProfiles = () => {
     console.error('Error reading profiles from localStorage', e);
   }
   return { 
-    ares: { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' },
-    aizen: { ...SHOWCASE_PROFILE, username: 'aizen', displayName: 'aizen' }
+    ares: { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' }
   };
 };
 
-export const getProfileByUsername = (username) => {
+export const isUsernameClaimed = (username) => {
+  if (!username) return false;
+  const clean = username.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  if (!clean) return false;
+  if (clean === 'ares') return true;
   const profiles = getStoredProfiles();
-  const cleanUsername = username?.toLowerCase().replace('@', '') || 'ares';
-  
+  return Boolean(profiles[clean]);
+};
+
+export const getProfileByUsername = (username) => {
+  if (!username) return null;
+  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+  if (!cleanUsername) return null;
+
+  const profiles = getStoredProfiles();
   if (profiles[cleanUsername]) {
     return profiles[cleanUsername];
   }
 
-  // Pre-configured showcase profile for /ares and /aizen
-  if (cleanUsername === 'ares' || cleanUsername === 'bloodare') {
+  // Pre-configured showcase profile only for /ares
+  if (cleanUsername === 'ares') {
     return {
       ...SHOWCASE_PROFILE,
       username: 'ares',
@@ -108,16 +117,8 @@ export const getProfileByUsername = (username) => {
     };
   }
 
-  if (cleanUsername === 'aizen') {
-    return {
-      ...SHOWCASE_PROFILE,
-      username: 'aizen',
-      displayName: 'aizen',
-    };
-  }
-  
-  // For any new claimed or unconfigured user: Return pure blank profile
-  return createBlankProfile(cleanUsername);
+  // Any other username is NOT claimed (returns null)
+  return null;
 };
 
 export const saveProfile = (profile) => {

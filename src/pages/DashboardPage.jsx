@@ -50,7 +50,7 @@ import {
   SoundcloudIcon,
   LinkChainIcon 
 } from '../components/Icons';
-import { getProfileByUsername, saveProfile } from '../utils/storage';
+import { getProfileByUsername, saveProfile, createBlankProfile } from '../utils/storage';
 
 export default function DashboardPage({ initialUsername = 'ares', onNavigate }) {
   // Navigation State: Lands in 'overview' by default (as requested!)
@@ -60,7 +60,12 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
   const [toastMessage, setToastMessage] = useState(null);
 
   // Profile State
-  const [profile, setProfile] = useState(() => getProfileByUsername(initialUsername));
+  const [profile, setProfile] = useState(() => getProfileByUsername(initialUsername) || createBlankProfile(initialUsername));
+
+  useEffect(() => {
+    const loaded = getProfileByUsername(initialUsername) || createBlankProfile(initialUsername);
+    setProfile(loaded);
+  }, [initialUsername]);
 
   // Modals & Forms
   const [showAddLinkModal, setShowAddLinkModal] = useState(false);
@@ -428,7 +433,7 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
               </div>
               <div>
                 <p className="text-xl font-bold text-white tracking-tight">
-                  {profile.username || 'bloodare'}
+                  {profile.username || 'user'}
                 </p>
                 <p className="text-xs text-white/40">Username</p>
               </div>

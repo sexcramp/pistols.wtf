@@ -314,17 +314,11 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
           )}
 
           {/* ======================================================== */}
-          {/* 5. SUBTEXT / BIO (ONLY IF USER HAS BIO SET)              */}
+          {/* 5. BIO / DESCRIPTION (NORMAL CLEAN FONT)                 */}
           {/* ======================================================== */}
           {hasBio && (
-            <div className="mt-3 sm:mt-3.5 text-center">
-              <p 
-                style={{
-                  fontFamily: 'Cormorant Garamond, "Times New Roman", serif',
-                  letterSpacing: '0.28em',
-                }}
-                className="text-[13px] sm:text-[14px] md:text-[15px] uppercase text-white/90 drop-shadow select-none font-normal"
-              >
+            <div className="mt-2.5 sm:mt-3 text-center px-3 max-w-[90%] mx-auto">
+              <p className="text-xs sm:text-[13px] md:text-sm text-white/80 font-normal leading-relaxed drop-shadow-sm select-none break-words">
                 {profile.bio}
               </p>
             </div>

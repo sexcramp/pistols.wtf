@@ -97,7 +97,11 @@ export default function App() {
         )}
 
         {currentPage === 'bio' && (
-          <BioPage username={activeUsername} onNavigate={navigate} />
+          <BioPage 
+            username={activeUsername} 
+            onNavigate={navigate} 
+            onOpenAuth={openAuth}
+          />
         )}
       </main>
 
