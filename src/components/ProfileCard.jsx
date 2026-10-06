@@ -284,7 +284,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
         {/* ======================================================== */}
         <div className="flex flex-col items-center justify-center mt-1 relative">
           {showUidTooltip && (
-            <div className="absolute -top-8 px-2.5 py-0.5 rounded-full bg-black/95 border border-white/10 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150 z-30">
+            <div className={`absolute ${hasAvatar ? 'top-full mt-2' : '-top-8'} px-3 py-1 rounded-full bg-black/95 border border-white/20 text-[11px] font-mono text-white shadow-2xl animate-in fade-in zoom-in-95 duration-150 z-50 pointer-events-none select-none whitespace-nowrap`}>
               UID {profile.uid || '1'}
             </div>
           )}

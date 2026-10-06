@@ -1,4 +1,8 @@
 // Local storage & profile state manager for pistols.wtf
+// Version 3: Clean state isolation, sequential UID (1 = ares, 2, 3...), zero default assets for new users
+
+const STORAGE_KEY = 'pistols_wtf_v3_profiles';
+const CURRENT_USER_KEY = 'pistols_wtf_v3_current_user';
 
 // Showcase testing profile (configured only for /ares)
 export const SHOWCASE_PROFILE = {
@@ -7,11 +11,11 @@ export const SHOWCASE_PROFILE = {
   bio: 'PRODIGY',
   avatarUrl: '', // Zero random dude PFP
   wallpaperUrl: '/wallpaper.jpg',
-  uid: 1,
+  uid: 1, // Ares is member #1
   views: 3700,
   badges: ['owner', 'premium'],
   discordId: '',
-  discordStatus: null,
+  discordStatus: null, // NO Spotify or fake Discord activity
   theme: {
     primaryColor: '#990026',
     cardBackground: 'rgba(0, 0, 0, 0.45)',
@@ -30,7 +34,21 @@ export const SHOWCASE_PROFILE = {
     url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3',
     volume: 0.6,
   },
-  links: []
+  links: [] // Pure clean
+};
+
+// Calculates the next sequential member UID (ares = 1, next = 2, next = 3...)
+export const getNextUid = () => {
+  try {
+    const profiles = getStoredProfiles();
+    const existingUids = Object.values(profiles)
+      .map(p => Number(p.uid))
+      .filter(u => !isNaN(u) && u > 0);
+    const max = existingUids.length > 0 ? Math.max(...existingUids) : 1;
+    return max + 1;
+  } catch (e) {
+    return 2;
+  }
 };
 
 // Factory for a clean, brand new claimed profile with zero placeholder assets
@@ -42,11 +60,11 @@ export const createBlankProfile = (username) => {
     bio: '', // NO description
     avatarUrl: '', // NO avatar
     wallpaperUrl: '', // Solid black background by default
-    uid: Math.floor(Math.random() * 899) + 100,
-    views: 0,
-    badges: [], // NO badges
+    uid: getNextUid(), // Sequential member count: 2, 3, 4...
+    views: 0, // Freshly claimed account starts strictly at 0 views
+    badges: [], // NO badges (no owner, no verified, no premium)
     discordId: '',
-    discordStatus: null,
+    discordStatus: null, // NO Discord status, NO Spotify activity
     theme: {
       primaryColor: '#990026',
       cardBackground: 'rgba(0, 0, 0, 0.45)',
@@ -70,22 +88,25 @@ export const createBlankProfile = (username) => {
 
 export const getStoredProfiles = () => {
   try {
-    const raw = localStorage.getItem('pistols_wtf_profiles');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // Ensure showcase profile /ares exists and has no old dude avatar
-      if (!parsed.ares) {
-        parsed.ares = { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' };
-      } else if (parsed.ares.avatarUrl === '/avatar.jpg' || parsed.ares.avatarUrl?.includes('unsplash')) {
-        parsed.ares.avatarUrl = '';
+    if (typeof window !== 'undefined') {
+      // Purge legacy storage keys that contain old mock profiles or fake Spotify states
+      localStorage.removeItem('whose_baby_profiles');
+      localStorage.removeItem('pistols_wtf_profiles');
+
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!parsed.ares) {
+          parsed.ares = { ...SHOWCASE_PROFILE };
+        }
+        return parsed;
       }
-      return parsed;
     }
   } catch (e) {
     console.error('Error reading profiles from localStorage', e);
   }
   return { 
-    ares: { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' }
+    ares: { ...SHOWCASE_PROFILE }
   };
 };
 
@@ -117,21 +138,23 @@ export const getProfileByUsername = (username) => {
     };
   }
 
-  // Any other username is NOT claimed (returns null)
+  // Any other username is UNCLAIMED (returns null)
   return null;
 };
 
 export const saveProfile = (profile) => {
   try {
     const profiles = getStoredProfiles();
-    const cleanUsername = (profile.username || 'ares').toLowerCase().replace('@', '');
+    const cleanUsername = (profile.username || 'ares').toLowerCase().replace(/[^a-z0-9_-]/g, '');
     profiles[cleanUsername] = {
       ...profile,
       username: cleanUsername,
       updatedAt: new Date().toISOString()
     };
-    localStorage.setItem('pistols_wtf_profiles', JSON.stringify(profiles));
-    localStorage.setItem('pistols_wtf_current_user', cleanUsername);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+      localStorage.setItem(CURRENT_USER_KEY, cleanUsername);
+    }
     return true;
   } catch (e) {
     console.error('Error saving profile', e);
@@ -141,20 +164,26 @@ export const saveProfile = (profile) => {
 
 export const getCurrentUser = () => {
   try {
-    const username = localStorage.getItem('pistols_wtf_current_user') || 'ares';
-    return getProfileByUsername(username);
+    if (typeof window !== 'undefined') {
+      const username = localStorage.getItem(CURRENT_USER_KEY) || 'ares';
+      return getProfileByUsername(username) || { ...SHOWCASE_PROFILE };
+    }
   } catch (e) {
-    return { ...SHOWCASE_PROFILE, username: 'ares', displayName: 'ares' };
+    // fallback
   }
+  return { ...SHOWCASE_PROFILE };
 };
 
 export const incrementProfileViews = (username) => {
   try {
+    const cleanUsername = username?.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    if (!cleanUsername) return;
     const profiles = getStoredProfiles();
-    const cleanUsername = (username || 'ares').toLowerCase().replace('@', '');
     if (profiles[cleanUsername]) {
-      profiles[cleanUsername].views = (profiles[cleanUsername].views || 0) + 1;
-      localStorage.setItem('pistols_wtf_profiles', JSON.stringify(profiles));
+      profiles[cleanUsername].views = (Number(profiles[cleanUsername].views) || 0) + 1;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+      }
     }
   } catch (e) {
     console.error('Error incrementing views', e);

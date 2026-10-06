@@ -44,21 +44,21 @@ export default function BioPage({ username = 'ares', onNavigate, onOpenAuth }) {
           {/* Status Pill */}
           <div className="flex justify-center mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-mono font-medium text-white/70 tracking-wide uppercase">
-                Available to claim
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-xs font-mono font-medium text-white/80 tracking-wide uppercase">
+                Not Claimed
               </span>
             </div>
           </div>
 
           {/* Username Title */}
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight break-all">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight break-all font-sans">
             pistols.wtf/{cleanHandle}
           </h1>
 
           {/* Description */}
-          <p className="mt-3 text-sm text-white/50 leading-relaxed max-w-[320px] mx-auto font-normal">
-            This username has not been claimed yet. Claim it now and create your clean profile.
+          <p className="mt-3.5 text-sm text-white/60 leading-relaxed max-w-[320px] mx-auto font-normal">
+            This username is not claimed by anyone yet. Click the button below if you want to claim this username.
           </p>
 
           {/* Claim Button */}

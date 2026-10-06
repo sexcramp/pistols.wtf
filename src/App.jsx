@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import BioPage from './pages/BioPage';
 import AuthModal from './components/AuthModal';
+import { getCurrentUser } from './utils/storage';
 
 // Synchronously parse initial URL route to prevent 1-second flash of landing page
 const getInitialRoute = () => {
@@ -12,7 +13,8 @@ const getInitialRoute = () => {
   if (!path || path === '') {
     return { page: 'home', username: 'ares' };
   } else if (path === 'dashboard') {
-    return { page: 'dashboard', username: 'ares' };
+    const cur = getCurrentUser();
+    return { page: 'dashboard', username: cur?.username || 'ares' };
   } else {
     return { page: 'bio', username: path.replace('@', '') };
   }
