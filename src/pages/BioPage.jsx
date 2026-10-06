@@ -74,16 +74,16 @@ export default function BioPage({ username = 'aizen', onNavigate }) {
       {/* TOP LEFT: CIRCULAR AUDIO TOGGLE (Screenshot Match 1:1)   */}
       {/* ======================================================== */}
       {entered && (
-        <div className="fixed top-6 left-6 z-40 animate-in fade-in duration-300">
+        <div className="fixed top-6 left-6 sm:top-8 sm:left-8 z-40 animate-in fade-in duration-300">
           <button
             onClick={toggleAudio}
             title={isMuted ? "Unmute audio" : "Mute audio"}
-            className="w-11 h-11 rounded-full bg-black/45 hover:bg-black/65 border border-white/10 backdrop-blur-xl flex items-center justify-center text-white/90 hover:text-white transition shadow-lg active:scale-95 group"
+            className="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/45 hover:bg-black/65 border border-white/10 backdrop-blur-xl flex items-center justify-center text-white/90 hover:text-white transition shadow-lg active:scale-95 group"
           >
             {isPlaying && !isMuted ? (
-              <Volume2 className="w-5 h-5 text-white/90 group-hover:text-white transition-transform group-hover:scale-110" />
+              <Volume2 className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white/90 group-hover:text-white transition-transform group-hover:scale-110" />
             ) : (
-              <VolumeX className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-transform group-hover:scale-110" />
+              <VolumeX className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white/40 group-hover:text-white/70 transition-transform group-hover:scale-110" />
             )}
           </button>
         </div>

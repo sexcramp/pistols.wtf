@@ -8,7 +8,7 @@ const DEFAULT_PROFILE = {
   wallpaperUrl: '/wallpaper.jpg',
   uid: 1,
   views: 3700,
-  badges: ['verified', 'early', 'owner', 'diamond', 'halloween', 'candy', 'sun'],
+  badges: ['owner', 'premium'], // Exactly as requested: owner badge and premium badge only
   discordId: '',
   discordStatus: null,
   theme: {
@@ -16,8 +16,10 @@ const DEFAULT_PROFILE = {
     cardBackground: 'rgba(0, 0, 0, 0.45)',
     cardBorder: 'rgba(255, 255, 255, 0.08)',
     cardBlur: 28,
-    cardRadius: '38px',
-    tilt: true,
+    cardRadius: '42px',
+    tilt: true, // Toggleable moving card
+    monochromeBadges: false, // Toggleable single-color badges
+    monochromeBadgeColor: '#ffffff',
   },
   audio: {
     enabled: true,
@@ -35,9 +37,15 @@ export const getStoredProfiles = () => {
     const raw = localStorage.getItem('pistols_wtf_profiles');
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Migrate or ensure aizen default has new assets
+      // Ensure aizen default has updated badges & theme settings
       if (!parsed.aizen) {
         parsed.aizen = { ...DEFAULT_PROFILE };
+      } else {
+        if (!parsed.aizen.badges || parsed.aizen.badges.length > 2) {
+          parsed.aizen.badges = ['owner', 'premium'];
+        }
+        parsed.aizen.avatarUrl = parsed.aizen.avatarUrl || '/avatar.jpg';
+        parsed.aizen.wallpaperUrl = parsed.aizen.wallpaperUrl || '/wallpaper.jpg';
       }
       return parsed;
     }

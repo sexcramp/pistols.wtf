@@ -22,84 +22,37 @@ import {
 } from './Icons';
 
 // ==============================================================
-// 7 EXACT BADGE SVGS (Matching Screenshot_20261005_212328_Chrome)
+// GUNS.LOL AUTHENTIC VECTOR BADGES
 // ==============================================================
 
-// 1. Verified Badge (Scalloped circle with checkmark)
-export const VerifiedBadgeIcon = ({ className = "w-4 h-4 text-white" }) => (
+// 1. Premium Diamond Gem (Authentic guns.lol cut gemstone)
+export const GunsPremiumDiamondIcon = ({ className = "w-5 h-5", color = "currentColor" }) => (
+  <svg className={className} viewBox="23 32 465 448" fill={color}>
+    <path d="M396.31 32H264l84.19 112.26L396.31 32zm-280.62 0l48.12 112.26L248 32H115.69zM256 74.67L192 160h128l-64-85.33zm166.95-23.61L376.26 160H488L422.95 51.06zm-333.9 0L23 160h112.74L89.05 51.06zM146.68 192H24l222.8 288h.53L146.68 192zm218.64 0L264.67 480h.53L488 192H365.32zm-35.93 0H182.61L256 400l73.39-208z" />
+  </svg>
+);
+
+// 2. Owner Crown (Authentic guns.lol crown emblem)
+export const GunsOwnerCrownIcon = ({ className = "w-5 h-5", color = "currentColor" }) => (
+  <svg className={className} viewBox="0 0 512 512" fill={color}>
+    <path d="M51.2 136.5l30.4 196.3h348.8l30.4-196.3-108.8 68.3L256 73.1 160 204.8 51.2 136.5zM45.7 370.3c0-4.2 3.4-7.6 7.6-7.6h405.4c4.2 0 7.6 3.4 7.6 7.6v51.2c0 14.1-11.5 25.6-25.6 25.6H71.3c-14.1 0-25.6-11.5-25.6-25.6v-51.2z" />
+  </svg>
+);
+
+// 3. Verified Scalloped Seal (Authentic guns.lol verified emblem)
+export const GunsVerifiedIcon = ({ className = "w-5 h-5", color = "#1d9bf0" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none">
     <path 
-      d="M12 2l2.4 2.1 3.2-.5 1.3 2.9 3 .9-.2 3.2 2.3 2.3-1.6 2.8 1.1 3-2.7 1.7-.5 3.2-3.1.7-1.7 2.7-3.1-.7-2.6 1.9-2.6-1.9-3.1.7-1.7-2.7-3.1-.7-.5-3.2-2.7-1.7 1.1-3-1.6-2.8 2.3-2.3-.2-3.2 3-.9 1.3-2.9 3.2.5L12 2z" 
-      fill="currentColor" 
+      d="M12 1.5l2.45 2.8 3.6-.8 1.9 3.2 3.4 1.45L23 12l-2.45 2.8.35 3.7-3.6.8-1.9 3.2-3.4-1.45L8.6 22.5l-1.9-3.2-3.6-.8.35-3.7L1 12l2.45-2.8-.35-3.7 3.6-.8 1.9-3.2L12 1.5z" 
+      fill={color}
     />
     <path 
-      d="M8.5 12.2l2.4 2.4 4.8-4.8" 
-      fill="none" 
-      stroke="#000" 
+      d="M8.5 12.3l2.4 2.4 4.8-4.8" 
+      stroke="#ffffff" 
       strokeWidth="2.2" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
     />
-  </svg>
-);
-
-// 2. Early Supporter (4-pointed star / origami sparkle)
-export const StarBadgeIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2l2.6 6.8L21.4 12l-6.8 2.6L12 21.4l-2.6-6.8L2.6 12l6.8-2.6L12 2z" />
-  </svg>
-);
-
-// 3. Target / Staff Badge (Concentric rings with center diamond)
-export const TargetBadgeIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="9" strokeWidth="1.6" strokeDasharray="3 2" />
-    <circle cx="12" cy="12" r="5" strokeWidth="1.6" />
-    <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-  </svg>
-);
-
-// 4. Diamond Gem Badge
-export const DiamondBadgeIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 3h12l4 6-10 12L2 9z" />
-    <path d="M2 9h20" />
-    <path d="m10 3 2 6 2-6" />
-    <path d="m7.5 9 4.5 12 4.5-12" />
-  </svg>
-);
-
-// 5. Spiderweb Badge (Halloween Limited)
-export const SpiderwebIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-    <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" />
-    <circle cx="12" cy="12" r="4" strokeWidth="1.5" />
-    <circle cx="12" cy="12" r="8" strokeWidth="1.5" />
-  </svg>
-);
-
-// 6. Candy Cane Badge
-export const CandyCaneIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-    <path d="M18 10a5 5 0 0 0-5-5 5 5 0 0 0-5 5v11a2 2 0 0 0 4 0V10a1 1 0 0 1 1-1 1 1 0 0 1 1 1v11" />
-    <line x1="8.5" y1="13" x2="11.5" y2="15" />
-    <line x1="8.5" y1="17" x2="11.5" y2="19" />
-    <line x1="12.5" y1="5.5" x2="14.5" y2="8.5" />
-  </svg>
-);
-
-// 7. Sun with Rays Badge
-export const SunBadgeIcon = ({ className = "w-4 h-4 text-white" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="12" cy="12" r="3.5" fill="currentColor" />
-    <line x1="12" y1="2" x2="12" y2="4" />
-    <line x1="12" y1="20" x2="12" y2="22" />
-    <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
-    <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
-    <line x1="2" y1="12" x2="4" y2="12" />
-    <line x1="20" y1="12" x2="22" y2="12" />
-    <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
-    <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
   </svg>
 );
 
@@ -110,7 +63,11 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
   const [tiltStyle, setTiltStyle] = useState({});
 
   const theme = profile.theme || {};
+  // Toggleable 3D Moving Card tilt
   const isTilting = theme.tilt ?? true;
+  const isMonochromeBadges = Boolean(theme.monochromeBadges);
+  const monoColor = theme.monochromeBadgeColor || '#ffffff';
+
   const avatarUrl = profile.avatarUrl || '/avatar.jpg';
   const hasLinks = Boolean(profile.links && profile.links.length > 0);
   const hasDiscord = Boolean(profile.discordStatus);
@@ -125,7 +82,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
     return num.toString();
   };
 
-  // 3D Tilt calculation on mouse move
+  // 3D Tilt calculation on mouse move (only if enabled)
   const handleMouseMove = (e) => {
     if (!isTilting || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
@@ -154,7 +111,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
   // Social Icon Helper
   const getSocialIcon = (iconName) => {
-    const className = "w-4 h-4";
+    const className = "w-4 h-4 sm:w-5 sm:h-5";
     switch (iconName?.toLowerCase()) {
       case 'discord': return <DiscordIcon className={className} />;
       case 'spotify': return <SpotifyIcon className={className} />;
@@ -182,19 +139,83 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
     }
   };
 
-  // Badges list (matches Screenshot_20261005_212328_Chrome)
-  const defaultBadges = ['verified', 'early', 'owner', 'diamond', 'halloween', 'candy', 'sun'];
+  // Owner profile default badges: ONLY owner badge and premium badge as requested!
+  const defaultBadges = ['owner', 'premium'];
   const userBadges = (profile.badges && profile.badges.length > 0) ? profile.badges : defaultBadges;
 
+  // Render individual badge item matching guns.lol standards with full-color vs monochrome support
+  const renderBadgeItem = (badge, idx) => {
+    let badgeName = '';
+    let badgeEl = null;
+
+    if (badge === 'owner' || badge === 'crown') {
+      badgeName = 'Owner';
+      if (isMonochromeBadges) {
+        badgeEl = <GunsOwnerCrownIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+      } else {
+        badgeEl = (
+          <img 
+            src="/badges/owner.png" 
+            alt="Owner" 
+            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 object-contain drop-shadow-[0_0_8px_rgba(245,166,35,0.7)] select-none pointer-events-none" 
+          />
+        );
+      }
+    } else if (badge === 'premium' || badge === 'diamond') {
+      badgeName = 'Premium';
+      if (isMonochromeBadges) {
+        badgeEl = <GunsPremiumDiamondIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+      } else {
+        badgeEl = (
+          <GunsPremiumDiamondIcon 
+            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.7)] select-none" 
+            color="#00f0ff"
+          />
+        );
+      }
+    } else if (badge === 'verified') {
+      badgeName = 'Verified';
+      if (isMonochromeBadges) {
+        badgeEl = <GunsVerifiedIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5" color={monoColor} />;
+      } else {
+        badgeEl = (
+          <img 
+            src="/badges/verified.png" 
+            alt="Verified" 
+            className="w-5 h-5 sm:w-6 sm:h-6 md:w-6.5 md:h-6.5 object-contain drop-shadow-[0_0_8px_rgba(29,155,240,0.7)] select-none pointer-events-none" 
+          />
+        );
+      }
+    } else {
+      return null;
+    }
+
+    return (
+      <div 
+        key={idx}
+        onMouseEnter={() => setActiveTooltip(badgeName)}
+        onMouseLeave={() => setActiveTooltip(null)}
+        className="relative group p-0.5 hover:scale-125 transition-transform duration-200 cursor-pointer flex items-center justify-center"
+      >
+        {badgeEl}
+        {activeTooltip === badgeName && (
+          <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md bg-black/95 border border-white/10 text-[11px] font-medium whitespace-nowrap text-white shadow-xl pointer-events-none z-40 animate-in fade-in duration-100">
+            {badgeName}
+          </span>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="relative pt-12 select-none">
+    <div className="relative pt-16 sm:pt-20 md:pt-22 select-none w-full flex justify-center">
       {/* ======================================================== */}
-      {/* 1. FLOATING AVATAR (Top Edge Overlap)                    */}
+      {/* 1. FLOATING AVATAR (ENLARGED, ZERO BORDERLINE)           */}
       {/* ======================================================== */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
         <div className="relative pointer-events-auto">
-          {/* Glowing stardust outer ring matching screenshot */}
-          <div className="w-24 h-24 sm:w-26 sm:h-26 rounded-full p-1 bg-white/[0.04] backdrop-blur-md border border-white/20 shadow-[0_0_28px_rgba(255,255,255,0.22)] flex items-center justify-center">
+          {/* Pure clean circular avatar without any border or borderline as requested */}
+          <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-[0_16px_45px_rgba(0,0,0,0.7)]">
             <img 
               src={avatarUrl} 
               alt={profile.displayName || profile.username || 'aizen'} 
@@ -202,10 +223,10 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
             />
           </div>
 
-          {/* Optional Discord status indicator if Discord status is present */}
+          {/* Optional Discord status indicator if status is active */}
           {hasDiscord && profile.discordStatus && (
             <div 
-              className={`absolute bottom-0 right-1 z-40 w-4 h-4 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus?.status || 'online')}`}
+              className={`absolute bottom-1 right-2 z-40 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus?.status || 'online')}`}
               title={`Status: ${profile.discordStatus?.status || 'online'}`}
             />
           )}
@@ -213,28 +234,27 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
       </div>
 
       {/* ======================================================== */}
-      {/* 2. FROSTED GLASS BIOCARD                                 */}
+      {/* 2. FROSTED GLASS BIOCARD (PERFECT DESKTOP & MOBILE RATIO)*/}
       {/* ======================================================== */}
       <div 
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
-          ...tiltStyle,
+          ...(isTilting ? tiltStyle : {}),
           backgroundColor: 'rgba(0, 0, 0, 0.45)',
           backdropFilter: 'blur(28px)',
           WebkitBackdropFilter: 'blur(28px)',
           borderColor: 'rgba(255, 255, 255, 0.08)',
           boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
-          borderRadius: '38px',
         }}
-        className="w-full max-w-[360px] sm:max-w-[380px] pt-16 pb-8 px-6 sm:px-8 border relative overflow-hidden transition-all duration-300 text-white"
+        className="w-[92vw] max-w-[390px] sm:max-w-[460px] md:max-w-[520px] lg:max-w-[550px] pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-10 md:pb-12 px-6 sm:px-10 md:px-12 border relative overflow-hidden transition-all duration-300 text-white rounded-[36px] sm:rounded-[42px] md:rounded-[48px]"
       >
         {/* Top Right: Views Counter Capsule Pill (Eye + 3.7K) */}
-        <div className="absolute top-5 right-5 sm:top-6 sm:right-6 z-20">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08] shadow-sm">
-            <Eye className="w-3.5 h-3.5 text-white/70" />
-            <span className="text-xs font-semibold text-white/90 font-mono tracking-wide">
+        <div className="absolute top-5 right-5 sm:top-6 sm:right-6 md:top-7 md:right-7 z-20">
+          <div className="flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08] shadow-sm">
+            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/70" />
+            <span className="text-xs sm:text-[13px] font-semibold text-white/90 font-mono tracking-wide">
               {formatViews(profile.views ?? 3700)}
             </span>
           </div>
@@ -245,7 +265,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
         {/* ======================================================== */}
         <div className="flex flex-col items-center justify-center mt-2 relative">
           {showUidTooltip && (
-            <div className="absolute -top-7 px-2.5 py-0.5 rounded-full bg-black/95 border border-white/10 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150 z-30">
+            <div className="absolute -top-8 px-2.5 py-0.5 rounded-full bg-black/95 border border-white/10 text-[10px] font-mono text-white shadow-lg animate-in fade-in duration-150 z-30">
               UID {profile.uid || '1'}
             </div>
           )}
@@ -258,85 +278,30 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
               fontFamily: 'Comfortaa, "Plus Jakarta Sans", sans-serif',
               textShadow: '0 2px 14px rgba(0, 0, 0, 0.8)'
             }}
-            className="text-[26px] sm:text-[30px] font-bold text-white tracking-tight leading-none cursor-pointer hover:text-white/90 transition-colors"
+            className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-bold text-white tracking-tight leading-none cursor-pointer hover:text-white/90 transition-colors"
           >
             {profile.displayName || profile.username || 'aizen'}
           </h1>
 
           {/* ======================================================== */}
-          {/* 4. GAUSSIAN BLURRED BADGES DOCK                          */}
+          {/* 4. GAUSSIAN BLURRED BADGES DOCK (AUTHENTIC GUNS.LOL)     */}
           {/* ======================================================== */}
-          <div className="mt-3.5 flex justify-center">
-            <div className="inline-flex items-center gap-2.5 sm:gap-3 px-4 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-              {userBadges.map((badge, idx) => {
-                let badgeName = '';
-                let badgeIcon = null;
-
-                switch (badge) {
-                  case 'verified':
-                    badgeName = 'Verified';
-                    badgeIcon = <VerifiedBadgeIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'early':
-                    badgeName = 'Early Supporter';
-                    badgeIcon = <StarBadgeIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'owner':
-                  case 'staff':
-                    badgeName = 'Staff';
-                    badgeIcon = <TargetBadgeIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'diamond':
-                  case 'vip':
-                    badgeName = 'Diamond';
-                    badgeIcon = <DiamondBadgeIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'halloween':
-                    badgeName = 'Halloween Limited';
-                    badgeIcon = <SpiderwebIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'candy':
-                    badgeName = 'Holiday Limited';
-                    badgeIcon = <CandyCaneIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  case 'sun':
-                  case 'booster':
-                    badgeName = 'Booster';
-                    badgeIcon = <SunBadgeIcon className="w-4 h-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />;
-                    break;
-                  default:
-                    return null;
-                }
-
-                return (
-                  <div 
-                    key={idx}
-                    onMouseEnter={() => setActiveTooltip(badgeName)}
-                    onMouseLeave={() => setActiveTooltip(null)}
-                    className="relative group p-0.5 hover:scale-125 transition-transform duration-150 cursor-pointer"
-                  >
-                    {badgeIcon}
-                    {activeTooltip === badgeName && (
-                      <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-black/95 border border-white/10 text-[10px] whitespace-nowrap text-white shadow-lg pointer-events-none z-40 animate-in fade-in duration-100">
-                        {badgeName}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+          <div className="mt-4 sm:mt-4.5 flex justify-center">
+            <div className="inline-flex items-center gap-3.5 sm:gap-4 md:gap-5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+              {userBadges.map((badge, idx) => renderBadgeItem(badge, idx))}
             </div>
           </div>
 
           {/* ======================================================== */}
           {/* 5. SUBTEXT / BIO (Screenshot: PRODIGY)                  */}
           {/* ======================================================== */}
-          <div className="mt-3 text-center">
+          <div className="mt-3.5 sm:mt-4 text-center">
             <p 
               style={{
                 fontFamily: 'Cormorant Garamond, "Times New Roman", serif',
                 letterSpacing: '0.28em',
               }}
-              className="text-[13px] sm:text-[14px] uppercase text-white/90 drop-shadow select-none font-normal"
+              className="text-[13px] sm:text-[15px] md:text-[16px] lg:text-[17px] uppercase text-white/90 drop-shadow select-none font-normal"
             >
               {profile.bio || 'PRODIGY'}
             </p>
@@ -344,16 +309,16 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
           {/* Location / Occupation (if present) */}
           {(profile.location || profile.occupation) && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-[11px] text-white/60">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-3.5 text-xs text-white/60">
               {profile.location && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
-                  <MapPin className="w-3 h-3 text-white/40" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
+                  <MapPin className="w-3.5 h-3.5 text-white/40" />
                   {profile.location}
                 </span>
               )}
               {profile.occupation && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
-                  <Briefcase className="w-3 h-3 text-white/40" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/60">
+                  <Briefcase className="w-3.5 h-3.5 text-white/40" />
                   {profile.occupation}
                 </span>
               )}
@@ -362,9 +327,9 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
           {/* Optional Discord Presence box (if configured) */}
           {hasDiscord && profile.discordStatus && (
-            <div className="w-full mt-4 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3 shadow-sm text-left">
+            <div className="w-full mt-5 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-3.5 shadow-sm text-left">
               <div className="relative shrink-0">
-                <div className="w-9 h-9 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-800 border border-white/10">
                   <img 
                     src={avatarUrl} 
                     alt="Discord" 
@@ -372,18 +337,18 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
                   />
                 </div>
                 <div 
-                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus.status || 'online')}`}
+                  className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-black ${getStatusColor(profile.discordStatus.status || 'online')}`}
                 />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold text-white tracking-wide truncate">
+                  <p className="text-xs sm:text-sm font-semibold text-white tracking-wide truncate">
                     {profile.discordStatus.username || profile.username || 'aizen'}
                   </p>
-                  <DiscordIcon className="w-3.5 h-3.5 text-[#5865F2] shrink-0" />
+                  <DiscordIcon className="w-4 h-4 text-[#5865F2] shrink-0" />
                 </div>
-                <p className="text-[11px] text-white/50 italic truncate mt-0.5">
+                <p className="text-xs text-white/50 italic truncate mt-0.5">
                   {profile.discordStatus.activity || 'Playing Valorant'}
                 </p>
               </div>
@@ -392,7 +357,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
 
           {/* Optional Social Links (if configured) */}
           {hasLinks && (
-            <div className="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-white/[0.06] w-full flex-wrap">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 pt-4 border-t border-white/[0.06] w-full flex-wrap">
               {(profile.links || []).map((link) => (
                 <a
                   key={link.id}
@@ -401,7 +366,7 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
                   rel="noopener noreferrer"
                   onClick={() => onLinkClick && onLinkClick(link.id)}
                   title={link.title}
-                  className="w-9 h-9 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-white/[0.15] flex items-center justify-center text-white/70 hover:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-sm"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.06] hover:border-white/[0.15] flex items-center justify-center text-white/70 hover:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   {getSocialIcon(link.icon)}
                 </a>

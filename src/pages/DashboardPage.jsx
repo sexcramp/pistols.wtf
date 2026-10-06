@@ -39,7 +39,7 @@ import {
   TrendingUp,
   PartyPopper
 } from 'lucide-react';
-import ProfileCard, { SpiderwebIcon } from '../components/ProfileCard';
+import ProfileCard, { GunsPremiumDiamondIcon, GunsOwnerCrownIcon, GunsVerifiedIcon } from '../components/ProfileCard';
 import { 
   DiscordIcon, 
   SpotifyIcon, 
@@ -864,12 +864,35 @@ export default function DashboardPage({ initialUsername = 'aizen', onNavigate })
                     </div>
                   </div>
 
-                  {/* Save Layout Button in Orange */}
+                  {/* Save Layout Button */}
                   <button
                     onClick={handleSave}
                     className="w-full py-3 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition"
                   >
-                    Save
+                    Save Layout
+                  </button>
+                </div>
+
+                {/* 3D Tilt (Moving Card) Toggle */}
+                <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-white">3D Card Tilt (Moving Card)</h3>
+                    <p className="text-xs text-white/50 mt-0.5">
+                      Enable or disable 3D card rotation on cursor hover.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      const next = !(theme.tilt ?? true);
+                      setProfile(prev => ({
+                        ...prev,
+                        theme: { ...prev.theme, tilt: next }
+                      }));
+                      showToast(next ? 'Enabled moving card effect' : 'Disabled moving card effect');
+                    }}
+                    className={`w-12 h-6.5 rounded-full transition-colors p-0.5 shrink-0 flex items-center ${(theme.tilt ?? true) ? 'bg-[#990026]' : 'bg-white/10'}`}
+                  >
+                    <div className={`w-5.5 h-5.5 rounded-full bg-white transition-transform ${(theme.tilt ?? true) ? 'translate-x-5.5' : 'translate-x-0'}`} />
                   </button>
                 </div>
 
@@ -996,58 +1019,133 @@ export default function DashboardPage({ initialUsername = 'aizen', onNavigate })
             )}
 
             {/* ----------------------------------------------------- */}
-            {/* PAGE 5: BADGES (Screenshot_20261003_195315_Chrome)    */}
+            {/* PAGE 5: BADGES (Guns.lol style badge management)      */}
             {/* ----------------------------------------------------- */}
             {activePage === 'badges' && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="inline-flex p-1 rounded-xl bg-black/60 border border-white/5 text-xs">
-                    <button
-                      onClick={() => setBadgeFilter('owned')}
-                      className={`px-4 py-1.5 rounded-lg font-medium transition ${
-                        badgeFilter === 'owned' ? 'bg-[#990026] text-white' : 'text-white/40'
-                      }`}
-                    >
-                      Owned
-                    </button>
-                    <button
-                      onClick={() => setBadgeFilter('other')}
-                      className={`px-4 py-1.5 rounded-lg font-medium transition ${
-                        badgeFilter === 'other' ? 'bg-[#990026] text-white' : 'text-white/40'
-                      }`}
-                    >
-                      Other
-                    </button>
-                  </div>
-
-                  <button 
-                    onClick={() => showToast('Badge position customizer')}
-                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 transition"
-                  >
-                    <Wand2 className="w-3.5 h-3.5" />
-                    <span>Customize</span>
-                  </button>
-                </div>
-
-                {/* Badge item */}
-                <div className="p-3.5 rounded-[22px] bg-[#121215] border border-white/[0.06] flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <GripVertical className="w-4 h-4 text-white/30 cursor-grab" />
-                    <div className="w-9 h-9 rounded-xl bg-[#990026]/15 border border-[#990026]/30 flex items-center justify-center shadow-[0_0_10px_rgba(238,111,53,0.3)]">
-                      <SpiderwebIcon className="w-4 h-4 text-[#990026]" />
+                {/* Monochrome Badges Toggle */}
+                <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3.5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">Monochrome Badges</h3>
+                      <p className="text-xs text-white/50 mt-0.5">
+                        Display all badges in a unified single color instead of their default multi-color look.
+                      </p>
                     </div>
-                    <span className="text-xs font-semibold text-white">Halloween</span>
+                    <button 
+                      onClick={() => {
+                        const next = !theme.monochromeBadges;
+                        setProfile(prev => ({
+                          ...prev,
+                          theme: { ...prev.theme, monochromeBadges: next }
+                        }));
+                        showToast(next ? 'Enabled monochrome badges' : 'Enabled default badge colors');
+                      }}
+                      className={`w-12 h-6.5 rounded-full transition-colors p-0.5 shrink-0 flex items-center ${theme.monochromeBadges ? 'bg-[#990026]' : 'bg-white/10'}`}
+                    >
+                      <div className={`w-5.5 h-5.5 rounded-full bg-white transition-transform ${theme.monochromeBadges ? 'translate-x-5.5' : 'translate-x-0'}`} />
+                    </button>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                    <button className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                      <Eye className="w-3.5 h-3.5" />
+                  {theme.monochromeBadges && (
+                    <div className="flex items-center gap-3 pt-3 border-t border-white/5">
+                      <label className="text-xs text-white/70">Badge Color:</label>
+                      <input 
+                        type="color"
+                        value={theme.monochromeBadgeColor || '#ffffff'}
+                        onChange={(e) => setProfile(prev => ({
+                          ...prev,
+                          theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
+                        }))}
+                        className="w-8 h-8 rounded-lg bg-transparent border border-white/10 cursor-pointer"
+                      />
+                      <input 
+                        type="text"
+                        value={theme.monochromeBadgeColor || '#ffffff'}
+                        onChange={(e) => setProfile(prev => ({
+                          ...prev,
+                          theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
+                        }))}
+                        className="bg-black/40 border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white font-mono w-28 outline-none focus:border-[#990026]"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Badges List */}
+                <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
+                  <h3 className="text-sm font-bold text-white mb-2">Available Badges</h3>
+
+                  {/* Owner Badge */}
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                        <img src="/badges/owner.png" alt="Owner" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Owner</p>
+                        <p className="text-[11px] text-amber-400 font-mono">Platform Creator / Admin</p>
+                      </div>
+                    </div>
+                    <span className="text-[11px] px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 font-semibold border border-amber-500/20">
+                      Active
+                    </span>
+                  </div>
+
+                  {/* Premium Badge */}
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                        <GunsPremiumDiamondIcon className="w-6 h-6 text-[#00f0ff]" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Premium</p>
+                        <p className="text-[11px] text-cyan-400 font-mono">Lifetime Supporter</p>
+                      </div>
+                    </div>
+                    <span className="text-[11px] px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-500/20">
+                      Active
+                    </span>
+                  </div>
+
+                  {/* Verified Badge */}
+                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+                        <img src="/badges/verified.png" alt="Verified" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white">Verified</p>
+                        <p className="text-[11px] text-sky-400 font-mono">Authentic Profile</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const hasVerified = (profile.badges || []).includes('verified');
+                        const nextBadges = hasVerified
+                          ? profile.badges.filter(b => b !== 'verified')
+                          : [...(profile.badges || []), 'verified'];
+                        setProfile(prev => ({ ...prev, badges: nextBadges }));
+                        showToast(hasVerified ? 'Removed Verified badge' : 'Added Verified badge');
+                      }}
+                      className={`text-[11px] px-3.5 py-1 rounded-full font-semibold border transition ${
+                        (profile.badges || []).includes('verified')
+                          ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+                          : 'bg-white/5 text-white/50 border-white/10 hover:text-white'
+                      }`}
+                    >
+                      {(profile.badges || []).includes('verified') ? 'Enabled' : 'Disabled'}
                     </button>
                   </div>
                 </div>
+
+                {/* Save Badges button */}
+                <button
+                  onClick={handleSave}
+                  className="w-full py-3 rounded-2xl bg-[#990026] hover:bg-[#73001d] text-white font-semibold text-xs shadow-lg shadow-[#990026]/25 active:scale-[0.98] transition"
+                >
+                  Save Badges
+                </button>
               </div>
             )}
 
