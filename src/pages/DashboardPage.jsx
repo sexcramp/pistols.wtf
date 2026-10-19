@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   ExternalLink, 
@@ -37,9 +37,23 @@ import {
   RadioTower,
   Volume2,
   TrendingUp,
-  PartyPopper
+  PartyPopper,
+  Upload,
+  ArrowUp,
+  ArrowDown,
+  RefreshCw
 } from 'lucide-react';
-import ProfileCard, { GunsPremiumDiamondIcon, GunsOwnerCrownIcon, GunsVerifiedIcon, SpiderwebIcon } from '../components/ProfileCard';
+import ProfileCard, { 
+  GunsPremiumDiamondIcon, 
+  GunsOwnerCrownIcon, 
+  GunsVerifiedIcon, 
+  SpiderwebIcon,
+  GunsDeveloperIcon,
+  GunsStaffIcon,
+  GunsSupporterIcon,
+  GunsOgIcon,
+  GunsBugHunterIcon
+} from '../components/ProfileCard';
 import { 
   DiscordIcon, 
   SpotifyIcon, 
@@ -50,7 +64,8 @@ import {
   SoundcloudIcon,
   LinkChainIcon 
 } from '../components/Icons';
-import { getProfileByUsername, saveProfile, createBlankProfile } from '../utils/storage';
+import { getProfileByUsername, saveProfile, createBlankProfile, logoutUser } from '../utils/storage';
+import { processImageUpload } from '../utils/imageUpload';
 
 export default function DashboardPage({ initialUsername = 'ares', onNavigate }) {
   // Navigation State: Lands in 'overview' by default (as requested!)
@@ -67,11 +82,18 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
     setProfile(loaded);
   }, [initialUsername]);
 
+  // File Input References
+  const avatarInputRef = useRef(null);
+  const wallpaperInputRef = useRef(null);
+
   // Modals & Forms
   const [showAddLinkModal, setShowAddLinkModal] = useState(false);
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
   const [newLinkIcon, setNewLinkIcon] = useState('globe');
+
+  const [showEditLinkModal, setShowEditLinkModal] = useState(false);
+  const [editingLink, setEditingLink] = useState(null);
 
   const [showAddTrackModal, setShowAddTrackModal] = useState(false);
   const [newTrackTitle, setNewTrackTitle] = useState('');
@@ -90,6 +112,89 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
   const handleSave = () => {
     saveProfile(profile);
     showToast('Changes saved to pistols.wtf! ✦');
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    showToast('Logged out successfully');
+    onNavigate('home');
+  };
+
+  // Avatar Upload from Device Storage
+  const handleAvatarFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      showToast('Uploading avatar from device...');
+      const dataUrl = await processImageUpload(file, { maxWidth: 512, maxHeight: 512, isAvatar: true });
+      setProfile(prev => {
+        const updated = { ...prev, avatarUrl: dataUrl };
+        saveProfile(updated);
+        return updated;
+      });
+      showToast('Avatar uploaded from device! ✦');
+    } catch (err) {
+      showToast(err.message || 'Failed to upload avatar');
+    }
+    e.target.value = '';
+  };
+
+  // Wallpaper Upload from Device Storage
+  const handleWallpaperFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      showToast('Uploading wallpaper from device...');
+      const dataUrl = await processImageUpload(file, { maxWidth: 1920, maxHeight: 1080 });
+      setProfile(prev => {
+        const updated = { ...prev, wallpaperUrl: dataUrl };
+        saveProfile(updated);
+        return updated;
+      });
+      showToast('Wallpaper uploaded from device! ✦');
+    } catch (err) {
+      showToast(err.message || 'Failed to upload wallpaper');
+    }
+    e.target.value = '';
+  };
+
+  // Reorder links (Move up / Move down)
+  const handleMoveLink = (index, direction) => {
+    const links = [...(profile.links || [])];
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= links.length) return;
+    
+    const temp = links[index];
+    links[index] = links[targetIndex];
+    links[targetIndex] = temp;
+    
+    setProfile(prev => {
+      const updated = { ...prev, links };
+      saveProfile(updated);
+      return updated;
+    });
+    showToast('Links reordered');
+  };
+
+  // Edit Link Handler
+  const handleSaveEditLink = (e) => {
+    e.preventDefault();
+    if (!editingLink) return;
+
+    setProfile(prev => {
+      const updatedLinks = (prev.links || []).map(l => 
+        l.id === editingLink.id ? editingLink : l
+      );
+      const updated = { ...prev, links: updatedLinks };
+      saveProfile(updated);
+      return updated;
+    });
+
+    setShowEditLinkModal(false);
+    setEditingLink(null);
+    showToast('Link updated! ✦');
   };
 
   const handleAddLink = (e) => {
@@ -383,7 +488,7 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                 </div>
               </div>
               <button
-                onClick={() => onNavigate('home')}
+                onClick={handleLogout}
                 className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition"
                 title="Log out"
               >
@@ -627,33 +732,94 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                 {/* Avatar Section */}
                 <div className="space-y-3">
                   <label className="text-xs font-semibold text-white/90 block">Avatar</label>
-                  <div className="w-20 h-20 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden">
-                    {profile.avatarUrl ? (
-                      <img src={profile.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-8 h-8 text-white/40" />
-                    )}
+                  
+                  {/* Hidden file input for device storage upload */}
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarFileUpload}
+                    className="hidden"
+                  />
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden shrink-0 shadow-inner">
+                      {profile.avatarUrl ? (
+                        <img src={profile.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-8 h-8 text-white/40" />
+                      )}
+                    </div>
+                    
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <p className="text-xs font-medium text-white/80">Profile Picture</p>
+                      <p className="text-[11px] text-white/40">Upload a PNG, JPG, or GIF directly from your device storage.</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
+
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {/* Device Upload Button */}
                     <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25 flex items-center gap-2 active:scale-95"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Upload from Device</span>
+                    </button>
+
+                    {/* Image URL Button */}
+                    <button
+                      type="button"
                       onClick={() => {
                         const url = prompt('Enter your Avatar image URL:', profile.avatarUrl || '');
                         if (url !== null) {
-                          setProfile(prev => ({ ...prev, avatarUrl: url.trim() }));
+                          setProfile(prev => {
+                            const updated = { ...prev, avatarUrl: url.trim() };
+                            saveProfile(updated);
+                            return updated;
+                          });
                           showToast('Avatar updated!');
                         }
                       }}
-                      className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
+                      className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white/80 hover:text-white text-xs font-medium transition"
                     >
-                      Change Avatar
+                      Image URL
                     </button>
+
+                    {/* Sync from Discord Button if Discord Tag exists */}
+                    {profile.discordTag && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const discordPfp = `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.discordTag}`;
+                          setProfile(prev => {
+                            const updated = { ...prev, avatarUrl: discordPfp };
+                            saveProfile(updated);
+                            return updated;
+                          });
+                          showToast('Synced avatar with Discord!');
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-[#5865F2]/20 hover:bg-[#5865F2]/30 border border-[#5865F2]/30 text-[#5865F2] text-xs font-medium transition flex items-center gap-1.5"
+                      >
+                        <DiscordIcon className="w-3 h-3 text-[#5865F2]" />
+                        <span>Sync Discord</span>
+                      </button>
+                    )}
+
+                    {/* Remove Avatar Button */}
                     {profile.avatarUrl && (
                       <button
+                        type="button"
                         onClick={() => {
-                          setProfile(prev => ({ ...prev, avatarUrl: '' }));
+                          setProfile(prev => {
+                            const updated = { ...prev, avatarUrl: '' };
+                            saveProfile(updated);
+                            return updated;
+                          });
                           showToast('Avatar removed');
                         }}
-                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition"
+                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-xs font-medium transition"
                       >
                         Remove
                       </button>
@@ -661,36 +827,73 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                   </div>
 
                   {/* Wallpaper / Background Section */}
-                  <div className="pt-3 space-y-2 border-t border-white/[0.06]">
+                  <div className="pt-4 space-y-2 border-t border-white/[0.06]">
                     <label className="text-xs font-semibold text-white/90 block">Wallpaper / Background</label>
-                    <p className="text-[11px] text-white/50">Leave empty for a clean solid black background.</p>
-                    <div className="w-full h-24 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden relative">
+                    <p className="text-[11px] text-white/50">Upload a background image from device or leave empty for pure black.</p>
+                    
+                    {/* Hidden file input for wallpaper */}
+                    <input
+                      ref={wallpaperInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleWallpaperFileUpload}
+                      className="hidden"
+                    />
+
+                    <div className="w-full h-28 rounded-2xl bg-[#141418] border border-white/10 flex items-center justify-center text-white/50 overflow-hidden relative shadow-inner">
                       {profile.wallpaperUrl ? (
                         <img src={profile.wallpaperUrl} alt="wallpaper" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-xs text-white/30 font-mono">Solid Black (Default)</span>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs text-white/30 font-mono block">Solid Black (Default)</span>
+                          <span className="text-[10px] text-white/20">Clean minimal aesthetic</span>
+                        </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 pt-1">
+
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {/* Upload Wallpaper from Device Button */}
                       <button
+                        type="button"
+                        onClick={() => wallpaperInputRef.current?.click()}
+                        className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25 flex items-center gap-2 active:scale-95"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload from Device</span>
+                      </button>
+
+                      {/* Image URL Button */}
+                      <button
+                        type="button"
                         onClick={() => {
                           const url = prompt('Enter your Wallpaper image URL:', profile.wallpaperUrl || '');
                           if (url !== null) {
-                            setProfile(prev => ({ ...prev, wallpaperUrl: url.trim() }));
+                            setProfile(prev => {
+                              const updated = { ...prev, wallpaperUrl: url.trim() };
+                              saveProfile(updated);
+                              return updated;
+                            });
                             showToast('Wallpaper updated!');
                           }
                         }}
-                        className="px-4 py-2 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold transition shadow-md shadow-[#990026]/25"
+                        className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white/80 hover:text-white text-xs font-medium transition"
                       >
-                        Change Wallpaper
+                        Image URL
                       </button>
+
+                      {/* Reset to Solid Black Button */}
                       {profile.wallpaperUrl && (
                         <button
+                          type="button"
                           onClick={() => {
-                            setProfile(prev => ({ ...prev, wallpaperUrl: '' }));
-                            showToast('Wallpaper removed (Solid black)');
+                            setProfile(prev => {
+                              const updated = { ...prev, wallpaperUrl: '' };
+                              saveProfile(updated);
+                              return updated;
+                            });
+                            showToast('Wallpaper reset to solid black');
                           }}
-                          className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition"
+                          className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-xs font-medium transition"
                         >
                           Reset to Black
                         </button>
@@ -1062,22 +1265,74 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                       </button>
                     </>
                   ) : (
-                    <div className="space-y-2 text-left">
-                      {(profile.links || []).map(link => (
-                        <div key={link.id} className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-white truncate">{link.title}</p>
-                            <p className="text-[11px] text-white/40 truncate">{link.url}</p>
+                    <div className="space-y-2.5 text-left">
+                      {(profile.links || []).map((link, idx) => (
+                        <div key={link.id} className="p-3.5 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-between gap-3 group hover:border-white/10 transition">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            {/* Reorder Buttons */}
+                            <div className="flex flex-col gap-0.5 shrink-0">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveLink(idx, -1)}
+                                className="w-5 h-5 rounded flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 disabled:opacity-20 transition"
+                                title="Move up"
+                              >
+                                <ArrowUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === (profile.links || []).length - 1}
+                                onClick={() => handleMoveLink(idx, 1)}
+                                className="w-5 h-5 rounded flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 disabled:opacity-20 transition"
+                                title="Move down"
+                              >
+                                <ArrowDown className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-semibold text-white truncate">{link.title}</p>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-white/40 font-mono">
+                                  {link.icon || 'globe'}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-white/40 truncate font-mono mt-0.5">{link.url}</p>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              setProfile(prev => ({ ...prev, links: prev.links.filter(l => l.id !== link.id) }));
-                              showToast('Link removed');
-                            }}
-                            className="text-red-400 p-1 hover:bg-red-500/10 rounded-lg transition"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {/* Edit Link Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingLink({ ...link });
+                                setShowEditLinkModal(true);
+                              }}
+                              className="text-white/40 hover:text-white p-1.5 hover:bg-white/10 rounded-lg transition"
+                              title="Edit link"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Delete Link Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setProfile(prev => {
+                                  const updated = { ...prev, links: prev.links.filter(l => l.id !== link.id) };
+                                  saveProfile(updated);
+                                  return updated;
+                                });
+                                showToast('Link removed');
+                              }}
+                              className="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg transition"
+                              title="Delete link"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -1103,10 +1358,14 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                     <button 
                       onClick={() => {
                         const next = !theme.monochromeBadges;
-                        setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, monochromeBadges: next }
-                        }));
+                        setProfile(prev => {
+                          const updated = {
+                            ...prev,
+                            theme: { ...prev.theme, monochromeBadges: next }
+                          };
+                          saveProfile(updated);
+                          return updated;
+                        });
                         showToast(next ? 'Enabled monochrome badges' : 'Enabled default badge colors');
                       }}
                       className={`w-12 h-6.5 rounded-full transition-colors p-0.5 shrink-0 flex items-center ${theme.monochromeBadges ? 'bg-[#990026]' : 'bg-white/10'}`}
@@ -1121,19 +1380,27 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                       <input 
                         type="color"
                         value={theme.monochromeBadgeColor || '#ffffff'}
-                        onChange={(e) => setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
-                        }))}
+                        onChange={(e) => setProfile(prev => {
+                          const updated = {
+                            ...prev,
+                            theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
+                          };
+                          saveProfile(updated);
+                          return updated;
+                        })}
                         className="w-8 h-8 rounded-lg bg-transparent border border-white/10 cursor-pointer"
                       />
                       <input 
                         type="text"
                         value={theme.monochromeBadgeColor || '#ffffff'}
-                        onChange={(e) => setProfile(prev => ({
-                          ...prev,
-                          theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
-                        }))}
+                        onChange={(e) => setProfile(prev => {
+                          const updated = {
+                            ...prev,
+                            theme: { ...prev.theme, monochromeBadgeColor: e.target.value }
+                          };
+                          saveProfile(updated);
+                          return updated;
+                        })}
                         className="bg-black/40 border border-white/10 rounded-lg px-2.5 py-1 text-xs text-white font-mono w-28 outline-none focus:border-[#990026]"
                       />
                     </div>
@@ -1144,79 +1411,54 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                 <div className="p-5 rounded-[26px] bg-[#121215] border border-white/[0.06] space-y-3">
                   <h3 className="text-sm font-bold text-white mb-2">Available Badges</h3>
 
-                  {/* Owner Badge */}
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                        <img src="/badges/owner.png" alt="Owner" className="w-6 h-6 object-contain" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Owner</p>
-                        <p className="text-[11px] text-amber-400 font-mono">Platform Creator / Admin</p>
-                      </div>
-                    </div>
-                    {(profile.username === 'ares' || (profile.badges || []).includes('owner')) ? (
-                      <span className="text-[11px] px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 font-semibold border border-amber-500/20">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/40 border border-white/10 font-mono">
-                        Locked
-                      </span>
-                    )}
-                  </div>
+                  {[
+                    { id: 'owner', label: 'Owner', desc: 'Platform Creator / Admin', icon: <img src="/badges/owner.png" alt="Owner" className="w-5 h-5 object-contain" /> },
+                    { id: 'developer', label: 'Developer', desc: 'Code Contributor', icon: <GunsDeveloperIcon className="w-5 h-5 text-purple-400" /> },
+                    { id: 'staff', label: 'Staff', desc: 'Community Moderator', icon: <GunsStaffIcon className="w-5 h-5 text-pink-400" /> },
+                    { id: 'verified', label: 'Verified', desc: 'Authentic Identity', icon: <img src="/badges/verified.png" alt="Verified" className="w-5 h-5 object-contain" /> },
+                    { id: 'premium', label: 'Premium', desc: 'Lifetime Supporter', icon: <GunsPremiumDiamondIcon className="w-5 h-5 text-[#00f0ff]" /> },
+                    { id: 'supporter', label: 'Supporter', desc: 'Generous Contributor', icon: <GunsSupporterIcon className="w-5 h-5 text-rose-500" /> },
+                    { id: 'og', label: 'OG Member', desc: 'Early Pioneer', icon: <GunsOgIcon className="w-5 h-5 text-yellow-400" /> },
+                    { id: 'halloween', label: 'Halloween', desc: 'Limited Edition Event', icon: <SpiderwebIcon className="w-5 h-5 text-orange-400" /> },
+                    { id: 'bughunter', label: 'Bug Hunter', desc: 'Security Reporter', icon: <GunsBugHunterIcon className="w-5 h-5 text-emerald-400" /> },
+                  ].map(b => {
+                    const isEnabled = (profile.badges || []).includes(b.id);
+                    return (
+                      <div key={b.id} className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3 hover:border-white/10 transition">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
+                            {b.icon}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white">{b.label}</p>
+                            <p className="text-[11px] text-white/40">{b.desc}</p>
+                          </div>
+                        </div>
 
-                  {/* Premium Badge */}
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                        <GunsPremiumDiamondIcon className="w-6 h-6 text-[#00f0ff]" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextBadges = isEnabled
+                              ? (profile.badges || []).filter(item => item !== b.id)
+                              : [...(profile.badges || []), b.id];
+                            setProfile(prev => {
+                              const updated = { ...prev, badges: nextBadges };
+                              saveProfile(updated);
+                              return updated;
+                            });
+                            showToast(isEnabled ? `Disabled ${b.label} badge` : `Enabled ${b.label} badge`);
+                          }}
+                          className={`text-[11px] px-3.5 py-1 rounded-full font-semibold border transition ${
+                            isEnabled
+                              ? 'bg-[#990026]/20 text-white border-[#990026]/50'
+                              : 'bg-white/5 text-white/40 border-white/10 hover:text-white'
+                          }`}
+                        >
+                          {isEnabled ? 'Enabled' : 'Disabled'}
+                        </button>
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Premium</p>
-                        <p className="text-[11px] text-cyan-400 font-mono">Lifetime Supporter</p>
-                      </div>
-                    </div>
-                    {(profile.username === 'ares' || (profile.badges || []).includes('premium')) ? (
-                      <span className="text-[11px] px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-500/20">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/40 border border-white/10 font-mono">
-                        Locked
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Verified Badge */}
-                  <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
-                        <img src="/badges/verified.png" alt="Verified" className="w-6 h-6 object-contain" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">Verified</p>
-                        <p className="text-[11px] text-sky-400 font-mono">Authentic Profile</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        const hasVerified = (profile.badges || []).includes('verified');
-                        const nextBadges = hasVerified
-                          ? profile.badges.filter(b => b !== 'verified')
-                          : [...(profile.badges || []), 'verified'];
-                        setProfile(prev => ({ ...prev, badges: nextBadges }));
-                        showToast(hasVerified ? 'Removed Verified badge' : 'Added Verified badge');
-                      }}
-                      className={`text-[11px] px-3.5 py-1 rounded-full font-semibold border transition ${
-                        (profile.badges || []).includes('verified')
-                          ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
-                          : 'bg-white/5 text-white/50 border-white/10 hover:text-white'
-                      }`}
-                    >
-                      {(profile.badges || []).includes('verified') ? 'Enabled' : 'Disabled'}
-                    </button>
-                  </div>
+                    );
+                  })}
                 </div>
 
                 {/* Save Badges button */}
@@ -1560,6 +1802,80 @@ export default function DashboardPage({ initialUsername = 'ares', onNavigate }) 
                   className="flex-1 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold shadow-lg shadow-[#990026]/25"
                 >
                   Add Link
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* 5.5. EDIT LINK MODAL                                          */}
+      {/* ------------------------------------------------------------- */}
+      {showEditLinkModal && editingLink && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div onClick={() => setShowEditLinkModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md p-6 rounded-[28px] bg-[#141418] border border-white/10 shadow-2xl">
+            <h3 className="text-base font-bold text-white mb-4">Edit Link</h3>
+            <form onSubmit={handleSaveEditLink} className="space-y-3">
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Title / Label</label>
+                <input
+                  type="text"
+                  value={editingLink.title}
+                  onChange={(e) => setEditingLink({ ...editingLink, title: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Destination URL</label>
+                <input
+                  type="text"
+                  value={editingLink.url}
+                  onChange={(e) => setEditingLink({ ...editingLink, url: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-white/70 block mb-1">Platform Icon</label>
+                <select
+                  value={editingLink.icon || 'globe'}
+                  onChange={(e) => setEditingLink({ ...editingLink, icon: e.target.value })}
+                  className="w-full bg-black/60 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:border-[#990026]"
+                >
+                  <option value="globe">Custom Website</option>
+                  <option value="discord">Discord</option>
+                  <option value="spotify">Spotify</option>
+                  <option value="github">GitHub</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="twitter">X (Twitter)</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="telegram">Telegram</option>
+                  <option value="twitch">Twitch</option>
+                  <option value="kick">Kick</option>
+                  <option value="steam">Steam</option>
+                  <option value="soundcloud">Soundcloud</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditLinkModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-[#990026] hover:bg-[#73001d] text-white text-xs font-semibold shadow-lg shadow-[#990026]/25"
+                >
+                  Save Changes
                 </button>
               </div>
             </form>

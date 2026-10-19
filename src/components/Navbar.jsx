@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { SparklesIcon, DiamondIcon, DiscordIcon } from './Icons';
+import { isLoggedIn, getCurrentUser } from '../utils/storage';
 
 export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -55,18 +56,29 @@ export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
 
           {/* Action Buttons Right */}
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => onOpenAuth ? onOpenAuth('login') : onNavigate('dashboard')}
-              className="px-5 py-1.5 rounded-full bg-[#1f1f23] hover:bg-[#27272d] border border-white/[0.08] text-white text-[14px] font-medium transition active:scale-[0.98]"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => onOpenAuth ? onOpenAuth('register') : onNavigate('dashboard')}
-              className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[14px] font-medium transition shadow-md shadow-[#990026]/30 active:scale-[0.98]"
-            >
-              Register
-            </button>
+            {isLoggedIn() ? (
+              <button
+                onClick={() => onNavigate('dashboard')}
+                className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[14px] font-medium transition shadow-md shadow-[#990026]/30 active:scale-[0.98]"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => onNavigate('login')}
+                  className="px-5 py-1.5 rounded-full bg-[#1f1f23] hover:bg-[#27272d] border border-white/[0.08] text-white text-[14px] font-medium transition active:scale-[0.98]"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => onNavigate('register')}
+                  className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[14px] font-medium transition shadow-md shadow-[#990026]/30 active:scale-[0.98]"
+                >
+                  Register
+                </button>
+              </>
+            )}
           </div>
         </nav>
       </header>
@@ -188,29 +200,41 @@ export default function Navbar({ onNavigate, onOpenAuth, currentPage }) {
             {/* Dashed divider */}
             <div className="border-t border-dashed border-white/[0.12] my-3.5 mx-1" />
 
-            {/* Bottom Buttons: Login and Register */}
-            <div className="grid grid-cols-2 gap-3 mt-1 ios-item-4">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onOpenAuth) onOpenAuth('login');
-                  else onNavigate('dashboard');
-                }}
-                className="py-3 rounded-[16px] bg-[#222226] hover:bg-[#28282d] border border-white/[0.08] text-white text-[15px] font-medium text-center transition active:scale-[0.96]"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onOpenAuth) onOpenAuth('register');
-                  else onNavigate('dashboard');
-                }}
-                className="py-3 rounded-[16px] bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[15px] font-medium text-center transition shadow-lg shadow-[#990026]/30 active:scale-[0.96]"
-              >
-                Register
-              </button>
-            </div>
+            {/* Bottom Buttons: Login and Register or Dashboard */}
+            {isLoggedIn() ? (
+              <div className="mt-1 ios-item-4">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigate('dashboard');
+                  }}
+                  className="w-full py-3 rounded-[16px] bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[15px] font-medium text-center transition shadow-lg shadow-[#990026]/30 active:scale-[0.96]"
+                >
+                  Enter Dashboard
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 mt-1 ios-item-4">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigate('login');
+                  }}
+                  className="py-3 rounded-[16px] bg-[#222226] hover:bg-[#28282d] border border-white/[0.08] text-white text-[15px] font-medium text-center transition active:scale-[0.96]"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onNavigate('register');
+                  }}
+                  className="py-3 rounded-[16px] bg-gradient-to-r from-[#990026] to-[#5c0017] hover:from-[#b3002d] hover:to-[#73001d] text-white text-[15px] font-medium text-center transition shadow-lg shadow-[#990026]/30 active:scale-[0.96]"
+                >
+                  Register
+                </button>
+              </div>
+            )}
           </div>
         )}
       </header>

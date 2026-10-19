@@ -165,13 +165,47 @@ export const saveProfile = (profile) => {
 export const getCurrentUser = () => {
   try {
     if (typeof window !== 'undefined') {
-      const username = localStorage.getItem(CURRENT_USER_KEY) || 'ares';
-      return getProfileByUsername(username) || { ...SHOWCASE_PROFILE };
+      const username = localStorage.getItem(CURRENT_USER_KEY);
+      if (!username) return null;
+      return getProfileByUsername(username);
     }
   } catch (e) {
     // fallback
   }
-  return { ...SHOWCASE_PROFILE };
+  return null;
+};
+
+export const isLoggedIn = () => {
+  return Boolean(getCurrentUser());
+};
+
+export const loginUser = (username) => {
+  try {
+    if (typeof window !== 'undefined' && username) {
+      const clean = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+      // Ensure profile exists or create blank
+      let profile = getProfileByUsername(clean);
+      if (!profile) {
+        profile = createBlankProfile(clean);
+        saveProfile(profile);
+      }
+      localStorage.setItem(CURRENT_USER_KEY, clean);
+      return profile;
+    }
+  } catch (e) {
+    console.error('Error logging in user', e);
+  }
+  return null;
+};
+
+export const logoutUser = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(CURRENT_USER_KEY);
+    }
+  } catch (e) {
+    console.error('Error logging out', e);
+  }
 };
 
 export const incrementProfileViews = (username) => {

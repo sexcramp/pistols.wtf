@@ -1,42 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import BioPage from './pages/BioPage';
-import AuthModal from './components/AuthModal';
-import { getCurrentUser } from './utils/storage';
+import { getCurrentUser, isLoggedIn } from './utils/storage';
 
-// Synchronously parse initial URL route to prevent 1-second flash of landing page
+// Synchronously parse initial URL route to prevent flash of wrong page
 const getInitialRoute = () => {
-  if (typeof window === 'undefined') return { page: 'home', username: 'ares' };
-  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  if (!path || path === '') {
-    return { page: 'home', username: 'ares' };
-  } else if (path === 'dashboard') {
-    const cur = getCurrentUser();
-    return { page: 'dashboard', username: cur?.username || 'ares' };
-  } else {
-    return { page: 'bio', username: path.replace('@', '') };
+  if (typeof window === 'undefined') {
+    return { page: 'home', username: '', mode: 'login' };
   }
+
+  const rawPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  const searchParams = new URLSearchParams(window.location.search);
+  const prefilled = searchParams.get('username') || '';
+
+  // 1. Landing / Home
+  if (!rawPath || rawPath === '') {
+    return { page: 'home', username: '', mode: 'login' };
+  }
+
+  // 2. Login Page
+  if (rawPath === 'login') {
+    if (isLoggedIn()) {
+      const cur = getCurrentUser();
+      if (typeof window !== 'undefined' && window.history) {
+        window.history.replaceState({}, '', '/dashboard');
+      }
+      return { page: 'dashboard', username: cur?.username || 'user', mode: 'login' };
+    }
+    return { page: 'login', username: prefilled, mode: 'login' };
+  }
+
+  // 3. Register Page
+  if (rawPath === 'register') {
+    if (isLoggedIn()) {
+      const cur = getCurrentUser();
+      if (typeof window !== 'undefined' && window.history) {
+        window.history.replaceState({}, '', '/dashboard');
+      }
+      return { page: 'dashboard', username: cur?.username || 'user', mode: 'register' };
+    }
+    return { page: 'login', username: prefilled, mode: 'register' };
+  }
+
+  // 4. Dashboard (Protected Route)
+  if (rawPath === 'dashboard') {
+    if (!isLoggedIn()) {
+      // User is NOT logged in: redirect to /login
+      if (typeof window !== 'undefined' && window.history) {
+        window.history.replaceState({}, '', '/login');
+      }
+      return { page: 'login', username: '', mode: 'login' };
+    }
+    const cur = getCurrentUser();
+    return { page: 'dashboard', username: cur?.username || 'user', mode: 'login' };
+  }
+
+  // 5. Bio Page for :username
+  return { page: 'bio', username: rawPath.replace('@', ''), mode: 'login' };
 };
 
 export default function App() {
   const initialRoute = getInitialRoute();
-  const [currentPage, setCurrentPage] = useState(initialRoute.page); // Synchronous initial state
+  const [currentPage, setCurrentPage] = useState(initialRoute.page);
   const [activeUsername, setActiveUsername] = useState(initialRoute.username);
-  const [authModal, setAuthModal] = useState({
-    isOpen: false,
-    mode: 'register',
-    prefilledUsername: '',
-  });
+  const [authMode, setAuthMode] = useState(initialRoute.mode);
 
-  // Handle URL route parsing on back/forward navigation
+  // Parse route on back/forward browser navigation
   const parseRoute = () => {
     const route = getInitialRoute();
     setCurrentPage(route.page);
-    if (route.page === 'bio') {
-      setActiveUsername(route.username);
-    }
+    setActiveUsername(route.username);
+    setAuthMode(route.mode);
   };
 
   useEffect(() => {
@@ -45,76 +82,104 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (page, username = 'ares') => {
-    setCurrentPage(page);
+  // Centralized Navigation Function
+  const navigate = (page, extra = '') => {
     if (page === 'home') {
+      setCurrentPage('home');
       window.history.pushState({}, '', '/');
+    } else if (page === 'login') {
+      if (isLoggedIn()) {
+        const cur = getCurrentUser();
+        setActiveUsername(cur?.username || 'user');
+        setCurrentPage('dashboard');
+        window.history.pushState({}, '', '/dashboard');
+      } else {
+        setAuthMode('login');
+        if (extra) setActiveUsername(extra);
+        setCurrentPage('login');
+        window.history.pushState({}, '', '/login');
+      }
+    } else if (page === 'register') {
+      if (isLoggedIn()) {
+        const cur = getCurrentUser();
+        setActiveUsername(cur?.username || 'user');
+        setCurrentPage('dashboard');
+        window.history.pushState({}, '', '/dashboard');
+      } else {
+        setAuthMode('register');
+        if (extra) setActiveUsername(extra);
+        setCurrentPage('login');
+        const url = extra ? `/register?username=${encodeURIComponent(extra)}` : '/register';
+        window.history.pushState({}, '', url);
+      }
     } else if (page === 'dashboard') {
-      setActiveUsername(username);
-      window.history.pushState({}, '', '/dashboard');
+      if (!isLoggedIn()) {
+        // Protected Route Redirect: takes unauthenticated users to /login
+        setAuthMode('login');
+        setCurrentPage('login');
+        window.history.pushState({}, '', '/login');
+      } else {
+        const cur = getCurrentUser();
+        const uname = extra || cur?.username || 'user';
+        setActiveUsername(uname);
+        setCurrentPage('dashboard');
+        window.history.pushState({}, '', '/dashboard');
+      }
     } else if (page === 'bio') {
-      setActiveUsername(username);
-      window.history.pushState({}, '', `/${username}`);
+      const uname = extra || 'ares';
+      setActiveUsername(uname);
+      setCurrentPage('bio');
+      window.history.pushState({}, '', `/${uname}`);
     }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const openAuth = (mode = 'register', prefilled = '') => {
-    setAuthModal({
-      isOpen: true,
-      mode,
-      prefilledUsername: prefilled,
-    });
-  };
-
-  const closeAuth = () => {
-    setAuthModal(prev => ({ ...prev, isOpen: false }));
-  };
-
-  const handleAuthSuccess = (username) => {
-    navigate('dashboard', username);
   };
 
   return (
     <div className="min-h-screen bg-[#060608] text-white selection:bg-[#990026] selection:text-white">
-      {/* Show Floating Stadium Navbar ONLY on Landing/Home Page */}
+      {/* Floating Stadium Navbar on Landing/Home Page */}
       {currentPage === 'home' && (
         <Navbar 
           onNavigate={navigate} 
-          onOpenAuth={openAuth}
           currentPage={currentPage} 
         />
       )}
 
       <main>
+        {/* 1. Landing Page */}
         {currentPage === 'home' && (
           <LandingPage 
             onNavigate={navigate} 
-            onOpenAuth={openAuth}
+            onOpenAuth={(mode, handle) => navigate(mode === 'register' ? 'register' : 'login', handle)}
           />
         )}
 
-        {currentPage === 'dashboard' && (
-          <DashboardPage initialUsername={activeUsername} onNavigate={navigate} />
+        {/* 2. Dedicated Login & Register Page */}
+        {currentPage === 'login' && (
+          <LoginPage 
+            initialMode={authMode} 
+            prefilledUsername={activeUsername} 
+            onNavigate={navigate} 
+          />
         )}
 
+        {/* 3. Dashboard Page (Protected) */}
+        {currentPage === 'dashboard' && (
+          <DashboardPage 
+            initialUsername={activeUsername || getCurrentUser()?.username || 'user'} 
+            onNavigate={navigate} 
+          />
+        )}
+
+        {/* 4. Bio Page for any claimed/unclaimed username */}
         {currentPage === 'bio' && (
           <BioPage 
             username={activeUsername} 
             onNavigate={navigate} 
-            onOpenAuth={openAuth}
+            onOpenAuth={(mode, handle) => navigate('register', handle)}
           />
         )}
       </main>
-
-      {/* Register / Login Modal */}
-      <AuthModal
-        isOpen={authModal.isOpen}
-        onClose={closeAuth}
-        onSuccess={handleAuthSuccess}
-        initialMode={authModal.mode}
-        prefilledUsername={authModal.prefilledUsername}
-      />
     </div>
   );
 }

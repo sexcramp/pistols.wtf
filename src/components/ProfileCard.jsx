@@ -65,6 +65,53 @@ export const SpiderwebIcon = ({ className = "w-4 h-4", color = "currentColor" })
   </svg>
 );
 
+// 5. Developer Badge (Terminal / Code brackets)
+export const GunsDeveloperIcon = ({ className = "w-5 h-5", color = "#a855f7" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+
+// 6. Staff / Shield Badge
+export const GunsStaffIcon = ({ className = "w-5 h-5", color = "#ec4899" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
+  </svg>
+);
+
+// 7. Supporter Badge (Heart)
+export const GunsSupporterIcon = ({ className = "w-5 h-5", color = "#f43f5e" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill={color}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+  </svg>
+);
+
+// 8. OG Badge (Lightning bolt)
+export const GunsOgIcon = ({ className = "w-5 h-5", color = "#eab308" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill={color}>
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+  </svg>
+);
+
+// 9. Bug Hunter Badge
+export const GunsBugHunterIcon = ({ className = "w-5 h-5", color = "#22c55e" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="8" height="14" x="8" y="6" rx="4" />
+    <path d="m19 7-3 2" />
+    <path d="m5 7 3 2" />
+    <path d="m19 19-3-2" />
+    <path d="m5 19 3-2" />
+    <path d="M20 13h-4" />
+    <path d="M4 13h4" />
+    <path d="m10 4 1 2" />
+    <path d="m14 4-1 2" />
+  </svg>
+);
+
+
 export default function ProfileCard({ profile = {}, isPreview = false, onLinkClick }) {
   const [showUidTooltip, setShowUidTooltip] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState(null);
@@ -201,6 +248,24 @@ export default function ProfileCard({ profile = {}, isPreview = false, onLinkCli
           />
         );
       }
+    } else if (badge === 'developer') {
+      badgeName = 'Developer';
+      badgeEl = <GunsDeveloperIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(168,85,247,0.7)]" color={isMonochromeBadges ? monoColor : '#a855f7'} />;
+    } else if (badge === 'staff') {
+      badgeName = 'Staff';
+      badgeEl = <GunsStaffIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(236,72,153,0.7)]" color={isMonochromeBadges ? monoColor : '#ec4899'} />;
+    } else if (badge === 'supporter') {
+      badgeName = 'Supporter';
+      badgeEl = <GunsSupporterIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]" color={isMonochromeBadges ? monoColor : '#f43f5e'} />;
+    } else if (badge === 'og') {
+      badgeName = 'OG Member';
+      badgeEl = <GunsOgIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(234,179,8,0.7)]" color={isMonochromeBadges ? monoColor : '#eab308'} />;
+    } else if (badge === 'halloween') {
+      badgeName = 'Halloween';
+      badgeEl = <SpiderwebIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(249,115,22,0.7)]" color={isMonochromeBadges ? monoColor : '#f97316'} />;
+    } else if (badge === 'bughunter') {
+      badgeName = 'Bug Hunter';
+      badgeEl = <GunsBugHunterIcon className="w-5 h-5 sm:w-5.5 sm:h-5.5 drop-shadow-[0_0_8px_rgba(34,197,94,0.7)]" color={isMonochromeBadges ? monoColor : '#22c55e'} />;
     } else {
       return null;
     }
